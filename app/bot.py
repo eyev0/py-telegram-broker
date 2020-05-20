@@ -3,13 +3,16 @@ import logging
 from aiogram.utils import executor
 
 from app import dp as dispatcher, config
+from app.decorators import log_call
 
 
+@log_call
 async def on_startup(dp):
     logging.warning('Powering up.')
     logging.warning('Config is:' + str(config))
 
 
+@log_call
 async def on_shutdown(dp):
     logging.warning('Shutting down..')
 

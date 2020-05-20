@@ -1,10 +1,6 @@
 import json
-import logging
-import sys
 
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
-
-from app import config
 
 APP_NAME = 'magicproxybot'
 
@@ -25,10 +21,6 @@ class Config(object):
         self.config_path = self.vol_path + '/config.json'
         self.proxy_path = self.vol_path + '/proxy.json'
         self.log_path = self.vol_path + f'/{APP_NAME}.log'
-        self.states_storage = RedisStorage2(host='localhost',
-                                            port=34343,
-                                            db='db0',
-                                            prefix='fsm')
 
         self.db_dialect = 'postgres'
         self.db_user = 'docker'
@@ -36,18 +28,26 @@ class Config(object):
         self.db_name = 'docker'
         if self.container:
             self.db_host = 'postgres-' + APP_NAME
+            self.redis_host = 'redis-' + APP_NAME
             self.db_port = '5432'
+            self.redis_port = '6379'
         else:
-            self.db_host = 'localhost'
-            self.db_port = '34343'
+            self.db_host = self.redis_host = 'localhost'
+            self.db_port = '45432'
+            self.redis_port = '34343'
 
         self.db_connect_string = self.db_dialect + '://' + self.db_user + ':' + self.db_password + '@' \
             + self.db_host + ':' + self.db_port + '/' + self.db_name
 
+        self.states_storage = RedisStorage2(host=self.redis_host,
+                                            port=self.redis_port,
+                                            db=0,
+                                            prefix='fsm')
+
         with open(self.config_path, 'rb') as f:
             self.conf = json.load(f)
             self.TOKEN = self.conf['TOKEN']
-            self.admin_ids = self.conf['admin_ids']
+            self.check_admin = self.conf['check_admin']
 
         with open(self.proxy_path, 'rb') as f:
             self.proxy_conf = json.load(f)
@@ -58,30 +58,4 @@ class Config(object):
 
     def __repr__(self):
         return f'Config(container={self.container}, test_env={self.test_env}, TOKEN={self.TOKEN}, ' \
-               f'PROXY_URL={self.PROXY_URL}, vol_dir={self.vol_path}, admin_ids={self.admin_ids})'
-
-
-formatter = logging.Formatter(u'%(filename)s [ LINE:%(lineno)+3s ]#%(levelname)+8s [%(asctime)s]  %(message)s')
-
-
-def setup_logger(name, file=None, level=logging.INFO):
-    if file is not None:
-        handler = logging.FileHandler(file)
-    else:
-        handler = logging.StreamHandler(sys.stdout)
-    handler.setFormatter(formatter)
-
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
-    logger.addHandler(handler)
-
-    return logger
-
-
-file_logger = setup_logger('file logger', config.log_path, level=logging.INFO)
-stdout_logger = setup_logger('stdout_logger', None, level=logging.WARNING)
-
-
-def log_message(message, level=logging.INFO):
-    file_logger.log(level=level, msg=message)
-    stdout_logger.log(level=level, msg=message)
+               f'PROXY_URL={self.PROXY_URL}, vol_dir={self.vol_path}, check_admin={self.check_admin})'
