@@ -29,100 +29,110 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     uid = Column(Integer)
     username = Column(String(255))
-    full_name = Column(String(255))
+    full_name = Column(String(30))
+    email_address = Column(String(100))
+    phone_number = Column(String(20))
+    location = Column(String(100))
     active = Column(Boolean, default=True)
     receive_notifications = Column(Boolean, default=True)
-    edit_datetime = Column(DateTime, default=clock.now())
+    created = Column(DateTime, default=clock.now())
+    edited = Column(DateTime, default=clock.now())
 
     def __init__(self,
                  uid,
                  username='',
                  full_name='',
+                 email_address='',
+                 phone_number='',
+                 location='',
                  active=True,
-                 receive_notifications=True,
-                 edit_datetime=clock.now()):
+                 receive_notifications=True):
         self.uid = uid
         self.username = username
         self.full_name = full_name
+        self.email_address = email_address
+        self.phone_number = phone_number
+        self.location = location
         self.active = active
         self.receive_notifications = receive_notifications
-        self.edit_datetime = edit_datetime
 
     def __repr__(self):
-        return "User(id={}, uid={}, username={}, " \
-               "full_name={}, active={}, receive_notifications={}, edit_datetime={})" \
-            .format(self.id, self.uid, self.username,
-                    self.full_name, self.active, self.receive_notifications, self.edit_datetime)
+        return f"User(id={self.id}, uid={self.uid}, username={self.username}, " \
+               f"full_name={self.full_name}, email_address={self.email_address}, " \
+               f"phone_number={self.phone_number}, location={self.location})" \
+               f"active={self.active}, receive_notifications={self.receive_notifications}, " \
+               f"created={self.created}, edited={self.edited})"
 
 
-class Event(Base):
-    __tablename__ = 'event'
+class Card(Base):
+    __tablename__ = 'card'
     id = Column(Integer, primary_key=True)
-    title = Column(String(100))
-    description = Column(String(1000))
-    access_info = Column(String(1000))
-    status = Column(Integer)
-    edit_datetime = Column(DateTime, default=clock.now())
+    owner_id = Column(Integer, ForeignKey('user.id'))
+    name = Column(String(100))
+    price = Column(Integer, default=False)
+    created = Column(DateTime, default=clock.now())
+    edited = Column(DateTime, default=clock.now())
 
-    status_map = {
-        0: 'не опубликовано',
-        1: 'открыта регистрация',
-        9: 'регистрация закрыта',
-        10: 'архивировано',
+    owner = relationship('User', backref='owner_cards', foreign_keys=[owner_id])
+
+    def __init__(self,
+                 owner_id,
+                 name,
+                 price):
+        self.owner_id = owner_id
+        self.name = name
+        self.price = price
+
+    def __repr__(self):
+        return f"Card(id={self.id}, user_id={self.owner_id}, name={self.name}, price={self.price}, " \
+               f"created={self.created}, edited={self.edited})"
+
+
+class Subscription(Base):
+    __tablename__ = 'subscription'
+
+    TYPES = {
+        0: 'card_id',
+        1: 'space_add_hundred',
+        2: 'space_add_thousand',
+        3: 'space_add_5_thousand',
     }
 
-    def __init__(self,
-                 title='',
-                 description='',
-                 access_info='',
-                 status=0,
-                 edit_datetime=clock.now()):
-        self.title = title
-        self.description = description
-        self.access_info = access_info
-        self.status = status
-        self.edit_datetime = edit_datetime
-
-    def __repr__(self):
-        return "Event(id={}, title={}, description={}, access_info={}, status={}, " \
-               "edit_datetime={})" \
-            .format(self.id, self.title, self.description, self.access_info, self. status,
-                    self.edit_datetime)
-
-
-class Enrollment(Base):
-    __tablename__ = 'enrollment'
     id = Column(Integer, primary_key=True)
-    complete = Column(Boolean(), default=False)
-    admin_check = Column(Boolean(), default=False)
-    file_type = Column(String(10))
-    file_id = Column(String(1000))
-    edit_datetime = Column(DateTime, default=clock.now())
+    subscriber_id = Column(Integer, ForeignKey('user.id'))
+    type = Column(Integer, default=0)
+    card_id = Column(Integer, ForeignKey('card.id'))
+    created = Column(DateTime, default=clock.now())
 
-    user_id = Column(Integer, ForeignKey('user.id'))
-    event_id = Column(Integer, ForeignKey('event.id'))
-
-    user = relationship('User', backref='user_enrollments', foreign_keys=[user_id])
-    event = relationship('Event', backref='event_enrollments', foreign_keys=[event_id])
+    subscriber = relationship('User', backref='user_subscriptions', foreign_keys=[subscriber_id])
+    card = relationship('Card', backref='card_subscriptions', foreign_keys=[card_id])
 
     def __init__(self,
-                 user_id,
-                 event_id,
-                 complete=False,
-                 admin_check=False,
-                 file_type='',
-                 file_id='',
-                 edit_datetime=clock.now()):
-        self.user_id = user_id
-        self.event_id = event_id
-        self.complete = complete
-        self.admin_check = admin_check
-        self.file_type = file_type
-        self.file_id = file_id
-        self.edit_datetime = edit_datetime
+                 subscriber_id,
+                 card_id):
+        self.subscriber_id = subscriber_id
+        self.card_id = card_id
 
     def __repr__(self):
-        return "Enrollment(id={}, user_id={}, event_id={}, complete={}, " \
-               "admin_check={}, file_type={}, file_id={}, edit_datetime={})" \
-            .format(self.id, self.user_id, self.event_id, self.complete,
-                    self.admin_check, self.file_type, self.file_id, self.edit_datetime)
+        return f"Subscription(id={self.id}, user_id={self.subscriber_id}, " \
+               f"card_id={self.card_id}, created={self.created})"
+
+
+class Demand(Base):
+    __tablename__ = 'demand'
+    id = Column(Integer, primary_key=True)
+    requestor_id = Column(Integer, ForeignKey('user.id'))
+    card_name = Column(String(100))
+    created = Column(DateTime, default=clock.now())
+
+    requestor = relationship('User', backref='user_demands', foreign_keys=[requestor_id])
+
+    def __init__(self,
+                 requestor_id,
+                 card_id):
+        self.requestor_id = requestor_id
+        self.card_name = card_id
+
+    def __repr__(self):
+        return f"Demand(id={self.id}, user_id={self.requestor_id}, " \
+               f"card_id={self.card_name}, created={self.created})"

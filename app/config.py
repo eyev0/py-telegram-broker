@@ -2,7 +2,7 @@ import json
 
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
 
-APP_NAME = 'magicproxybot'
+APP_NAME = 'mtgdealer'
 
 
 class Config(object):
@@ -15,12 +15,10 @@ class Config(object):
             self.vol_path = '/vol'
         else:
             self.vol_path = f'/home/egor/{APP_NAME}'
-            if self.test_env:
-                self.vol_path = self.vol_path + '/test'
 
         self.config_path = self.vol_path + '/config.json'
         self.proxy_path = self.vol_path + '/proxy.json'
-        self.log_path = self.vol_path + f'/{APP_NAME}.log'
+        self.log_path = self.vol_path + f'/{APP_NAME}{"-test" if test_env else ""}.log'
 
         self.db_dialect = 'postgres'
         self.db_user = 'docker'
@@ -34,19 +32,23 @@ class Config(object):
         else:
             self.db_host = self.redis_host = 'localhost'
             self.db_port = '45432'
-            self.redis_port = '34343'
+            self.redis_port = '46379'
 
         self.db_connect_string = self.db_dialect + '://' + self.db_user + ':' + self.db_password + '@' \
             + self.db_host + ':' + self.db_port + '/' + self.db_name
 
+        if test_env:
+            prefix = 'test'
+        else:
+            prefix = ''
         self.states_storage = RedisStorage2(host=self.redis_host,
                                             port=self.redis_port,
                                             db=0,
-                                            prefix='fsm')
+                                            prefix=prefix+'fsm')
 
         with open(self.config_path, 'rb') as f:
             self.conf = json.load(f)
-            self.TOKEN = self.conf['TOKEN']
+            self.TOKEN = self.conf['TOKEN' if not test_env else 'TOKEN_TEST']
             self.check_admin = self.conf['check_admin']
 
         with open(self.proxy_path, 'rb') as f:

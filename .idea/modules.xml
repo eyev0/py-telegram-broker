@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/magicproxybot.iml" filepath="$PROJECT_DIR$/.idea/magicproxybot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/mtgdealer.iml" filepath="$PROJECT_DIR$/.idea/mtgdealer.iml" />
     </modules>
   </component>
 </project>

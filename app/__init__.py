@@ -21,7 +21,7 @@ args = parser.parse_args()
 config = Config(args.container, args.test_env)
 
 file_handler = logging.FileHandler(config.log_path)
-stdout_handler = logging.StreamHandler(sys.stdout)
+stdout_handler = logging.StreamHandler(sys.stderr)
 # noinspection PyArgumentList
 logging.basicConfig(format=u'%(filename)s [ LINE:%(lineno)+3s ]#%(levelname)+8s [%(asctime)s]  %(message)s',
                     level=logging.INFO,
