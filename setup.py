@@ -1,6 +1,6 @@
 from distutils.core import setup
 
-from app.config import APP_NAME
+APP_NAME = 'magicproxybot'
 
 setup(name=APP_NAME,
       version='1.0',
