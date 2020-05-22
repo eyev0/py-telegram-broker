@@ -54,6 +54,7 @@ class Config(object):
             self.conf = json.load(f)
             self.TOKEN = self.conf['TOKEN' if not test_env else 'TOKEN_TEST']
             self.check_admin = self.conf['check_admin']
+            self.admins = []
 
         with open(self.proxy_path, 'rb') as f:
             self.proxy_conf = json.load(f)
