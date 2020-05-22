@@ -5,7 +5,7 @@ from aiogram import types
 from app import dp
 
 
-def mixed_handler_cozy_args(func):
+def mixed_handler_parse_args(func):
     """ Process args for message and callback_query handlers in one func"""
     @functools.wraps(func)
     def decorator(obj: types.base.TelegramObject, **partial_data):
@@ -34,7 +34,7 @@ def mixed_handler_cozy_args(func):
     return decorator
 
 
-def message_handler_cozy_args(func):
+def message_handler_parse_args(func):
     @functools.wraps(func)
     def decorator(message: types.Message, **partial_data):
         user_id = message.from_user.id
@@ -49,7 +49,7 @@ def message_handler_cozy_args(func):
     return decorator
 
 
-def callback_query_handler_cozy_args(func):
+def callback_query_handler_parse_args(func):
     @functools.wraps(func)
     def decorator(callback_query: types.CallbackQuery, **partial_data):
         message = callback_query.message

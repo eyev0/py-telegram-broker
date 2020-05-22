@@ -17,7 +17,7 @@ def trace(func):
         result = func(*args, **kwargs)
 
         if result is not None:
-            if isinstance(result, Iterable):
+            if isinstance(result, Iterable) and not isinstance(result, str):
                 result_str = ', '.join([str(x) for x in result])
             else:
                 result_str = result
@@ -40,7 +40,7 @@ def trace_async(func):
         result = await func(*args, **kwargs)
 
         if result is not None:
-            if isinstance(result, Iterable):
+            if isinstance(result, Iterable) and not isinstance(result, str):
                 result_str = ', '.join([str(x) for x in result])
             else:
                 result_str = result
