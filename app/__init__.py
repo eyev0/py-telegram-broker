@@ -32,4 +32,5 @@ bot = Bot(token=config.TOKEN, proxy=config.PROXY_URL)
 dp = Dispatcher(bot, storage=config.states_storage)
 dp.middleware.setup(LoggingMiddleware())
 
+import app.db
 import app.handlers

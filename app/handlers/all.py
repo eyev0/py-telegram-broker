@@ -1,5 +1,5 @@
 from app import dp, bot
-from app.decorators import cozy_args
+from app.decorators import *
 from app.handlers.util.keyboards import *
 from app.handlers.util.states import States
 from app.log import trace_async
@@ -8,11 +8,9 @@ from app.log import trace_async
 @dp.message_handler(commands=['start'],
                     state='*')
 @trace_async
-@cozy_args
-async def start(user_id, message, user_state, **kwargs):
-    uid = message.from_user.id
-    state = dp.current_state(user=uid, chat=uid)
-    await state.set_state(States.all()[0])
+@message_handler_cozy_args
+async def start(user_id, message, user_state):
+    await user_state.set_state(States.all()[0])
     await message.reply('Yo',
                         reply=False,
                         reply_markup=keyboard_menu)
@@ -23,11 +21,10 @@ async def start(user_id, message, user_state, **kwargs):
 @dp.message_handler(commands=['upload'],
                     state='*')
 @trace_async
-@cozy_args
+@mixed_handler_cozy_args
 async def upload(user_id, message, user_state, is_callback, callback_query):
-    await user_state.set_state(States.all()[0])
-    await message.reply('Yo',
-                        reply=False,
-                        reply_markup=keyboard_menu)
+    await user_state.set_state(States.all()[1])
+    await message.reply('Upload',
+                        reply=False)
     if is_callback:
         await bot.answer_callback_query(callback_query.id)
