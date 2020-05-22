@@ -2,13 +2,14 @@ import functools
 
 from aiogram import types
 
-from app import dp
+from app import dp, bot
+from app.handlers.util.states import resolve_state
 
 
 def mixed_handler_parse_args(func):
-    """ Process args for message and callback_query handlers in one func"""
+    """ Parse args for message and callback_query handlers in one func"""
     @functools.wraps(func)
-    def decorator(obj: types.base.TelegramObject, **partial_data):
+    async def decorator(obj: types.base.TelegramObject, **partial_data):
         is_callback = False
         callback_query = None
         if isinstance(obj, types.CallbackQuery):
@@ -29,7 +30,10 @@ def mixed_handler_parse_args(func):
             'is_callback': is_callback,
             'callback_query': callback_query,
         }
-        return func(**kwargs)
+        result = resolve_state(func)(**kwargs)
+        if is_callback:
+            await bot.answer_callback_query(callback_query.id)
+        return result
 
     return decorator
 
@@ -44,14 +48,14 @@ def message_handler_parse_args(func):
             'message': message,
             'user_state': user_state,
         }
-        return func(**kwargs)
+        return resolve_state(func)(**kwargs)
 
     return decorator
 
 
 def callback_query_handler_parse_args(func):
     @functools.wraps(func)
-    def decorator(callback_query: types.CallbackQuery, **partial_data):
+    async def decorator(callback_query: types.CallbackQuery, **partial_data):
         message = callback_query.message
         user_id = callback_query.from_user.id
         user_state = partial_data.get('state', dp.current_state(user=user_id, chat=user_id))
@@ -61,7 +65,8 @@ def callback_query_handler_parse_args(func):
             'user_state': user_state,
             'callback_query': callback_query,
         }
-        return func(**kwargs)
+        result = resolve_state(func)(**kwargs)
+        await bot.answer_callback_query(callback_query.id)
+        return result
 
     return decorator
-
