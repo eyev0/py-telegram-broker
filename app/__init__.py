@@ -8,7 +8,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 
 from app.config import Config, APP_NAME
-from app.log import LVL_CALL
+from app.decorate_log import LVL_CALL
 from app.storage_util import FSMContextFactory
 
 clock = datetime(2020, 1, 1, tzinfo=pytz.timezone('Europe/Moscow'))

@@ -3,7 +3,7 @@ import logging
 from aiogram.utils import executor
 
 from app import dp as dispatcher, config
-from app.log import trace_async
+from app.decorate_log import trace_async
 
 
 @trace_async

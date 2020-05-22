@@ -2,7 +2,7 @@ import json
 
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
 
-from app.log import LVL_CALL
+from app.decorate_log import LVL_CALL
 
 APP_NAME = 'mtgdealer'
 
