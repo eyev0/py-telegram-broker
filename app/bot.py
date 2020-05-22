@@ -3,16 +3,17 @@ import logging
 from aiogram.utils import executor
 
 from app import dp as dispatcher, config
-from app.decorators import log_call
+from app.log import trace_async
 
 
-@log_call
+@trace_async
 async def on_startup(dp):
-    logging.warning('Powering up.')
-    logging.warning('Config is:' + str(config))
+    me = await dp.bot.get_me()
+    logging.warning(f'Powering up @{me["username"]}')
+    logging.warning(f'Config is:{config!r}')
 
 
-@log_call
+@trace_async
 async def on_shutdown(dp):
     logging.warning('Shutting down..')
 

@@ -2,6 +2,8 @@ import json
 
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
 
+from app.log import LVL_CALL
+
 APP_NAME = 'mtgdealer'
 
 
@@ -19,6 +21,8 @@ class Config(object):
         self.config_path = self.vol_path + '/config.json'
         self.proxy_path = self.vol_path + '/proxy.json'
         self.log_path = self.vol_path + f'/{APP_NAME}{"-test" if test_env else ""}.log'
+
+        self.log_level = LVL_CALL
 
         self.db_dialect = 'postgres'
         self.db_user = 'docker'
@@ -44,7 +48,7 @@ class Config(object):
         self.states_storage = RedisStorage2(host=self.redis_host,
                                             port=self.redis_port,
                                             db=0,
-                                            prefix=prefix+'fsm')
+                                            prefix=f'{prefix}fsm')
 
         with open(self.config_path, 'rb') as f:
             self.conf = json.load(f)
@@ -60,4 +64,4 @@ class Config(object):
 
     def __repr__(self):
         return f'Config(container={self.container}, test_env={self.test_env}, TOKEN={self.TOKEN}, ' \
-               f'PROXY_URL={self.PROXY_URL}, vol_dir={self.vol_path}, check_admin={self.check_admin})'
+               f'PROXY_URL={self.PROXY_URL})'

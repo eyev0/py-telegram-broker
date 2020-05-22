@@ -6,8 +6,8 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeybo
 
 
 button_upload = InlineKeyboardButton('Залить', callback_data='upload')
-button_view = InlineKeyboardButton('Список твоих карт', callback_data='view')
-button_delete = InlineKeyboardButton('Удалить', callback_data='delete')
+button_view = InlineKeyboardButton('Мои карты', callback_data='view')
+button_delete = InlineKeyboardButton('Удалить карты', callback_data='delete')
 
 keyboard_menu = InlineKeyboardMarkup()
 keyboard_menu.row(button_upload)
