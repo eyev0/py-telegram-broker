@@ -1,7 +1,7 @@
-version: '3.8'
+version: '3.7'
 
 services:
-    mtgdealer-db:
+    db:
         image: 'postgres:alpine'
         restart: always
         environment:
@@ -17,7 +17,7 @@ services:
         deploy:
             restart_policy:
                 condition: on-failure
-    mtgdealer-kvstorage:
+    redis:
         image: 'redis:alpine'
         command: redis-server --appendonly yes
         restart: always
@@ -34,14 +34,17 @@ services:
         deploy:
             restart_policy:
                 condition: on-failure
-    mtgdealer-bot:
-        image: "egordementyev/docker-mtgdealer:latest"
+    bot:
+        image: "mtgdealer:latest"
+        build: .
         restart: always
+        volumes:
+            - ./vol:/vol
         networks:
             - mtgdealer-net
         depends_on:
-            - mtgdealer-db
-            - mtgdealer-kvstorage
+            - db
+            - redis
         deploy:
             restart_policy:
                 condition: on-failure
@@ -50,5 +53,5 @@ networks:
     mtgdealer-net:
 
 volumes:
-    db-mtgdealer:
     redis-mtgdealer:
+    db-mtgdealer:
