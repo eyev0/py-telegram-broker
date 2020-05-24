@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+    mtgdealer-db:
+        image: 'postgres:alpine'
+        restart: always
+        environment:
+            - POSTGRES_USER=docker
+            - POSTGRES_PASSWORD=docker
+            - POSTGRES_DB=docker
+        volumes:
+            - db-mtgdealer:/var/lib/postgresql/data
+        ports:
+            - "45432:5432"
+        networks:
+            - mtgdealer-net
+        deploy:
+            restart_policy:
+                condition: on-failure
+    mtgdealer-kvstorage:
+        image: 'redis:alpine'
+        command: redis-server --appendonly yes
+        restart: always
+        environment:
+            - POSTGRES_USER=docker
+            - POSTGRES_PASSWORD=docker
+            - POSTGRES_DB=docker
+        volumes:
+            - redis-mtgdealer:/data
+        ports:
+            - "46379:6379"
+        networks:
+            - mtgdealer-net
+        deploy:
+            restart_policy:
+                condition: on-failure
+    mtgdealer-bot:
+        image: "egordementyev/docker-mtgdealer:latest"
+        restart: always
+        networks:
+            - mtgdealer-net
+        depends_on:
+            - mtgdealer-db
+            - mtgdealer-kvstorage
+        deploy:
+            restart_policy:
+                condition: on-failure
+        
+networks:
+    mtgdealer-net:
+
+volumes:
+    db-mtgdealer:
+    redis-mtgdealer:
