@@ -30,7 +30,7 @@ def mixed_handler_parse_args(func):
             'is_callback': is_callback,
             'callback_query': callback_query,
         }
-        result = resolve_state(func)(**kwargs)
+        result = await resolve_state(func)(**kwargs)
         if is_callback:
             await bot.answer_callback_query(callback_query.id)
         return result
@@ -40,7 +40,7 @@ def mixed_handler_parse_args(func):
 
 def message_handler_parse_args(func):
     @functools.wraps(func)
-    def decorator(message: types.Message, **partial_data):
+    async def decorator(message: types.Message, **partial_data):
         user_id = message.from_user.id
         user_state = partial_data.get('state', dp.current_state(user=user_id, chat=user_id))
         kwargs = {
@@ -48,7 +48,7 @@ def message_handler_parse_args(func):
             'message': message,
             'user_state': user_state,
         }
-        return resolve_state(func)(**kwargs)
+        return await resolve_state(func)(**kwargs)
 
     return decorator
 
@@ -65,7 +65,7 @@ def callback_query_handler_parse_args(func):
             'user_state': user_state,
             'callback_query': callback_query,
         }
-        result = resolve_state(func)(**kwargs)
+        result = await resolve_state(func)(**kwargs)
         await bot.answer_callback_query(callback_query.id)
         return result
 

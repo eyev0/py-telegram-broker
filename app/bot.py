@@ -1,5 +1,6 @@
 import logging
 
+import aiogram
 from aiogram.utils import executor
 
 from app import dp as dispatcher, config
@@ -7,24 +8,41 @@ from app.decorate_log import trace_async
 
 
 @trace_async
-async def on_startup(dp):
+async def on_startup(dp: aiogram.Dispatcher):
+    if config.webhook_mode:
+        await trace_async(dp.bot.set_webhook)(config.WEBHOOK_URL)
+
     me = await dp.bot.get_me()
     logging.warning(f'Powering up @{me["username"]}')
     logging.warning(f'Config is:{config!r}')
 
 
 @trace_async
-async def on_shutdown(dp):
+async def on_shutdown(dp: aiogram.Dispatcher):
     logging.warning('Shutting down..')
 
     # Close DB connection (if used)
-    await dp.storage.close()
-    await dp.storage.wait_closed()
+    await trace_async(dp.storage.close)()
+    await trace_async(dp.storage.wait_closed)()
+
+    if config.webhook_mode:
+        await trace_async(dp.bot.delete_webhook)()
 
     logging.warning('Bye!')
 
+
 if __name__ == '__main__':
-    executor.start_polling(dispatcher,
-                           on_startup=on_startup,
-                           on_shutdown=on_shutdown,
-                           timeout=20)
+    if config.webhook_mode:
+        executor.start_webhook(dispatcher=dispatcher,
+                               webhook_path=config.WEBHOOK_PATH,
+                               on_startup=on_startup,
+                               on_shutdown=on_shutdown,
+                               skip_updates=True,
+                               host=config.WEBAPP_HOST,
+                               port=config.WEBAPP_PORT,
+                               )
+    else:
+        executor.start_polling(dispatcher,
+                               on_startup=on_startup,
+                               on_shutdown=on_shutdown,
+                               timeout=20)
