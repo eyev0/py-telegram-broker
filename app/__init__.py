@@ -28,7 +28,7 @@ config = Config(args.container,
                 args.webhook_mode,
                 args.proxy)
 
-file_handler = logging.FileHandler(config.log_path)
+file_handler = logging.FileHandler(config.log_file)
 stdout_handler = logging.StreamHandler(sys.stderr)
 # noinspection PyArgumentList
 logging.basicConfig(format=u'%(filename)s [ LINE:%(lineno)+3s ]#%(levelname)+8s [%(asctime)s]  %(message)s',

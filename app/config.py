@@ -1,11 +1,13 @@
 import json
+import os
+from pathlib import Path
 
 import aiohttp
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
 
 from app.decorate_log import LVL_CALL
 
-APP_NAME = 'mtgdealer'
+APP_NAME = 'salesboard'
 
 
 class Config(object):
@@ -18,14 +20,17 @@ class Config(object):
 
         if self.container:
             self.vol_path = '/vol'
+            self.log_path = '/log'
         else:
-            self.vol_path = f'/home/egor/{APP_NAME}'
+            proj_dir = Path(os.path.dirname(__file__)).parent
+            self.vol_path = f'{proj_dir}/data/vol'
+            self.log_path = f'{proj_dir}/data/log'
 
         self.config_json = self.vol_path + '/config.json'
         self.proxy_json = self.vol_path + '/proxy.json'
         self.webhook_json = self.vol_path + '/webhook.json'
-        self.log_path = self.vol_path + f'/{APP_NAME}{"-test" if test_env else ""}.log'
-
+        
+        self.log_file = self.log_path + f'/{APP_NAME}{"-test" if test_env else ""}.log'
         self.log_level = LVL_CALL
 
         self.db_dialect = 'postgres'
