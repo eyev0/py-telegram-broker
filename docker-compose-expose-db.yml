@@ -1,20 +1,6 @@
 version: '3.7'
 
 services:
-    bot:
-        build:
-            context: .
-            dockerfile: Dockerfile
-        image: salesboard:latest
-        restart: always
-        volumes:
-            - ./data/vol:/vol
-        networks:
-            - salesboard-net
-        depends_on:
-            - db
-            - redis
-
     db:
         image: 'postgres:alpine'
         restart: always
@@ -24,6 +10,8 @@ services:
             - POSTGRES_DB=docker
         volumes:
             - ./data/db:/var/lib/postgresql/data
+        ports:
+            - 45432:5432
         networks:
             - salesboard-net
 
@@ -37,9 +25,10 @@ services:
             - POSTGRES_DB=docker
         volumes:
             - ./data/redis:/data
+        ports:
+            - 46379:6379
         networks:
             - salesboard-net
 
 networks:
     salesboard-net:
-
