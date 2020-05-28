@@ -4,7 +4,7 @@ services:
     bot:
         build: https://github.com/edementyev/salesboard.git
         image: salesboard:latest
-        command: python3 ./app/bot.py -c -ц
+        command: python3 ./app/bot.py -c -w
         restart: unless-stopped
         environment:
             - SALESBOARD_ADMINS=['119707338']
