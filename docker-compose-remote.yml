@@ -2,18 +2,14 @@ version: '3.7'
 
 services:
     bot:
-        build:
-            context: .
-            dockerfile: Dockerfile
+        build: https://github.com/edementyev/salesboard.git
         image: salesboard:latest
+        command: python3 ./app/bot.py -c -w
         restart: unless-stopped
         environment:
-            - SALESBOARD_PROXY={'protocol':'socks5','ip':'116.203.53.174','port':'1008','username':'telegram','password':'telegram'}
-            - SALESBOARD_TOKEN='1165605883:AAFLmgZFDbRNzmFmM_MTKfr7IqeTIB6ZSzU'
+            - SALESBOARD_TOKEN=1165605883:AAFLmgZFDbRNzmFmM_MTKfr7IqeTIB6ZSzU
             - SALESBOARD_ADMIN=['119707338']
             - SALESBOARD_WEBHOOK={'host':'https://static.174.53.203.116.clients.your-server.de'}
-        volumes:
-            - ./data/vol:/vol
         networks:
             - network
         depends_on:
@@ -28,7 +24,7 @@ services:
             - POSTGRES_PASSWORD=docker
             - POSTGRES_DB=docker
         volumes:
-            - ./data/db:/var/lib/postgresql/data
+            - dbdata:/var/lib/postgresql/data
         networks:
             - network
 
@@ -41,10 +37,15 @@ services:
             - POSTGRES_PASSWORD=docker
             - POSTGRES_DB=docker
         volumes:
-            - ./data/redis:/data
+            - redisdata:/data
         networks:
             - network
 
 networks:
     network:
 
+volumes:
+    dbdata:
+        name: salesboard-db
+    redisdata:
+        name: salesboard-redis
