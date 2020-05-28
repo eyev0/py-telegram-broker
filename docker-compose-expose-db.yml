@@ -24,7 +24,7 @@ services:
             - POSTGRES_PASSWORD=docker
             - POSTGRES_DB=docker
         volumes:
-            - redisdata/redis:/data
+            - redisdata:/data
         ports:
             - 46379:6379
         networks:
