@@ -4,7 +4,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from app import config
 from app.db.models import Base
 
-engine = sqlalchemy.create_engine(config.db_connect_string)
+engine = sqlalchemy.create_engine(config.db.db_connect_string)
 
 Base.metadata.create_all(engine)
 
