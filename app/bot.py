@@ -1,10 +1,12 @@
 import logging
+import signal
+import sys
 
 import aiogram
 from aiogram.utils import executor
 
 from app import dp as dispatcher, config
-from app.decorate_log import trace_async
+from app.decorate_log import trace_async, trace
 
 
 @trace_async
@@ -31,7 +33,14 @@ async def on_shutdown(dp: aiogram.Dispatcher):
     logging.warning('Bye!')
 
 
+@trace
+def terminate(signalnum, frame):
+    logging.warning(f'!! received {signalnum}, terminating the process')
+    sys.exit()
+
+
 if __name__ == '__main__':
+    signal.signal(signal.SIGTERM, terminate)
     if config.webhook_mode:
         executor.start_webhook(dispatcher=dispatcher,
                                webhook_path=config.WEBHOOK_PATH,

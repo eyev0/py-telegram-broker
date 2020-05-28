@@ -1,4 +1,5 @@
 import argparse
+import asyncio
 import logging
 import sys
 from datetime import datetime
@@ -35,8 +36,9 @@ logging.basicConfig(format=u'%(filename)s [ LINE:%(lineno)+3s ]#%(levelname)+8s 
                     level=LVL_CALL,
                     handlers=(file_handler, stdout_handler,))
 
-bot = Bot(token=config.TOKEN, proxy=config.PROXY_URL, proxy_auth=config.PROXY_AUTH)
-dp = Dispatcher(bot, storage=config.states_storage)
+event_loop = asyncio.get_event_loop()
+bot = Bot(token=config.TOKEN, loop=event_loop, proxy=config.PROXY_URL, proxy_auth=config.PROXY_AUTH)
+dp = Dispatcher(bot, loop=event_loop, storage=config.states_storage)
 dp.middleware.setup(LoggingMiddleware())
 
 import app.db
