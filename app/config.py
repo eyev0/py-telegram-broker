@@ -86,7 +86,7 @@ class Config:
                 self.WEBHOOK_URL = f'{self.WEBHOOK_HOST}{self.WEBHOOK_PATH}'
 
                 # webserver settings
-                self.WEBAPP_HOST = 'localhost'  # or ip
+                self.WEBAPP_HOST = '0.0.0.0'  # or ip
                 self.WEBAPP_PORT = 8080
 
     def __init__(self, container, test_env, webhook_mode, use_proxy):
