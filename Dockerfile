@@ -10,4 +10,4 @@ RUN pip install --no-cache-dir -e .
 
 RUN mkdir /log
 
-CMD [ "python", "./app/bot.py", "--container", "--proxy" ]
+CMD [ "python", "./app/bot.py", "-c" ]
