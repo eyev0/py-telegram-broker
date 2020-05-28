@@ -48,8 +48,7 @@ if __name__ == '__main__':
                                on_shutdown=on_shutdown,
                                skip_updates=True,
                                host=config.webhook.WEBAPP_HOST,
-                               port=config.webhook.WEBAPP_PORT,
-                               )
+                               port=config.webhook.WEBAPP_PORT)
     else:
         executor.start_polling(dispatcher,
                                on_startup=on_startup,
