@@ -98,6 +98,7 @@ class Config:
         self.redis = self.__class__.RedisConfig(container, test_env)
         self.log = self.__class__.LogConfig(container, test_env)
         self.proxy = self.__class__.ProxyConfig(use_proxy)
+        self.webhook_mode = webhook_mode
         self.webhook = self.__class__.WebhookConfig(webhook_mode)
 
     def __repr__(self):
