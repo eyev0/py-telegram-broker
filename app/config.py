@@ -83,7 +83,8 @@ class Config:
                 webhook_conf = ast.literal_eval(os.environ[f'{APP_NAME.upper()}_WEBHOOK'])
                 self.WEBHOOK_HOST = webhook_conf['host']
                 self.WEBHOOK_PORT = webhook_conf['port']
-                self.WEBHOOK_URL = f'https://{self.WEBHOOK_HOST}:{self.WEBHOOK_PORT}/{token}'
+                self.WEBHOOK_PATH = f'/{token}'
+                self.WEBHOOK_URL = f'{self.WEBHOOK_HOST}{self.WEBHOOK_PATH}'
 
                 # webserver settings
                 self.WEBAPP_HOST = '0.0.0.0'  # or ip
