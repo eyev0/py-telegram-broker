@@ -41,7 +41,7 @@ def terminate(signalnum, frame):
 
 if __name__ == '__main__':
     signal.signal(signal.SIGTERM, terminate)
-    if config.webhook_mode:
+    if config.webhook.webhook_mode:
         executor.start_webhook(dispatcher=dispatcher,
                                webhook_path=config.WEBHOOK_PATH,
                                on_startup=on_startup,
