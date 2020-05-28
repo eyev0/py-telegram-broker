@@ -29,7 +29,7 @@ config = Config(args.container,
                 args.webhook_mode,
                 args.proxy)
 
-file_handler = logging.FileHandler(config.log_file)
+file_handler = logging.FileHandler(config.log.log_file)
 stdout_handler = logging.StreamHandler(sys.stderr)
 # noinspection PyArgumentList
 logging.basicConfig(format=u'%(filename)s [ LINE:%(lineno)+3s ]#%(levelname)+8s [%(asctime)s]  %(message)s',
@@ -37,8 +37,8 @@ logging.basicConfig(format=u'%(filename)s [ LINE:%(lineno)+3s ]#%(levelname)+8s 
                     handlers=(file_handler, stdout_handler,))
 
 event_loop = asyncio.get_event_loop()
-bot = Bot(token=config.TOKEN, loop=event_loop, proxy=config.PROXY_URL, proxy_auth=config.PROXY_AUTH)
-dp = Dispatcher(bot, loop=event_loop, storage=config.states_storage)
+bot = Bot(token=config.TOKEN, loop=event_loop, proxy=config.proxy.PROXY_URL, proxy_auth=config.proxy.PROXY_AUTH)
+dp = Dispatcher(bot, loop=event_loop, storage=config.redis.states_storage)
 dp.middleware.setup(LoggingMiddleware())
 
 import app.db
