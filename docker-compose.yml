@@ -7,7 +7,6 @@ services:
         command: python3 ./app/bot.py -c -p
         restart: unless-stopped
         environment:
-            - SALESBOARD_TOKEN=1165605883:AAFLmgZFDbRNzmFmM_MTKfr7IqeTIB6ZSzU
             - SALESBOARD_ADMIN=['119707338']
             - SALESBOARD_PROXY={'protocol':'socks5','ip':'116.203.53.174','port':'1008','username':'telegram','password':'telegram'}
         networks:

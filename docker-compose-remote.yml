@@ -7,7 +7,6 @@ services:
         command: python3 ./app/bot.py -c -w
         restart: unless-stopped
         environment:
-            - SALESBOARD_TOKEN=1165605883:AAFLmgZFDbRNzmFmM_MTKfr7IqeTIB6ZSzU
             - SALESBOARD_ADMINS=['119707338']
             - SALESBOARD_WEBHOOK={'host':'static.174.53.203.116.clients.your-server.de','port':'8443'}
         networks:
