@@ -10,10 +10,8 @@ def mixed_handler_parse_args(func):
     """ Parse args for message and callback_query handlers in one func"""
     @functools.wraps(func)
     async def decorator(obj: types.base.TelegramObject, **partial_data):
-        is_callback = False
         callback_query = None
         if isinstance(obj, types.CallbackQuery):
-            is_callback = True
             callback_query = obj
             message = obj.message
             user_id = callback_query.from_user.id
@@ -25,13 +23,12 @@ def mixed_handler_parse_args(func):
         user_state = partial_data.get('state', dp.current_state(user=user_id, chat=user_id))
         kwargs = {
             'user_id': user_id,
-            'message': message,
             'user_state': user_state,
-            'is_callback': is_callback,
+            'message': message,
             'callback_query': callback_query,
         }
         result = await resolve_state(func)(**kwargs)
-        if is_callback:
+        if callback_query:
             await bot.answer_callback_query(callback_query.id)
         return result
 
@@ -45,8 +42,8 @@ def message_handler_parse_args(func):
         user_state = partial_data.get('state', dp.current_state(user=user_id, chat=user_id))
         kwargs = {
             'user_id': user_id,
-            'message': message,
             'user_state': user_state,
+            'message': message,
         }
         return await resolve_state(func)(**kwargs)
 
@@ -61,8 +58,8 @@ def callback_query_handler_parse_args(func):
         user_state = partial_data.get('state', dp.current_state(user=user_id, chat=user_id))
         kwargs = {
             'user_id': user_id,
-            'message': message,
             'user_state': user_state,
+            'message': message,
             'callback_query': callback_query,
         }
         result = await resolve_state(func)(**kwargs)
