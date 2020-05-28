@@ -84,7 +84,7 @@ class Config:
                 self.WEBHOOK_HOST = webhook_conf['host']
                 self.WEBHOOK_PORT = webhook_conf['port']
                 self.WEBHOOK_PATH = f'/{token}'
-                self.WEBHOOK_URL = f'{self.WEBHOOK_HOST}{self.WEBHOOK_PATH}'
+                self.WEBHOOK_URL = f'https://{self.WEBHOOK_HOST}{self.WEBHOOK_PATH}'
 
                 # webserver settings
                 self.WEBAPP_HOST = '0.0.0.0'  # or ip
