@@ -87,7 +87,7 @@ class Config:
 
                 # webserver settings
                 self.WEBAPP_HOST = 'localhost'  # or ip
-                self.WEBAPP_PORT = 3001
+                self.WEBAPP_PORT = 8080
 
     def __init__(self, container, test_env, webhook_mode, use_proxy):
 
