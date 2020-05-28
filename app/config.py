@@ -82,17 +82,17 @@ class Config:
             if webhook_mode:
                 webhook_conf = ast.literal_eval(os.environ[f'{APP_NAME.upper()}_WEBHOOK'])
                 self.WEBHOOK_HOST = webhook_conf['host']
-                self.WEBHOOK_PATH = f'/{token}'
-                self.WEBHOOK_URL = f'{self.WEBHOOK_HOST}{self.WEBHOOK_PATH}'
+                self.WEBHOOK_PORT = webhook_conf['port']
+                self.WEBHOOK_URL = f'https://{self.WEBHOOK_HOST}:{self.WEBHOOK_PORT}/{token}'
 
                 # webserver settings
                 self.WEBAPP_HOST = '0.0.0.0'  # or ip
-                self.WEBAPP_PORT = 8080
+                self.WEBAPP_PORT = int(self.WEBHOOK_PORT)
 
     def __init__(self, container, test_env, webhook_mode, use_proxy):
 
         self.TOKEN = os.environ[f'{APP_NAME.upper()}_TOKEN']
-        self.check_admin = ast.literal_eval(os.environ[f'{APP_NAME.upper()}_ADMIN'])
+        self.check_admin = ast.literal_eval(os.environ[f'{APP_NAME.upper()}_ADMINS'])
         self.admins = []
         self.db = self.__class__.DBConfig(container, test_env)
         self.redis = self.__class__.RedisConfig(container, test_env)
