@@ -3,7 +3,7 @@ version: '3.7'
 services:
     db:
         image: 'postgres:alpine'
-        restart: always
+        restart: unless-stopped
         environment:
             - POSTGRES_USER=docker
             - POSTGRES_PASSWORD=docker
@@ -13,12 +13,12 @@ services:
         ports:
             - 45432:5432
         networks:
-            - salesboard-net
+            - expose-network
 
     redis:
         image: 'redis:alpine'
         command: redis-server --appendonly yes
-        restart: always
+        restart: unless-stopped
         environment:
             - POSTGRES_USER=docker
             - POSTGRES_PASSWORD=docker
@@ -28,7 +28,7 @@ services:
         ports:
             - 46379:6379
         networks:
-            - salesboard-net
+            - expose-network
 
 networks:
-    salesboard-net:
+    expose-network:
