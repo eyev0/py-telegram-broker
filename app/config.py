@@ -1,7 +1,7 @@
+import ast
 import configparser
 import os
 from pathlib import Path
-import ast
 
 
 def literal_eval(func):
@@ -13,6 +13,7 @@ def literal_eval(func):
 
 class Section(dict):
     def __init__(self, parser, sect_name):
+        self.name = sect_name
         self._parser = parser
         self.contents = parser[sect_name]
         self._parser_func_map = {
@@ -28,6 +29,10 @@ class Section(dict):
 
         super().__init__(self.contents)
 
+    def set(self, key, value):
+        self[key] = value
+        self.contents[key] = value
+
     @staticmethod
     def parsekey(opt_key: str):
         if opt_key[1] == ',':
@@ -41,32 +46,57 @@ class Section(dict):
         return get_func(sect_name, opt_key)
 
 
-class Config:
+class ConfigProxy:
     def parse_conf(self, path):
         self.configparser.read(path)
-        self.sections = self.configparser.sections()
-
-        for section_name in self.sections:
+        for section_name in self.configparser.sections():
             section = Section(self.configparser, section_name)
+            self.sections.append(section)
             setattr(self, section_name, section)
 
-    def __init__(self, debug):
+    def __init__(self, path, debug):
         self.configparser = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
         self.sections = []
+        self.parse_conf(path)
 
-        if debug:
-            work_dir = str(Path(os.path.dirname(__file__)).parent)
-        else:
-            work_dir = os.getcwd()
-        def_conf_path = work_dir + '/init/default.ini'
-        conf_path = work_dir + '/init/config.ini'
-        self.parse_conf(def_conf_path)
-        self.parse_conf(conf_path)
+    def get_sect(self, section_name) -> Section:
+        return getattr(self, section_name, None)
 
     def __repr__(self):
         repr_str = ''
-        for section_name in self.sections:
-            repr_str += f'\n[{section_name}]\n'
-            for key in getattr(self, section_name):
-                repr_str += f'    {key}={getattr(self, section_name)[key]}\n'
+        for section in self.sections:
+            repr_str += f'\n[{section.name}]\n'
+            for key in section:
+                repr_str += f'    {key}={section[key]}\n'
         return repr_str
+
+
+class ConfigNotImplementedError(BaseException):
+    """./config/config.ini not implemented error"""
+
+
+class Config(ConfigProxy):
+    def __init__(self, debug):
+        if debug:
+            app_dir = str(Path(os.path.dirname(__file__)).parent)
+        else:
+            app_dir = os.getcwd()
+        # default conf
+        super().__init__(app_dir + '/config/default.ini', debug)
+
+        # env-based conf
+        conf_path = app_dir + '/config/config.ini'
+        if not os.path.exists(conf_path):
+            raise ConfigNotImplementedError()
+        conf = ConfigProxy(conf_path, debug)
+        self.merge(conf)
+
+    def merge(self, another_conf: ConfigProxy):
+        # add new sections
+        for section in another_conf.sections:
+            if section not in self.sections:
+                self.sections.append(section)
+        # add/replace parameters in all sections
+        for section in another_conf.sections:
+            for key in section:
+                self.get_sect(section.name).set(key, section[key])
