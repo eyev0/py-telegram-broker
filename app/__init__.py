@@ -40,8 +40,9 @@ logging.basicConfig(format=u'%(filename)s [ LINE:%(lineno)+3s ]#%(levelname)+8s 
 event_loop = asyncio.get_event_loop()
 if config.app.use_proxy:
     proxy_url = config.proxy.url
-    proxy_auth = aiohttp.BasicAuth(login=config.proxy.username,
-                                   password=config.proxy.password)
+    if len(config.proxy.username) > 0:
+        proxy_auth = aiohttp.BasicAuth(login=config.proxy.username,
+                                       password=config.proxy.password)
 else:
     proxy_url = None
     proxy_auth = None

@@ -1,6 +1,14 @@
 import configparser
 import os
 from pathlib import Path
+import ast
+
+
+def literal_eval(func):
+    def wrapper(*args, **kwargs):
+        orig_result = func(*args, **kwargs)
+        return ast.literal_eval(orig_result)
+    return wrapper
 
 
 class Section(dict):
@@ -11,6 +19,7 @@ class Section(dict):
             'i': self._parser.getint,
             'f': self._parser.getfloat,
             'b': self._parser.getboolean,
+            'e': literal_eval(self._parser.get),
             's': self._parser.get,
         }
 
@@ -33,20 +42,26 @@ class Section(dict):
 
 
 class Config:
+    def parse_conf(self, path):
+        self.configparser.read(path)
+        self.sections = self.configparser.sections()
+
+        for section_name in self.sections:
+            section = Section(self.configparser, section_name)
+            setattr(self, section_name, section)
+
     def __init__(self, debug):
+        self.configparser = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
+        self.sections = []
+
         if debug:
             work_dir = str(Path(os.path.dirname(__file__)).parent)
         else:
             work_dir = os.getcwd()
+        def_conf_path = work_dir + '/init/default.ini'
         conf_path = work_dir + '/init/config.ini'
-        config = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
-        config.read(conf_path)
-        self.configparser = config
-        self.sections = config.sections()
-
-        for section_name in self.sections:
-            section = Section(config, section_name)
-            setattr(self, section_name, section)
+        self.parse_conf(def_conf_path)
+        self.parse_conf(conf_path)
 
     def __repr__(self):
         repr_str = ''
