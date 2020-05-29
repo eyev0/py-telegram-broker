@@ -228,5 +228,6 @@ cython_debug/
 data/
 .idea
 init/
-log/
 config/config.ini
+!/log/
+log/salesboard.log
