@@ -5,18 +5,19 @@ services:
         build: https://github.com/edementyev/salesboard.git
         image: salesboard:latest
         command: python3 ./app/bot.py
-        restart: unless-stopped
+        restart: no
         networks:
             - network
         volumes:
-            - ./init:/usr/src/app/init
+            - ./log:/log
+            - ./config:/usr/src/app/config
         depends_on:
             - db
             - redis
 
     db:
         image: 'postgres:alpine'
-        restart: unless-stopped
+        restart: no
         environment:
             - POSTGRES_USER=docker
             - POSTGRES_PASSWORD=docker
@@ -29,7 +30,7 @@ services:
     redis:
         image: 'redis:alpine'
         command: redis-server --appendonly yes
-        restart: unless-stopped
+        restart: no
         environment:
             - POSTGRES_USER=docker
             - POSTGRES_PASSWORD=docker
