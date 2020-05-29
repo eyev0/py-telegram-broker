@@ -8,6 +8,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 RUN pip install --no-cache-dir -e .
 
-RUN mkdir /log
+VOLUME /log
 
-CMD [ "python", "./app/bot.py", "-c" ]
+CMD [ "python", "./app/bot.py"]
