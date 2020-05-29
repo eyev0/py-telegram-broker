@@ -18,9 +18,9 @@ async def start(user_id, user_state, message: types.Message, session: sqlalchemy
                                           .filter(User.uid == user_id))
     if rowcount == 0:
         # create user
-        trace(trace(User)(uid=user_id,
-                          username=message.from_user.username)
-              ).insert_me(session)
+        trace(User)(uid=user_id,
+                    username=message.from_user.username)\
+            .insert_me(session)
 
     await trace_async(message.reply)('Yo',
                                      reply=False,
