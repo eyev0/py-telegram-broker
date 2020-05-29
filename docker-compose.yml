@@ -5,7 +5,7 @@ services:
         build: https://github.com/edementyev/salesboard.git
         image: salesboard:latest
         command: python3 ./app/bot.py
-        restart: no
+        restart: 'no'
         networks:
             - network
         volumes:
@@ -17,7 +17,7 @@ services:
 
     db:
         image: 'postgres:alpine'
-        restart: no
+        restart: 'no'
         environment:
             - POSTGRES_USER=docker
             - POSTGRES_PASSWORD=docker
@@ -30,7 +30,7 @@ services:
     redis:
         image: 'redis:alpine'
         command: redis-server --appendonly yes
-        restart: no
+        restart: 'no'
         environment:
             - POSTGRES_USER=docker
             - POSTGRES_PASSWORD=docker
