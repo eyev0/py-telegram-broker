@@ -229,3 +229,4 @@ data/
 .idea
 init/
 log/
+config/config.ini
