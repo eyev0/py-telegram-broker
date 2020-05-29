@@ -82,7 +82,7 @@ class Config(ConfigProxy):
         else:
             app_dir = os.getcwd()
         # default conf
-        super().__init__(app_dir + '/config/default.ini', debug)
+        super().__init__(app_dir + '/defaults/config.ini', debug)
 
         # env-based conf
         conf_path = app_dir + '/config/config.ini'
