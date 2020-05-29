@@ -229,5 +229,4 @@ data/
 .idea
 init/
 config/config.ini
-!/log/
 log/salesboard.log
