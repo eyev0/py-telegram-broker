@@ -11,6 +11,9 @@ from app.decorate_log import trace_async, trace
 
 @trace_async
 async def on_startup(dp: aiogram.Dispatcher):
+    if config.app.webhook_mode:
+        await trace_async(dp.bot.set_webhook)(config.webhook.url)
+
     me = await dp.bot.get_me()
     logging.warning(f'Powering up @{me["username"]}')
 
@@ -43,8 +46,8 @@ if __name__ == '__main__':
                                on_startup=on_startup,
                                on_shutdown=on_shutdown,
                                skip_updates=True,
-                               host=config.webhook.host,
-                               port=config.webhook.port)
+                               host=config.webhook.webapp_host,
+                               port=config.webhook.webapp_port)
     else:
         executor.start_polling(dispatcher,
                                on_startup=on_startup,
