@@ -230,3 +230,4 @@ data/
 init/
 config/
 log/salesboard.log
+nginx/
