@@ -9,6 +9,8 @@ services:
             - network
         volumes:
             - /var/run/docker.sock:/tmp/docker.sock:ro
+        depends_on:
+          - bot
 
     bot:
         build: https://github.com/edementyev/salesboard.git

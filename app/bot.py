@@ -11,9 +11,6 @@ from app.decorate_log import trace_async, trace
 
 @trace_async
 async def on_startup(dp: aiogram.Dispatcher):
-    if config.app.webhook_mode:
-        await trace_async(dp.bot.set_webhook)(config.webhook.WEBHOOK_URL)
-
     me = await dp.bot.get_me()
     logging.warning(f'Powering up @{me["username"]}')
 
