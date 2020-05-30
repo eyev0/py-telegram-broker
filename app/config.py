@@ -2,7 +2,7 @@ import ast
 import configparser
 import os
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, List
 
 
 def literal_eval(func):
@@ -64,46 +64,70 @@ class Section:
 
 
 class Config:
-    def __init__(self, path, debug):
-        self.sections = []
-        self.section_names = []
-        self.configparser = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
-        self.configparser.read(path)
-        self.dynamic_load_sections()
+    def __init__(self, path=None):
+        self._path = path
+        self._sections = []
+        self._section_names = []
+        self._loaded_configs_list = []
+        self._configparser = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
+        self._parsers = [self._configparser, ]
+        if path is not None:
+            self._configparser.read(path)
+            self.dynamic_load_sections(self._configparser)
+            self._loaded_configs_list.append(path)
 
     def __repr__(self):
-        repr_str = ''
-        for section in self.sections:
+        repr_str = 'Loaded configs: '
+        for conf_path in self._loaded_configs_list:
+            repr_str += f'\n{conf_path}'
+        for section in self._sections:
             repr_str += f'\n[{section.get_name()}]\n'
             for key in section.get_options_list():
                 repr_str += f'    {key}={section.get_option(key)}\n'
         return repr_str
 
-    def get_sect(self, section_name) -> Section:
+    def get_path(self) -> str:
+        return self._path
+
+    def get_parser(self) -> configparser.ConfigParser:
+        return self._configparser
+
+    def get_section(self, section_name) -> Section:
         return getattr(self, section_name, None)
 
-    def dynamic_load_sections(self):
-        for section_name in self.configparser.sections():
-            section = Section(self.configparser, section_name)
-            self.sections.append(section)
-            self.section_names.append(section_name)
-            setattr(self, section_name, section)
+    def set_section(self, section):
+        self._sections.append(section)
+        self._section_names.append(section.get_name())
+        setattr(self, section.get_name(), section)
+
+    def get_sections(self) -> List:
+        return self._sections
+
+    def get_section_names(self) -> List:
+        return self._section_names
+
+    def dynamic_load_sections(self, parser):
+        for section_name in parser.sections():
+            section = Section(parser, section_name)
+            self.set_section(section)
 
     def override_with(self, conf):
-        for section_name in conf.section_names:
-            if section_name not in self.section_names:
-                self.sections.append(conf.get_sect(section_name))
-                self.section_names.append(section_name)
+        for section_name in conf.get_section_names():
+            if section_name not in self._section_names:
+                section = conf.get_section(section_name)
+                self.set_section(section)
             else:
-                self.get_sect(section_name).override_with(conf.get_sect(section_name))
+                self.get_section(section_name).override_with(conf.get_section(section_name))
+        self._parsers.append(conf.get_parser())
+        self._loaded_configs_list.append(conf.get_path())
 
 
-class ConfigNotImplementedError(BaseException):
-    """./config/config.ini not implemented error"""
+class ConfigDirNotExistsError(BaseException):
+    """app_dir/config directory does not exist"""
 
 
-class DefaultConfigNotExistsError(BaseException):
-    """./config/config.ini not implemented error"""
+class DefaultConfigDirNotExistsError(BaseException):
+    """app_dir/defaults directory does not exist"""
 
 
 class ConfigManager:
@@ -113,16 +137,26 @@ class ConfigManager:
         else:
             app_dir = os.getcwd()
 
-        self.path_default = app_dir + '/defaults/config.ini'
-        self.path_env = app_dir + '/config/config.ini'
+        self.path_defaults = app_dir + '/defaults/'
+        self.path_configs = app_dir + '/config/'
+        if not os.path.exists(self.path_defaults):
+            raise DefaultConfigDirNotExistsError()
+        if not os.path.exists(self.path_configs):
+            raise ConfigDirNotExistsError()
 
-        if not os.path.exists(self.path_default):
-            raise DefaultConfigNotExistsError()
-        if not os.path.exists(self.path_env):
-            raise ConfigNotImplementedError()
-        # default conf
-        self.config = Config(self.path_default, debug)
-        # env-based conf
-        env_config = Config(self.path_env, debug)
+        self.config = Config()
+        # load default config
+        self.load_from_dir(self.path_defaults)
+        # load env configs
+        self.load_from_dir(self.path_configs)
 
-        self.config.override_with(env_config)
+    def load_from_dir(self, directory):
+        path_list = []
+        (dirpath, _, filenames) = next(os.walk(directory))
+        for filename in filenames:
+            filepath = os.path.join(dirpath, filename)
+            path_list.append(filepath)
+        path_list.sort()
+        for path in path_list:
+            conf = Config(path)
+            self.config.override_with(conf)
