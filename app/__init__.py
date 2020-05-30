@@ -11,7 +11,6 @@ from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 
 from app.config import Config, ConfigManager
-from app.decorate_log import LVL_CALL
 from app.storage_util import FSMContextFactory
 
 clock = datetime(2020, 1, 1, tzinfo=pytz.timezone('Europe/Moscow'))
@@ -34,8 +33,9 @@ if config.log.use_file:
     log_handlers.append(file_handler)
 # noinspection PyArgumentList
 logging.basicConfig(format=u'%(filename)s [ LINE:%(lineno)+3s ]#%(levelname)+8s [%(asctime)s]  %(message)s',
-                    level=LVL_CALL,
+                    level=config.log.level,
                     handlers=log_handlers)
+logging.log(config.log.level, f'\n{config!r}')
 
 event_loop = asyncio.get_event_loop()
 proxy_url = None

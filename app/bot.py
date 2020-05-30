@@ -16,7 +16,6 @@ async def on_startup(dp: aiogram.Dispatcher):
 
     me = await dp.bot.get_me()
     logging.warning(f'Powering up @{me["username"]}')
-    logging.warning(f'\n{config!r}')
 
 
 @trace_async

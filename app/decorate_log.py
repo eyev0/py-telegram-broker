@@ -2,14 +2,16 @@ import functools
 import logging
 from collections import Iterable
 
-LVL_CALL = 25
-logging.addLevelName(LVL_CALL, 'CALL')
+from app import config
+
+if config.log.add_trace_level_name:
+    logging.addLevelName(config.log.trace_level, 'TRACE')
 
 
 def trace(func):
     @functools.wraps(func)
     def decorator(*args, **kwargs):
-        logging.log(LVL_CALL,
+        logging.log(config.log.trace_level,
                     f'TRACE: calling {func.__module__}.{func.__name__}(' +
                     f'{",".join([str(x) for x in args])}' +
                     ', ' +
@@ -21,7 +23,7 @@ def trace(func):
                 result_str = ', '.join([str(x) for x in result])
             else:
                 result_str = result
-            logging.log(LVL_CALL,
+            logging.log(config.log.trace_level,
                         f'TRACE: {func.__module__}.{func.__name__} '
                         f'returned {result_str!r}')
         return result
@@ -32,7 +34,7 @@ def trace(func):
 def trace_async(func):
     @functools.wraps(func)
     async def decorator(*args, **kwargs):
-        logging.log(LVL_CALL,
+        logging.log(config.log.trace_level,
                     f'TRACE: calling {func.__module__}.{func.__name__}(' +
                     f'{",".join([str(x) for x in args])}' +
                     ', ' +
@@ -44,7 +46,7 @@ def trace_async(func):
                 result_str = ', '.join([str(x) for x in result])
             else:
                 result_str = result
-            logging.log(LVL_CALL,
+            logging.log(config.log.trace_level,
                         f'TRACE: {func.__module__}.{func.__name__} '
                         f'returned {result_str!r}')
         return result
