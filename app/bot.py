@@ -42,12 +42,12 @@ if __name__ == '__main__':
     signal.signal(signal.SIGTERM, terminate)
     if config.app.webhook_mode:
         executor.start_webhook(dispatcher=dispatcher,
-                               webhook_path=config.webhook.WEBHOOK_PATH,
+                               webhook_path=config.webhook.path,
                                on_startup=on_startup,
                                on_shutdown=on_shutdown,
                                skip_updates=True,
-                               host=config.webhook.WEBAPP_HOST,
-                               port=config.webhook.WEBAPP_PORT)
+                               host=config.webhook.host,
+                               port=config.webhook.port)
     else:
         executor.start_polling(dispatcher,
                                on_startup=on_startup,

@@ -1,0 +1,64 @@
+version: '3.7'
+
+services:
+    nginx-proxy:
+        image: jwilder/nginx-proxy:latest
+        ports:
+            - "80:80"
+        networks:
+            - network
+        volumes:
+            - /var/run/docker.sock:/tmp/docker.sock:ro
+
+    bot:
+        build: https://github.com/edementyev/salesboard.git
+        image: salesboard:latest
+        command: python3 ./app/bot.py
+        restart: 'no'
+        ports:
+            - "8443:8443"
+        networks:
+            - network
+        volumes:
+            - ./log:/log
+            - ./config:/usr/src/app/config
+        environment:
+            - VIRTUAL_HOST=salesboard.bot
+            - VIRTUAL_PROTO=https
+        depends_on:
+            - db
+            - redis
+
+    db:
+        image: 'postgres:alpine'
+        restart: 'no'
+        environment:
+            - POSTGRES_USER=docker
+            - POSTGRES_PASSWORD=docker
+            - POSTGRES_DB=docker
+        volumes:
+            - dbdata:/var/lib/postgresql/data
+        networks:
+            - network
+
+    redis:
+        image: 'redis:alpine'
+        command: redis-server --appendonly yes
+        restart: 'no'
+        environment:
+            - POSTGRES_USER=docker
+            - POSTGRES_PASSWORD=docker
+            - POSTGRES_DB=docker
+        volumes:
+            - redisdata:/data
+        networks:
+            - network
+
+networks:
+    network:
+
+volumes:
+    dbdata:
+        name: salesboard-db
+    redisdata:
+        name: salesboard-redis
