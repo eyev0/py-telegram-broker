@@ -10,7 +10,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 
-from app.config import Config
+from app.config import Config, ConfigManager
 from app.decorate_log import LVL_CALL
 from app.storage_util import FSMContextFactory
 
@@ -20,7 +20,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--debug', dest='debug',
                     action='store_true', default=False)
 args = parser.parse_args()
-config = Config(args.debug)
+config = ConfigManager(args.debug).config
 
 stdout_handler = logging.StreamHandler(sys.stderr)
 log_handlers = [stdout_handler]
@@ -38,14 +38,13 @@ logging.basicConfig(format=u'%(filename)s [ LINE:%(lineno)+3s ]#%(levelname)+8s 
                     handlers=log_handlers)
 
 event_loop = asyncio.get_event_loop()
+proxy_url = None
+proxy_auth = None
 if config.app.use_proxy:
     proxy_url = config.proxy.url
     if len(config.proxy.username) > 0:
         proxy_auth = aiohttp.BasicAuth(login=config.proxy.username,
                                        password=config.proxy.password)
-else:
-    proxy_url = None
-    proxy_auth = None
 bot = Bot(token=config.app.token,
           loop=event_loop,
           proxy=proxy_url,
