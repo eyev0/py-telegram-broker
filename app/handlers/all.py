@@ -2,7 +2,7 @@ import sqlalchemy.orm
 
 from app.db import use_db_session, sql_result
 from app.db.models import User
-from app.decorate_log import trace_async, trace
+from app.log import trace_async, trace
 from app.handlers.util.parse_args import *
 from app.handlers.util.keyboards import *
 from app.handlers.util.states import States
