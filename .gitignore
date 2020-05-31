@@ -229,5 +229,5 @@ data/
 .idea
 init/
 config/
-log/salesboard.log
+log/*.log
 nginx/
