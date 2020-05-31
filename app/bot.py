@@ -45,7 +45,7 @@ if __name__ == '__main__':
                                webhook_path=config.webhook.path,
                                on_startup=on_startup,
                                on_shutdown=on_shutdown,
-                               skip_updates=True,
+                               skip_updates=False,
                                host=config.webhook.webapp_host,
                                port=config.webhook.webapp_port)
     else:
