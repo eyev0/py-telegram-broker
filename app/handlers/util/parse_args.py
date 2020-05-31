@@ -3,10 +3,24 @@ import functools
 from aiogram import types
 
 from app import dp, bot
-from app.handlers.util.states import resolve_state
 
 
-def mixed_handler_parse_args(func):
+def parse_args(mode: str = None):
+    parsers = {
+        'message': message_parse_args,
+        'callback': callback_parse_args,
+        'message_callback': message_callback_parse_args,
+    }
+
+    def decorator(func):
+        assert mode is not None
+        assert mode in parsers
+        wrapper = parsers[mode]
+        return wrapper(func)
+    return decorator
+
+
+def message_callback_parse_args(func):
     """ Parse args for message and callback_query handlers in one func"""
     @functools.wraps(func)
     async def decorator(obj: types.base.TelegramObject, **partial_data):
@@ -27,7 +41,7 @@ def mixed_handler_parse_args(func):
             'message': message,
             'callback_query': callback_query,
         }
-        result = await resolve_state(func)(**kwargs)
+        result = await func(**kwargs)
         if callback_query:
             await bot.answer_callback_query(callback_query.id)
         return result
@@ -35,7 +49,7 @@ def mixed_handler_parse_args(func):
     return decorator
 
 
-def message_handler_parse_args(func):
+def message_parse_args(func):
     @functools.wraps(func)
     async def decorator(message: types.Message, **partial_data):
         user_id = message.from_user.id
@@ -45,12 +59,12 @@ def message_handler_parse_args(func):
             'user_state': user_state,
             'message': message,
         }
-        return await resolve_state(func)(**kwargs)
+        return await func(**kwargs)
 
     return decorator
 
 
-def callback_query_handler_parse_args(func):
+def callback_parse_args(func):
     @functools.wraps(func)
     async def decorator(callback_query: types.CallbackQuery, **partial_data):
         message = callback_query.message
@@ -62,7 +76,7 @@ def callback_query_handler_parse_args(func):
             'message': message,
             'callback_query': callback_query,
         }
-        result = await resolve_state(func)(**kwargs)
+        result = await func(**kwargs)
         await bot.answer_callback_query(callback_query.id)
         return result
 
