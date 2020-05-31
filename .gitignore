@@ -225,9 +225,7 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-data/
 .idea
-init/
 config/
 log/*.log
 nginx/
