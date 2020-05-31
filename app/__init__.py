@@ -1,17 +1,16 @@
 import argparse
 import asyncio
 import logging
-import sys
 from datetime import datetime
 
 import aiohttp
 import pytz
+import sys
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 
 from app.config import Config, ConfigManager
-from app.storage_util import FSMContextFactory
 
 clock = datetime(2020, 1, 1, tzinfo=pytz.timezone('Europe/Moscow'))
 
