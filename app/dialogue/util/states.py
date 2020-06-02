@@ -7,10 +7,11 @@ from aiogram.utils.helper import Helper, HelperMode, Item
 class States(Helper):
     mode = HelperMode.snake_case
 
-    STATE_0_INITIAL = Item()
-    STATE_1_UPLOAD = Item()
-    STATE_2_VIEW = Item()
-    STATE_3_DELETE = Item()
+    STATE_0_SIGN_UP = Item()
+    STATE_1_INITIAL = Item()
+    STATE_2_UPLOAD = Item()
+    STATE_3_VIEW = Item()
+    STATE_4_DELETE = Item()
 
 
 class CreateAccountStates(Helper):
