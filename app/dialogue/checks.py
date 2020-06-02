@@ -15,8 +15,13 @@ from app.trace import trace
 def filter_account_created(message: types.Message, session: sqlalchemy.orm.Session):
     rowcount, user, _ = trace(sql_result)(session.query(User)
                                           .filter(User.uid == message.from_user.id))
-    if user.location is None:
-        return False, CreateAccountStates.CREATE_ACC_STATE_0_CITY
+    if user is None or user.location is None:
+        return False
+    return True
+
+
+def filter_not_signed_up(message: types.Message):
+    return not filter_account_created(message)
 
 
 def account_created(user: User) -> Tuple:
@@ -26,16 +31,16 @@ def account_created(user: User) -> Tuple:
 
 def upload(user: User, upload_count: int, session: sqlalchemy.orm.Session) -> Tuple:
     if not user.active:
-        return False, States.STATE_0_INITIAL, MESSAGES['upload_code_inactive']  # user inactive
+        return False, States.STATE_0_SIGN_UP, MESSAGES['upload_code_inactive']  # user inactive
 
     rowcount, row, rows = trace(sql_result)(session.query(Card)
                                             .filter(Card.owner_id == user.id)
                                             .filter(Card.status < 9))
     if upload_count + rowcount > user.limit:
-        return False, States.STATE_0_INITIAL, MESSAGES['upload_code_limit']\
+        return False, States.STATE_0_SIGN_UP, MESSAGES['upload_code_limit']\
             .format(user.limit, upload_count)  # limit exceeded
 
-    return True, States.STATE_1_UPLOAD, MESSAGES['upload']
+    return True, States.STATE_2_UPLOAD, MESSAGES['upload']
 
 
 def is_from_su(message: types.Message):
