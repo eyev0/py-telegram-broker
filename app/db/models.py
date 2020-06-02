@@ -1,9 +1,15 @@
+from typing import Tuple
+
 import sqlalchemy.orm
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
 from app import clock
+from app.db.util import sql_result
+from app.handlers.util.states import States, CreateAccountStates
+from app.handlers.messages import MESSAGES
+from app.trace import trace
 
 Base = declarative_base()
 
@@ -33,6 +39,7 @@ class User(Base):
     email_address = Column(String(100))
     phone_number = Column(String(20))
     location = Column(String(100))
+    limit = Column(Integer, default=100)
     active = Column(Boolean, default=True)
     receive_notifications = Column(Boolean, default=True)
     created = Column(DateTime, default=clock.now())
@@ -45,6 +52,7 @@ class User(Base):
                  email_address='',
                  phone_number='',
                  location='',
+                 limit=100,
                  active=True,
                  receive_notifications=True):
         self.uid = uid
@@ -53,23 +61,49 @@ class User(Base):
         self.email_address = email_address
         self.phone_number = phone_number
         self.location = location
+        self.limit = limit
         self.active = active
         self.receive_notifications = receive_notifications
 
     def __repr__(self):
         return f"User(id={self.id}, uid={self.uid}, username={self.username}, " \
                f"full_name={self.full_name}, email_address={self.email_address}, " \
-               f"phone_number={self.phone_number}, location={self.location})" \
+               f"phone_number={self.phone_number}, location={self.location}), limit={self.limit}" \
                f"active={self.active}, receive_notifications={self.receive_notifications}, " \
                f"created={self.created}, edited={self.edited})"
+
+    def check_sign_up(self) -> Tuple:
+        if self.location is None:
+            return False, CreateAccountStates.CREATE_ACC_STATE_0_CITY
+
+    def check_upload_restrictions(self, upload_count: int, session: sqlalchemy.orm.Session) -> Tuple:
+        if not self.active:
+            return False, States.STATE_0_INITIAL, MESSAGES['upload_code_inactive']  # user inactive
+
+        rowcount, row, rows = trace(sql_result)(session.query(Card)
+                                                .filter(Card.owner_id == self.id)
+                                                .filter(Card.status < 9))
+        if upload_count + rowcount > self.limit:
+            return False, States.STATE_0_INITIAL, MESSAGES['upload_code_limit']\
+                .format(self.limit, upload_count)  # limit exceeded
+
+        return True, States.STATE_1_UPLOAD, MESSAGES['upload']
 
 
 class Card(Base):
     __tablename__ = 'card'
+
+    STATUSES = {
+        0: 'created',
+        1: 'listed',
+        9: 'sold',
+    }
+
     id = Column(Integer, primary_key=True)
     owner_id = Column(Integer, ForeignKey('user.id'))
     name = Column(String(100))
     price = Column(Integer, default=False)
+    status = Column(Integer)
     created = Column(DateTime, default=clock.now())
     edited = Column(DateTime, default=clock.now())
 
@@ -85,7 +119,7 @@ class Card(Base):
 
     def __repr__(self):
         return f"Card(id={self.id}, user_id={self.owner_id}, name={self.name}, price={self.price}, " \
-               f"created={self.created}, edited={self.edited})"
+               f"status={self.status}, created={self.created}, edited={self.edited})"
 
 
 class Subscription(Base):
