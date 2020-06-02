@@ -1,15 +1,9 @@
-from typing import Tuple
-
 import sqlalchemy.orm
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
 from app import clock
-from app.db.util import sql_result
-from app.handlers.util.states import States, CreateAccountStates
-from app.handlers.messages import MESSAGES
-from app.trace import trace
 
 Base = declarative_base()
 
@@ -71,23 +65,6 @@ class User(Base):
                f"phone_number={self.phone_number}, location={self.location}), limit={self.limit}" \
                f"active={self.active}, receive_notifications={self.receive_notifications}, " \
                f"created={self.created}, edited={self.edited})"
-
-    def check_sign_up(self) -> Tuple:
-        if self.location is None:
-            return False, CreateAccountStates.CREATE_ACC_STATE_0_CITY
-
-    def check_upload_restrictions(self, upload_count: int, session: sqlalchemy.orm.Session) -> Tuple:
-        if not self.active:
-            return False, States.STATE_0_INITIAL, MESSAGES['upload_code_inactive']  # user inactive
-
-        rowcount, row, rows = trace(sql_result)(session.query(Card)
-                                                .filter(Card.owner_id == self.id)
-                                                .filter(Card.status < 9))
-        if upload_count + rowcount > self.limit:
-            return False, States.STATE_0_INITIAL, MESSAGES['upload_code_limit']\
-                .format(self.limit, upload_count)  # limit exceeded
-
-        return True, States.STATE_1_UPLOAD, MESSAGES['upload']
 
 
 class Card(Base):
