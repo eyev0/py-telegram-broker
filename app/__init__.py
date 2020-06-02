@@ -1,11 +1,11 @@
-import argparse
 import asyncio
 import logging
+import os
+import sys
 from datetime import datetime
 
 import aiohttp
 import pytz
-import sys
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
@@ -14,11 +14,8 @@ from app.config import Config, ConfigManager
 
 clock = datetime(2020, 1, 1, tzinfo=pytz.timezone('Europe/Moscow'))
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-d', '--debug', dest='debug',
-                    action='store_true', default=False)
-args = parser.parse_args()
-config = ConfigManager(args.debug).config
+debug = bool(os.getenv('PY_APP_DEBUG_MODE') or False)
+config = ConfigManager(debug).config
 
 stdout_handler = logging.StreamHandler(sys.stderr)
 log_handlers = [stdout_handler]
@@ -56,5 +53,4 @@ dp = Dispatcher(bot,
                                       prefix=config.redis.prefix))
 dp.middleware.setup(LoggingMiddleware())
 
-import app.db
-import app.handlers
+from app.dialogue.handlers import *
