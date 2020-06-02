@@ -8,14 +8,14 @@ from app import clock
 Base = declarative_base()
 
 
-def insert_me(self, session: sqlalchemy.orm.Session):
-    session.add(self)
+def insert_me(obj, session: sqlalchemy.orm.Session):
+    session.add(obj)
     session.commit()
-    return self
+    return obj
 
 
-def delete_me(self, session: sqlalchemy.orm.Session):
-    session.delete(self)
+def delete_me(obj, session: sqlalchemy.orm.Session):
+    session.delete(obj)
     session.commit()
     return None
 
@@ -41,11 +41,11 @@ class User(Base):
 
     def __init__(self,
                  uid,
-                 username='',
-                 full_name='',
-                 email_address='',
-                 phone_number='',
-                 location='',
+                 username=None,
+                 full_name=None,
+                 email_address=None,
+                 phone_number=None,
+                 location=None,
                  limit=100,
                  active=True,
                  receive_notifications=True):
