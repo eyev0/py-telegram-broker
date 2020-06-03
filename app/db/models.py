@@ -67,8 +67,8 @@ class User(Base):
                f"created={self.created}, edited={self.edited})"
 
 
-class Card(Base):
-    __tablename__ = 'card'
+class Item(Base):
+    __tablename__ = 'item'
 
     STATUSES = {
         0: 'created',
@@ -84,7 +84,7 @@ class Card(Base):
     created = Column(DateTime, default=clock.now())
     edited = Column(DateTime, default=clock.now())
 
-    owner = relationship('User', backref='owner_cards', foreign_keys=[owner_id])
+    owner = relationship('User', backref='owner_items', foreign_keys=[owner_id])
 
     def __init__(self,
                  owner_id,
@@ -95,7 +95,7 @@ class Card(Base):
         self.price = price
 
     def __repr__(self):
-        return f"Card(id={self.id}, user_id={self.owner_id}, name={self.name}, price={self.price}, " \
+        return f"Item(id={self.id}, user_id={self.owner_id}, name={self.name}, price={self.price}, " \
                f"status={self.status}, created={self.created}, edited={self.edited})"
 
 
@@ -103,7 +103,7 @@ class Subscription(Base):
     __tablename__ = 'subscription'
 
     TYPES = {
-        0: 'card_id',
+        0: 'item',
         1: 'space_add_hundred',
         2: 'space_add_thousand',
         3: 'space_add_5_thousand',
@@ -112,11 +112,11 @@ class Subscription(Base):
     id = Column(Integer, primary_key=True)
     subscriber_id = Column(Integer, ForeignKey('user.id'))
     type = Column(Integer, default=0)
-    card_id = Column(Integer, ForeignKey('card.id'))
+    item_id = Column(Integer, ForeignKey('item.id'))
     created = Column(DateTime, default=clock.now())
 
     subscriber = relationship('User', backref='user_subscriptions', foreign_keys=[subscriber_id])
-    card = relationship('Card', backref='card_subscriptions', foreign_keys=[card_id])
+    item = relationship('Item', backref='item_subscriptions', foreign_keys=[item_id])
 
     def __init__(self,
                  subscriber_id,
@@ -126,24 +126,24 @@ class Subscription(Base):
 
     def __repr__(self):
         return f"Subscription(id={self.id}, user_id={self.subscriber_id}, " \
-               f"card_id={self.card_id}, created={self.created})"
+               f"item_id={self.item_id}, created={self.created})"
 
 
 class Demand(Base):
     __tablename__ = 'demand'
     id = Column(Integer, primary_key=True)
     requestor_id = Column(Integer, ForeignKey('user.id'))
-    card_name = Column(String(100))
+    item_name = Column(String(100))
     created = Column(DateTime, default=clock.now())
 
     requestor = relationship('User', backref='user_demands', foreign_keys=[requestor_id])
 
     def __init__(self,
                  requestor_id,
-                 card_id):
+                 item_name):
         self.requestor_id = requestor_id
-        self.card_name = card_id
+        self.item_name = item_name
 
     def __repr__(self):
         return f"Demand(id={self.id}, user_id={self.requestor_id}, " \
-               f"card_id={self.card_name}, created={self.created})"
+               f"item_name={self.item_name}, created={self.created})"
