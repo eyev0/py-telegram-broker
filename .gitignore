@@ -229,3 +229,4 @@ cython_debug/
 config/
 log/*.log
 nginx/
+drafts/
