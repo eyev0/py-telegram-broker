@@ -4,23 +4,26 @@ from aiogram.dispatcher import FSMContext
 from aiogram.utils.helper import Helper, HelperMode, Item
 
 
+class StateItem(Item):
+    pass
+
+
 class States(Helper):
     mode = HelperMode.snake_case
 
-    STATE_0_SIGN_UP = Item()
-    STATE_1_INITIAL = Item()
-    STATE_2_UPLOAD = Item()
-    STATE_3_VIEW = Item()
-    STATE_4_DELETE = Item()
+    STATE_0_INITIAL = StateItem()
+    STATE_1_UPLOAD = StateItem()
+    STATE_2_VIEW = StateItem()
+    STATE_3_DELETE = StateItem()
 
 
 class CreateAccountStates(Helper):
     mode = HelperMode.snake_case
 
-    CREATE_ACC_STATE_0_CITY = Item()
-    CREATE_ACC_STATE_1_NAME = Item()
-    CREATE_ACC_STATE_2_EMAIL = Item()
-    CREATE_ACC_STATE_3_PHONE = Item()
+    CREATE_ACC_STATE_0_CITY = StateItem()
+    CREATE_ACC_STATE_1_NAME = StateItem()
+    CREATE_ACC_STATE_2_EMAIL = StateItem()
+    CREATE_ACC_STATE_3_PHONE = StateItem()
 
 
 def resolve_state(func):
