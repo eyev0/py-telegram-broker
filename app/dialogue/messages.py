@@ -17,6 +17,10 @@ upload = 'Скинь мне список карт, которые хочешь �
                         '...'
 upload_complete = 'Успех!'
 
+delete = 'Что ты хочешь удалить?'
+
+search = 'Что ты хочешь найти?'
+
 admin_enable = 'Ладно... будешь за админа теперь!'
 admin_disable = 'Теперь ты как все, друг!'
 
@@ -40,6 +44,12 @@ MESSAGES = {
     # upload messages
     'upload': upload,
     'upload_complete': upload_complete,
+
+    # delete messages
+    'delete': delete,
+
+    # search messages
+    'search': search,
 }
 
 # YO!
