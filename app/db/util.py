@@ -5,6 +5,7 @@ from contextlib import contextmanager
 import sqlalchemy.orm
 
 from app.db import Session
+from app.trace import trace
 
 
 class Direction(object):
@@ -59,8 +60,12 @@ def session_scope():
     try:
         yield session
         session.commit()
-    except Exception as e:
-        logging.error(f'Got Error From Database:{e}')
+    except SQLEmptyResultError:
+        logging.exception('Got unexpected empty result for query:')
+        session.rollback()
+        pass
+    except Exception:
+        logging.exception('Got Error From Database:')
         session.rollback()
         raise
     finally:
@@ -70,14 +75,20 @@ def session_scope():
 def use_db_session(func):
     """Add session keyword arg to this function call"""
     @functools.wraps(func)
-    def decorator(*args, **kwargs):
+    async def decorator(*args, **kwargs):
         with session_scope() as session:
             kwargs['session'] = session
-            return func(*args, **kwargs)
+            return await func(*args, **kwargs)
     return decorator
 
 
-def sql_result(query: sqlalchemy.orm.Query):
+class SQLEmptyResultError(Exception):
+    """Raise when at least one row is expected"""
+    pass
+
+
+@trace
+def sql_result(query: sqlalchemy.orm.Query, raise_on_empty_result=False):
     """Return rowcount, first row and rows list for query"""
     rowcount = query.count()
     if rowcount > 0:
@@ -86,4 +97,6 @@ def sql_result(query: sqlalchemy.orm.Query):
     else:
         rows_list = first_row = None
 
+    if raise_on_empty_result and rowcount == 0:
+        raise SQLEmptyResultError()
     return rowcount, first_row, rows_list
