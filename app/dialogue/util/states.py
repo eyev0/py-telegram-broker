@@ -11,19 +11,11 @@ class StateItem(Item):
 class States(Helper):
     mode = HelperMode.snake_case
 
-    STATE_0_INITIAL = StateItem()
-    STATE_1_UPLOAD = StateItem()
-    STATE_2_VIEW = StateItem()
-    STATE_3_DELETE = StateItem()
-
-
-class CreateAccountStates(Helper):
-    mode = HelperMode.snake_case
-
-    CREATE_ACC_STATE_0_CITY = StateItem()
-    CREATE_ACC_STATE_1_NAME = StateItem()
-    CREATE_ACC_STATE_2_EMAIL = StateItem()
-    CREATE_ACC_STATE_3_PHONE = StateItem()
+    STATE_0_REQUEST_CITY = StateItem()
+    STATE_1_MAIN = StateItem()
+    STATE_2_UPLOAD = StateItem()
+    STATE_3_VIEW = StateItem()
+    STATE_4_DELETE = StateItem()
 
 
 def resolve_state(func):
