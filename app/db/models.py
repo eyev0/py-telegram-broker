@@ -80,7 +80,7 @@ class Item(Base):
     owner_id = Column(Integer, ForeignKey('user.id'))
     name = Column(String(100))
     price = Column(Integer, default=False)
-    status = Column(Integer)
+    status = Column(Integer, default=0)
     created = Column(DateTime, default=clock.now())
     edited = Column(DateTime, default=clock.now())
 
