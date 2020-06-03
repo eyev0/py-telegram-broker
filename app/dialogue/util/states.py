@@ -14,8 +14,9 @@ class States(Helper):
     STATE_0_REQUEST_CITY = StateItem()
     STATE_1_MAIN = StateItem()
     STATE_2_UPLOAD = StateItem()
-    STATE_3_VIEW = StateItem()
-    STATE_4_DELETE = StateItem()
+    STATE_3_DELETE = StateItem()
+    STATE_4_SEARCH = StateItem()
+    STATE_5_VIEW = StateItem()
 
 
 def resolve_state(func):
