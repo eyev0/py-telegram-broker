@@ -4,6 +4,7 @@ import sqlalchemy.orm
 from aiogram import types
 from aiogram.types import KeyboardButton, InlineKeyboardButton
 
+from app import config
 from app.db.models import User
 from app.db.util import use_db_session, sql_result
 from app.trace import trace
@@ -28,3 +29,11 @@ def filter_button_pressed(button: Union[KeyboardButton, InlineKeyboardButton]):
     else:
         return None
     return expr
+
+
+def filter_su(message: types.Message):
+    return message.from_user.id in config.app.su
+
+
+def filter_admin(message: types.Message):
+    return message.from_user.id in config.app.admin
