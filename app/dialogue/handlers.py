@@ -63,12 +63,12 @@ async def start(user_id,
         trace(User)(uid=user_id,
                     username=message.from_user.username) \
             .insert_me(session)
-        message_text = MESSAGES['greetings']
+        reply_text = MESSAGES['greetings']
         next_state = States.STATE_0_REQUEST_CITY
     else:
-        message_text = MESSAGES['yo']
+        reply_text = MESSAGES['yo']
         next_state = States.STATE_1_MAIN
-    await message.reply(message_text, reply=False)
+    await message.reply(reply_text, reply=False)
 
     return next_state
 
@@ -125,12 +125,14 @@ async def upload_action(user_id,
                         user_state,
                         message: types.Message,
                         session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
-    upload_rowcount = 0
     _, user, _ = sql_result(session.query(User)
                             .filter(User.uid == user_id),
                             raise_on_empty_result=True)
-    passed, next_state, message_text = checks.upload(user, upload_rowcount, session)
-    await message.reply(message_text,
+    passed, next_state, reply_text = checks.upload(user=user, raw_text=message.text, session=session)
+    if passed:
+        pass
+
+    await message.reply(reply_text,
                         reply=True)
     return next_state
 
