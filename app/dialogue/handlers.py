@@ -8,7 +8,7 @@ from app import dp, config
 from app.db import use_db_session, sql_result
 from app.db.models import User
 from app.dialogue import checks
-from app.dialogue.checks import is_from_su, is_from_admin
+from app.dialogue.filters import filter_su, filter_admin
 from app.dialogue.messages import MESSAGES
 from app.dialogue.util.keyboards import keyboard_remove
 from app.dialogue.util.parse_args import parse_args
@@ -17,7 +17,7 @@ from app.trace import trace_async, trace
 
 
 # /admin
-@dp.message_handler(is_from_su,
+@dp.message_handler(filter_su,
                     commands=['admin'],
                     state='*')
 @parse_args(mode='message')
@@ -25,7 +25,7 @@ from app.trace import trace_async, trace
 async def admin(user_id,
                 user_state,
                 message: types.Message):
-    if not is_from_admin(message):
+    if not filter_admin(message):
         config.app.admin.append(user_id)
         await message.reply(MESSAGES['admin_enable'], reply=False)
     else:
@@ -34,7 +34,7 @@ async def admin(user_id,
 
 
 # /clear
-@dp.message_handler(is_from_su,
+@dp.message_handler(filter_su,
                     commands=['clear'],
                     state='*')
 @parse_args(mode='message')
@@ -106,14 +106,11 @@ async def upload_command(user_id,
                          user_state,
                          message: types.Message,
                          session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
-    upload_rowcount = 0
-
     _, user, _ = sql_result(session.query(User)
                             .filter(User.uid == user_id),
                             raise_on_empty_result=True)
-
-    passed, next_state, message_text = checks.upload(user, upload_rowcount, session)
-    await message.reply(message_text,
+    next_state = States.STATE_2_UPLOAD
+    await message.reply(MESSAGES['upload'],
                         reply=True)
     return next_state
 
@@ -128,8 +125,12 @@ async def upload_action(user_id,
                         user_state,
                         message: types.Message,
                         session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
-    next_state = States.STATE_1_MAIN
-    await message.reply(MESSAGES['upload_complete'],
+    upload_rowcount = 0
+    _, user, _ = sql_result(session.query(User)
+                            .filter(User.uid == user_id),
+                            raise_on_empty_result=True)
+    passed, next_state, message_text = checks.upload(user, upload_rowcount, session)
+    await message.reply(message_text,
                         reply=True)
     return next_state
 
