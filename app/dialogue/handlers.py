@@ -96,7 +96,7 @@ async def location(user_id,
 
 
 # /upload
-@dp.message_handler(commands=['upload'],
+@dp.message_handler(commands=['upload', 'delete', 'search'],
                     state=States.STATE_1_MAIN)
 @parse_args(mode='message')
 @resolve_state
@@ -109,13 +109,19 @@ async def upload_command(user_id,
     _, user, _ = sql_result(session.query(User)
                             .filter(User.uid == user_id),
                             raise_on_empty_result=True)
-    next_state = States.STATE_2_UPLOAD
-    await message.reply(MESSAGES['upload'],
+    command = message.get_command(pure=True)
+    map_ = {
+        'upload': (MESSAGES['upload'], States.STATE_2_UPLOAD),
+        'delete': (MESSAGES['delete'], States.STATE_3_DELETE),
+        'search': (MESSAGES['search'], States.STATE_4_SEARCH),
+    }
+    check = checks.user_active(user, map_[command][0], map_[command][1])
+    await message.reply(check.reply_text,
                         reply=True)
-    return next_state
+    return check.next_state
 
 
-# /upload -> process action
+# process /upload
 @dp.message_handler(state=States.STATE_2_UPLOAD)
 @parse_args(mode='message')
 @resolve_state
@@ -128,13 +134,50 @@ async def upload_action(user_id,
     _, user, _ = sql_result(session.query(User)
                             .filter(User.uid == user_id),
                             raise_on_empty_result=True)
-    passed, next_state, reply_text = checks.upload(user=user, raw_text=message.text, session=session)
-    if passed:
-        pass
-
-    await message.reply(reply_text,
+    check = checks.upload(user=user, raw_text=message.text, session=session)
+    await message.reply(check.reply_text,
                         reply=True)
-    return next_state
+    return check.next_state
+
+
+# process /delete
+@dp.message_handler(state=States.STATE_3_DELETE)
+@parse_args(mode='message')
+@resolve_state
+@use_db_session
+@trace_async
+async def delete_action(user_id,
+                        user_state,
+                        message: types.Message,
+                        session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
+    pass
+    # _, user, _ = sql_result(session.query(User)
+    #                         .filter(User.uid == user_id),
+    #                         raise_on_empty_result=True)
+    # check = checks.upload(user=user, raw_text=message.text, session=session)
+    # await message.reply(check.reply_text,
+    #                     reply=True)
+    # return check.next_state
+
+
+# process /search
+@dp.message_handler(state=States.STATE_4_SEARCH)
+@parse_args(mode='message')
+@resolve_state
+@use_db_session
+@trace_async
+async def search_action(user_id,
+                        user_state,
+                        message: types.Message,
+                        session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
+    pass
+    # _, user, _ = sql_result(session.query(User)
+    #                         .filter(User.uid == user_id),
+    #                         raise_on_empty_result=True)
+    # check = checks.upload(user=user, raw_text=message.text, session=session)
+    # await message.reply(check.reply_text,
+    #                     reply=True)
+    # return check.next_state
 
 
 # /mycards
