@@ -1,9 +1,10 @@
-from typing import Union
-
-from aiogram import types
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton, \
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, KeyboardButton, ReplyKeyboardMarkup, \
     ReplyKeyboardRemove
 
+keyboard_remove = ReplyKeyboardRemove()
+
+button_geo = KeyboardButton('Отправить свою геолокацию', request_location=True)
+keyboard_geo = ReplyKeyboardMarkup().row(button_geo)
 
 button_upload = InlineKeyboardButton('Залить', callback_data='upload')
 button_view = InlineKeyboardButton('Мои карты', callback_data='view')
