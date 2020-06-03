@@ -1,9 +1,9 @@
-greetings = 'Yo, давай знакомиться. В каком городе ты живешь?'
+greetings = 'Yo, давай знакомиться. Для начала напиши, в каком городе ты живешь, ' \
+            'чтобы я мог зарегистрировать тебя в базе пользователей нашей площадки.'
+sign_up_complete = 'Yo, отлично! Можешь заливать картон.'
 yo = 'Yo, как дела?'
 help_ = ' '
 
-enter_location = 'Yo, сначала укажи свой город'
-sign_up_complete = 'Yo, отлично! Можешь заливать картон.'
 
 upload = 'Yo, скинь мне список карт, которые хочешь загрузить. ' \
                         'Каждая строка должна иметь формат <Название>,<Цена>\n' \
@@ -25,7 +25,6 @@ MESSAGES = {
     'greetings': greetings,
     'yo': yo,
     'help_': help_,
-    'enter_location': enter_location,
     'sign_up_complete': sign_up_complete,
 
     # admin messages
