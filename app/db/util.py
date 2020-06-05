@@ -72,8 +72,8 @@ def session_scope():
         session.close()
 
 
-def use_db_session(func):
-    """Add session keyword arg to this function call"""
+def db_session(func):
+    """Add session kwarg to this function call"""
     @functools.wraps(func)
     async def decorator(*args, **kwargs):
         with session_scope() as session:

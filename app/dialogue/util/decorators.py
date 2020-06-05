@@ -3,20 +3,34 @@ import functools
 from aiogram import types
 
 from app import dp, bot
+from app.trace import trace_async
+from app.db.util import db_session
+from app.dialogue.util.states import resolve_state
 
 
-def parse_args(mode: str = None):
-    parsers = {
+def add_handler_features(args_mode,
+                         use_resolve_state=False,
+                         use_db_session=False,
+                         use_trace=False):
+    arg_parsers = {
         'message': message_parse_args,
         'callback': callback_parse_args,
         'message_callback': message_callback_parse_args,
     }
 
     def decorator(func):
-        assert mode is not None
-        assert mode in parsers
-        wrapper = parsers[mode]
-        return wrapper(func)
+        if use_trace:
+            func = trace_async(func)
+        if use_db_session:
+            func = db_session(func)
+        if use_resolve_state:
+            func = resolve_state(func)
+        assert args_mode is not None
+        assert args_mode in arg_parsers
+        parse_func = arg_parsers[args_mode]
+        func = parse_func(func)
+        return func
+
     return decorator
 
 

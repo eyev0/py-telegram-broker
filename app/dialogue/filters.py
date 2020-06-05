@@ -6,11 +6,11 @@ from aiogram.types import KeyboardButton, InlineKeyboardButton
 
 from app import config
 from app.db.models import User
-from app.db.util import use_db_session, sql_result
+from app.db.util import db_session, sql_result
 from app.trace import trace
 
 
-@use_db_session
+@db_session
 def filter_account_created(message: types.Message, session: sqlalchemy.orm.Session):
     rowcount, user, _ = trace(sql_result)(session.query(User)
                                           .filter(User.uid == message.from_user.id))

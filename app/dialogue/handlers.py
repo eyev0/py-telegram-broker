@@ -5,15 +5,15 @@ from aiogram import types
 from aiogram.types import ContentTypes
 
 from app import dp, config
-from app.db import use_db_session, sql_result
+from app.db import sql_result
 from app.db.models import User
 from app.dialogue import checks
 from app.dialogue.filters import filter_su, filter_admin
 from app.dialogue.messages import MESSAGES
+from app.dialogue.util.decorators import add_handler_features
 from app.dialogue.util.keyboards import keyboard_remove
-from app.dialogue.util.parse_args import parse_args
-from app.dialogue.util.states import States, resolve_state, StateItem
-from app.trace import trace_async, trace
+from app.dialogue.util.states import States, StateItem
+from app.trace import trace
 
 REDIRECTS = {
     'upload': {'message': MESSAGES['upload'], 'state': States.STATE_2_UPLOAD},
@@ -26,8 +26,8 @@ REDIRECTS = {
 @dp.message_handler(filter_su,
                     commands=['admin'],
                     state='*')
-@parse_args(mode='message')
-@trace_async
+@add_handler_features(args_mode='message',
+                      use_trace=True)
 async def admin(user_id,
                 context,
                 message: types.Message):
@@ -43,9 +43,9 @@ async def admin(user_id,
 @dp.message_handler(filter_su,
                     commands=['clear'],
                     state='*')
-@parse_args(mode='message')
-@resolve_state
-@trace_async
+@add_handler_features(args_mode='message',
+                      use_resolve_state=True,
+                      use_trace=True)
 async def clear_state(user_id,
                       context,
                       message: types.Message) -> Union[StateItem, None]:
@@ -55,10 +55,10 @@ async def clear_state(user_id,
 # /start
 @dp.message_handler(commands=['start'],
                     state='*')
-@parse_args(mode='message')
-@resolve_state
-@use_db_session
-@trace_async
+@add_handler_features(args_mode='message',
+                      use_resolve_state=True,
+                      use_db_session=True,
+                      use_trace=True)
 async def start(user_id,
                 context,
                 message: types.Message,
@@ -82,10 +82,10 @@ async def start(user_id,
 # get geo
 @dp.message_handler(state=States.STATE_0_REQUEST_CITY,
                     content_types=ContentTypes.TEXT)
-@parse_args(mode='message')
-@resolve_state
-@use_db_session
-@trace_async
+@add_handler_features(args_mode='message',
+                      use_resolve_state=True,
+                      use_db_session=True,
+                      use_trace=True)
 async def location(user_id,
                    context,
                    message: types.Message,
@@ -104,9 +104,9 @@ async def location(user_id,
 # /cancel
 @dp.message_handler(commands=['cancel'],
                     state=[States.STATE_2_UPLOAD, States.STATE_3_DELETE, States.STATE_4_SEARCH])
-@parse_args(mode='message')
-@resolve_state
-@trace_async
+@add_handler_features(args_mode='message',
+                      use_resolve_state=True,
+                      use_trace=True)
 async def cancel(user_id,
                  context,
                  message: types.Message) -> Union[StateItem, None]:
@@ -117,10 +117,10 @@ async def cancel(user_id,
 # /upload
 @dp.message_handler(commands=['upload', 'delete', 'search'],
                     state=States.STATE_1_MAIN)
-@parse_args(mode='message')
-@resolve_state
-@use_db_session
-@trace_async
+@add_handler_features(args_mode='message',
+                      use_resolve_state=True,
+                      use_db_session=True,
+                      use_trace=True)
 async def upload_command(user_id,
                          context,
                          message: types.Message,
@@ -137,10 +137,10 @@ async def upload_command(user_id,
 
 # process /upload
 @dp.message_handler(state=States.STATE_2_UPLOAD)
-@parse_args(mode='message')
-@resolve_state
-@use_db_session
-@trace_async
+@add_handler_features(args_mode='message',
+                      use_resolve_state=True,
+                      use_db_session=True,
+                      use_trace=True)
 async def upload_action(user_id,
                         context,
                         message: types.Message,
@@ -156,10 +156,10 @@ async def upload_action(user_id,
 
 # process /delete
 @dp.message_handler(state=States.STATE_3_DELETE)
-@parse_args(mode='message')
-@resolve_state
-@use_db_session
-@trace_async
+@add_handler_features(args_mode='message',
+                      use_resolve_state=True,
+                      use_db_session=True,
+                      use_trace=True)
 async def delete_action(user_id,
                         context,
                         message: types.Message,
@@ -176,10 +176,10 @@ async def delete_action(user_id,
 
 # process /search
 @dp.message_handler(state=States.STATE_4_SEARCH)
-@parse_args(mode='message')
-@resolve_state
-@use_db_session
-@trace_async
+@add_handler_features(args_mode='message',
+                      use_resolve_state=True,
+                      use_db_session=True,
+                      use_trace=True)
 async def search_action(user_id,
                         context,
                         message: types.Message,
@@ -197,10 +197,10 @@ async def search_action(user_id,
 # /mycards
 @dp.message_handler(commands=['mycards'],
                     state=States.STATE_1_MAIN)
-@parse_args(mode='message')
-@resolve_state
-@use_db_session
-@trace_async
+@add_handler_features(args_mode='message',
+                      use_resolve_state=True,
+                      use_db_session=True,
+                      use_trace=True)
 async def mycards(user_id,
                   context,
                   message: types.Message,
