@@ -24,9 +24,9 @@ def resolve_state(func):
     async def decorator(*args, **kwargs):
         result = await func(*args, **kwargs)
 
-        user_state: FSMContext = kwargs.get('user_state', None)
-        if user_state is not None:
-            await user_state.set_state(result)
+        context: FSMContext = kwargs.get('context', None)
+        if context is not None:
+            await context.set_state(result)
         return result
 
     return decorator

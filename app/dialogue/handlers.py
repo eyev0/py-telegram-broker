@@ -23,7 +23,7 @@ from app.trace import trace_async, trace
 @parse_args(mode='message')
 @trace_async
 async def admin(user_id,
-                user_state,
+                context,
                 message: types.Message):
     if not filter_admin(message):
         config.app.admin.append(user_id)
@@ -41,7 +41,7 @@ async def admin(user_id,
 @resolve_state
 @trace_async
 async def clear_state(user_id,
-                      user_state,
+                      context,
                       message: types.Message) -> Union[StateItem, None]:
     return None
 
@@ -54,7 +54,7 @@ async def clear_state(user_id,
 @use_db_session
 @trace_async
 async def start(user_id,
-                user_state,
+                context,
                 message: types.Message,
                 session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
     rowcount, user, _ = sql_result(session.query(User)
@@ -81,7 +81,7 @@ async def start(user_id,
 @use_db_session
 @trace_async
 async def location(user_id,
-                   user_state,
+                   context,
                    message: types.Message,
                    session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
     rowcount, user, _ = sql_result(session.query(User)
@@ -103,19 +103,14 @@ async def location(user_id,
 @use_db_session
 @trace_async
 async def upload_command(user_id,
-                         user_state,
+                         context,
                          message: types.Message,
                          session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
     _, user, _ = sql_result(session.query(User)
                             .filter(User.uid == user_id),
                             raise_on_empty_result=True)
     command = message.get_command(pure=True)
-    map_ = {
-        'upload': (MESSAGES['upload'], States.STATE_2_UPLOAD),
-        'delete': (MESSAGES['delete'], States.STATE_3_DELETE),
-        'search': (MESSAGES['search'], States.STATE_4_SEARCH),
-    }
-    check = checks.user_active(user, map_[command][0], map_[command][1])
+    check = checks.user_active(user, REDIRECTS[command]['message'], REDIRECTS[command]['state'])
     await message.reply(check.reply_text,
                         reply=True)
     return check.next_state
@@ -128,7 +123,7 @@ async def upload_command(user_id,
 @use_db_session
 @trace_async
 async def upload_action(user_id,
-                        user_state,
+                        context,
                         message: types.Message,
                         session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
     _, user, _ = sql_result(session.query(User)
@@ -147,7 +142,7 @@ async def upload_action(user_id,
 @use_db_session
 @trace_async
 async def delete_action(user_id,
-                        user_state,
+                        context,
                         message: types.Message,
                         session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
     pass
@@ -167,7 +162,7 @@ async def delete_action(user_id,
 @use_db_session
 @trace_async
 async def search_action(user_id,
-                        user_state,
+                        context,
                         message: types.Message,
                         session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
     pass
@@ -188,7 +183,7 @@ async def search_action(user_id,
 @use_db_session
 @trace_async
 async def mycards(user_id,
-                  user_state,
+                  context,
                   message: types.Message,
                   session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
     await message.reply('Show me my cards',
