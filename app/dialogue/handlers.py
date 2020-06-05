@@ -95,6 +95,19 @@ async def location(user_id,
     return next_state
 
 
+# /cancel
+@dp.message_handler(commands=['cancel'],
+                    state=[States.STATE_2_UPLOAD, States.STATE_3_DELETE, States.STATE_4_SEARCH])
+@parse_args(mode='message')
+@resolve_state
+@trace_async
+async def cancel(user_id,
+                 context,
+                 message: types.Message) -> Union[StateItem, None]:
+    await message.reply(MESSAGES['cancel'])
+    return None
+
+
 # /upload
 @dp.message_handler(commands=['upload', 'delete', 'search'],
                     state=States.STATE_1_MAIN)
