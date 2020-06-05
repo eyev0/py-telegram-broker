@@ -15,6 +15,12 @@ from app.dialogue.util.parse_args import parse_args
 from app.dialogue.util.states import States, resolve_state, StateItem
 from app.trace import trace_async, trace
 
+REDIRECTS = {
+    'upload': {'message': MESSAGES['upload'], 'state': States.STATE_2_UPLOAD},
+    'delete': {'message': MESSAGES['delete'], 'state': States.STATE_3_DELETE},
+    'search': {'message': MESSAGES['search'], 'state': States.STATE_4_SEARCH},
+}
+
 
 # /admin
 @dp.message_handler(filter_su,
