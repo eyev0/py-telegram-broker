@@ -62,7 +62,7 @@ class User(Base):
     def __repr__(self):
         return f"User(id={self.id}, uid={self.uid}, username={self.username}, " \
                f"full_name={self.full_name}, email_address={self.email_address}, " \
-               f"phone_number={self.phone_number}, location={self.location}), limit={self.limit}, " \
+               f"phone_number={self.phone_number}, location={self.location}, limit={self.limit}, " \
                f"active={self.active}, receive_notifications={self.receive_notifications}, " \
                f"created={self.created}, edited={self.edited})"
 
