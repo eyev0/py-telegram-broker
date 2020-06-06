@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
 from app import clock
-from app.dialogue.util.models import SendMeMixin
+from app.dialogue.util.models import SendListMixin
 
 Base = declarative_base()
 
@@ -68,7 +68,7 @@ class User(Base):
                f"created={self.created}, edited={self.edited})"
 
 
-class Item(Base, SendMeMixin):
+class Item(Base, SendListMixin):
     __tablename__ = 'item'
 
     STATUSES = {
@@ -87,10 +87,6 @@ class Item(Base, SendMeMixin):
 
     owner = relationship('User', backref='owner_items', foreign_keys=[owner_id])
 
-    # SendMe parameters
-    _kb_hide_me = True
-    _kb_rows = 2
-
     def __init__(self,
                  owner_id,
                  name,
@@ -103,6 +99,12 @@ class Item(Base, SendMeMixin):
         return f"Item(id={self.id}, user_id={self.owner_id}, name={self.name}, price={self.price}, " \
                f"status={self.status}, created={self.created}, edited={self.edited})"
 
+    # SendListMixin
+    _list_mixin_header = 'Your cards:\n'
+
+    def row_repr(self):
+        return f'{self.id} : {self.name} - {str(self.price)}р.\n'
+
 
 class Subscription(Base):
     __tablename__ = 'subscription'
@@ -111,7 +113,7 @@ class Subscription(Base):
         0: 'item',
         1: 'space_add_hundred',
         2: 'space_add_thousand',
-        3: 'space_add_5_thousand',
+        3: 'space_add_fivethousand',
     }
 
     id = Column(Integer, primary_key=True)

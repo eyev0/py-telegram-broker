@@ -195,10 +195,6 @@ async def mycards(user_id,
                                    .filter(User.uid == user_id)
                                    .filter(Item.status < 9))
 
-    show_rows = 20
-    reply_text = 'Your cards:\n'
-    for i in range(min(rowcount, show_rows)):
-        reply_text += rows[i].name + ' - ' + str(rows[i].price) + 'р.\n'
-
+    reply_text = Item.list_repr(rows)
     await message.reply(reply_text,
                         reply=False)

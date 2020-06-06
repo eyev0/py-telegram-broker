@@ -49,10 +49,6 @@ def fetch_list(list_: list,
     return list_[current_pos], current_pos
 
 
-class WrappingListIterator(object):
-    pass
-
-
 @contextmanager
 def session_scope():
     """Provide a transactional scope around a series of operations."""
