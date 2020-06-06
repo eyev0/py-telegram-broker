@@ -41,6 +41,7 @@ def user_active_wrapper(func):
         else:
             result = func(*args, **kwargs)
         return result
+
     return decorator
 
 
@@ -49,14 +50,14 @@ def upload(user: User = None, raw_text: str = None, session: sqlalchemy.orm.Sess
     items_list = parse_items(raw_text)
     if items_list is None:
         return CheckResult(MESSAGES['upload_parse_failed'])
-    rowcount, row, rows = sql_result(session.query(Item)
-                                     .filter(Item.owner_id == user.id)
-                                     .filter(Item.status < 9))
+    rowcount, _, _ = sql_result(session.query(Item)
+                                .filter(Item.owner_id == user.id)
+                                .filter(Item.status < 9))
     if len(items_list) + rowcount > user.limit:
         return CheckResult(MESSAGES['upload_limit_exceeded'].format(user.limit, raw_text))
 
     for item in items_list:
-        Item(user.id, item['name'], item['price'])\
+        Item(user.id, item['name'], item['price']) \
             .insert_me(session)
     return CheckResult(MESSAGES['upload_complete'], passed=True)
 
