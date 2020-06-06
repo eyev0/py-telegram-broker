@@ -6,7 +6,7 @@ from aiogram.types import ContentTypes
 
 from app import dp, config
 from app.db import sql_result
-from app.db.models import User
+from app.db.models import User, Item
 from app.dialogue import checks
 from app.dialogue.filters import filter_su, filter_admin
 from app.dialogue.messages import MESSAGES
@@ -165,13 +165,6 @@ async def delete_action(user_id,
                         message: types.Message,
                         session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
     pass
-    # _, user, _ = sql_result(session.query(User)
-    #                         .filter(User.uid == user_id),
-    #                         raise_on_empty_result=True)
-    # check = checks.upload(user=user, raw_text=message.text, session=session)
-    # await message.reply(check.reply_text,
-    #                     reply=True)
-    # return check.next_state
 
 
 # process /search
@@ -185,26 +178,27 @@ async def search_action(user_id,
                         message: types.Message,
                         session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
     pass
-    # _, user, _ = sql_result(session.query(User)
-    #                         .filter(User.uid == user_id),
-    #                         raise_on_empty_result=True)
-    # check = checks.upload(user=user, raw_text=message.text, session=session)
-    # await message.reply(check.reply_text,
-    #                     reply=True)
-    # return check.next_state
 
 
 # /mycards
 @dp.message_handler(commands=['mycards'],
                     state=States.STATE_1_MAIN)
 @add_handler_features(args_mode='message',
-                      use_resolve_state=True,
                       use_db_session=True,
                       use_trace=True)
 async def mycards(user_id,
                   context,
                   message: types.Message,
-                  session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
-    await message.reply('Show me my cards',
+                  session: sqlalchemy.orm.Session):
+    rowcount, _, rows = sql_result(session.query(Item)
+                                   .join(User)
+                                   .filter(User.uid == user_id)
+                                   .filter(Item.status < 9))
+
+    show_rows = 20
+    reply_text = 'Your cards:\n'
+    for i in range(min(rowcount, show_rows)):
+        reply_text += rows[i].name + ' - ' + str(rows[i].price) + 'р.\n'
+
+    await message.reply(reply_text,
                         reply=False)
-    return None
