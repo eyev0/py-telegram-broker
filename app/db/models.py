@@ -4,6 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
 from app import clock
+from app.dialogue.util.models import SendMeMixin
 
 Base = declarative_base()
 
@@ -67,7 +68,7 @@ class User(Base):
                f"created={self.created}, edited={self.edited})"
 
 
-class Item(Base):
+class Item(Base, SendMeMixin):
     __tablename__ = 'item'
 
     STATUSES = {
@@ -85,6 +86,10 @@ class Item(Base):
     edited = Column(DateTime, default=clock.now())
 
     owner = relationship('User', backref='owner_items', foreign_keys=[owner_id])
+
+    # SendMe parameters
+    _kb_hide_me = True
+    _kb_rows = 2
 
     def __init__(self,
                  owner_id,
