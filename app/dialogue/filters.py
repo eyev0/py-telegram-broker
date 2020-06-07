@@ -10,10 +10,10 @@ from app.middlewares import db_session, sql_result
 
 
 @db_session
-def filter_user_active(message: types.Message, session: sqlalchemy.orm.Session):
+def filter_user_inactive(message: types.Message, session: sqlalchemy.orm.Session):
     rowcount, _, _ = sql_result(session.query(User)
                                 .filter(User.uid == message.from_user.id)
-                                .filter(User.active == True))
+                                .filter(User.active == False))
     return rowcount > 0
 
 
@@ -35,4 +35,3 @@ def filter_su(message: types.Message):
 
 def filter_admin(message: types.Message):
     return message.from_user.id in config.app.admin
-

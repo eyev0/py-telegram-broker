@@ -10,13 +10,13 @@ from app import dp, config
 from app.db.models import User, Item
 from app.dialogue import StateItem, States
 from app.dialogue import keyboard_remove
-from app.dialogue.filters import filter_su, filter_admin, filter_user_active
+from app.dialogue.filters import filter_su, filter_admin, filter_user_inactive
 from app.messages import MESSAGES
 from app.middlewares import trace, add_middlewares, sql_result
 
 
 # inactive
-@dp.message_handler(filter_user_active,
+@dp.message_handler(filter_user_inactive,
                     state='*')
 @add_middlewares(mixed_handler='message',
                  use_resolve_state=True,
@@ -55,7 +55,7 @@ async def admin(user_id,
 async def clear_state(user_id,
                       context,
                       message: types.Message) -> Union[StateItem, None]:
-    return None
+    return States.STATE_1_MAIN
 
 
 # /start
