@@ -6,28 +6,26 @@ import aiogram
 from aiogram.utils import executor
 
 from app import dp as dispatcher, config
-from app.middlewares import trace, trace_async
+from app.middlewares import trace
 
 
-@trace_async
 async def on_startup(dp: aiogram.Dispatcher):
     if config.app.webhook_mode:
-        await trace_async(dp.bot.set_webhook)(config.webhook.url)
+        await dp.bot.set_webhook(config.webhook.url)
 
     me = await dp.bot.get_me()
     logging.warning(f'Powering up @{me["username"]}')
 
 
-@trace_async
 async def on_shutdown(dp: aiogram.Dispatcher):
     logging.warning('Shutting down..')
 
     # Close DB connection (if used)
-    await trace_async(dp.storage.close)()
-    await trace_async(dp.storage.wait_closed)()
+    await dp.storage.close()
+    await dp.storage.wait_closed()
 
     if config.app.webhook_mode:
-        await trace_async(dp.bot.delete_webhook)()
+        await dp.bot.delete_webhook()
 
     logging.warning('Bye!')
 
