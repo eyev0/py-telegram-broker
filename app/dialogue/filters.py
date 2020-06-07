@@ -6,17 +6,15 @@ from aiogram.types import KeyboardButton, InlineKeyboardButton
 
 from app import config
 from app.db.models import User
-from app.db.util import db_session, sql_result
-from app.trace import trace
+from app.middlewares import db_session, sql_result
 
 
 @db_session
-def filter_account_created(message: types.Message, session: sqlalchemy.orm.Session):
-    rowcount, user, _ = trace(sql_result)(session.query(User)
-                                          .filter(User.uid == message.from_user.id))
-    if user is None or user.location is None:
-        return False
-    return True
+def filter_user_active(message: types.Message, session: sqlalchemy.orm.Session):
+    rowcount, _, _ = sql_result(session.query(User)
+                                .filter(User.uid == message.from_user.id)
+                                .filter(User.active == True))
+    return rowcount > 0
 
 
 def filter_button_pressed(button: Union[KeyboardButton, InlineKeyboardButton]):
@@ -37,3 +35,4 @@ def filter_su(message: types.Message):
 
 def filter_admin(message: types.Message):
     return message.from_user.id in config.app.admin
+

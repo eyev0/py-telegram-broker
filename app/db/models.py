@@ -4,6 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
 from app import clock
+from app.db.mixin import ListReprMixin
 
 Base = declarative_base()
 
@@ -67,7 +68,7 @@ class User(Base):
                f"created={self.created}, edited={self.edited})"
 
 
-class Item(Base):
+class Item(Base, ListReprMixin):
     __tablename__ = 'item'
 
     STATUSES = {
@@ -98,6 +99,12 @@ class Item(Base):
         return f"Item(id={self.id}, user_id={self.owner_id}, name={self.name}, price={self.price}, " \
                f"status={self.status}, created={self.created}, edited={self.edited})"
 
+    # SendListMixin
+    _list_mixin_header = 'Your cards:\n'
+
+    def row_repr(self):
+        return f'{self.id} : {self.name} - {str(self.price)}р.\n'
+
 
 class Subscription(Base):
     __tablename__ = 'subscription'
@@ -106,7 +113,7 @@ class Subscription(Base):
         0: 'item',
         1: 'space_add_hundred',
         2: 'space_add_thousand',
-        3: 'space_add_5_thousand',
+        3: 'space_add_fivethousand',
     }
 
     id = Column(Integer, primary_key=True)

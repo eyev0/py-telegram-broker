@@ -1,11 +1,9 @@
-import functools
 import logging
 from contextlib import contextmanager
 
 import sqlalchemy.orm
 
 from app.db import Session
-from app.trace import trace
 
 
 class Direction(object):
@@ -49,10 +47,6 @@ def fetch_list(list_: list,
     return list_[current_pos], current_pos
 
 
-class WrappingListIterator(object):
-    pass
-
-
 @contextmanager
 def session_scope():
     """Provide a transactional scope around a series of operations."""
@@ -72,31 +66,6 @@ def session_scope():
         session.close()
 
 
-def db_session(func):
-    """Add session kwarg to this function call"""
-    @functools.wraps(func)
-    async def decorator(*args, **kwargs):
-        with session_scope() as session:
-            kwargs['session'] = session
-            return await func(*args, **kwargs)
-    return decorator
-
-
 class SQLEmptyResultError(Exception):
     """Raise when at least one row is expected"""
     pass
-
-
-@trace
-def sql_result(query: sqlalchemy.orm.Query, raise_on_empty_result=False):
-    """Return rowcount, first row and rows list for query"""
-    rowcount = query.count()
-    if rowcount > 0:
-        rows_list = query.all()
-        first_row = rows_list[0]
-    else:
-        rows_list = first_row = None
-
-    if raise_on_empty_result and rowcount == 0:
-        raise SQLEmptyResultError()
-    return rowcount, first_row, rows_list
