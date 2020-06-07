@@ -1,6 +1,6 @@
 import functools
 import logging
-from typing import Iterable
+from typing import Iterable, Awaitable
 
 import sqlalchemy.orm
 from aiogram import types
@@ -66,29 +66,46 @@ def db_session(func):
     async def decorator(*args, **kwargs):
         with session_scope() as session:
             kwargs['session'] = session
-            return await func(*args, **kwargs)
+            result = func(*args, **kwargs)
+            if isinstance(result, Awaitable):
+                result = await result
+            return result
 
     return decorator
 
 
+def sql_result(query: sqlalchemy.orm.Query,
+               raise_on_empty_result=False):
+    """Return rowcount, first row and rows list for query"""
+    rowcount = query.count()
+    if rowcount > 0:
+        rows_list = query.all()
+        first_row = rows_list[0]
+    else:
+        rows_list = first_row = None
+
+    if raise_on_empty_result and rowcount == 0:
+        raise SQLEmptyResultError()
+    return rowcount, first_row, rows_list
+
+
 def resolve_state(func):
     @functools.wraps(func)
-    async def decorator(*args, **kwargs):
+    async def resolve_state_wrapper(*args, **kwargs):
         result = await func(*args, **kwargs)
         context: FSMContext = kwargs.get('context', None)
         if context is not None:
             await context.set_state(result)
         return result
 
-    return decorator
+    return resolve_state_wrapper
 
 
 def handler_args(mixed_mode=False):
-    def handler_args_wrapper(func):
-        """ Parse args for message and callback_query handlers in one func"""
+    def decorator(func):
 
         @functools.wraps(func)
-        async def decorator(obj: types.base.TelegramObject, **partial_data):
+        async def handler_args_wrapper(obj: types.base.TelegramObject, **partial_data):
             callback_query = None
             if isinstance(obj, types.CallbackQuery):
                 callback_query = obj
@@ -114,16 +131,16 @@ def handler_args(mixed_mode=False):
                 await bot.answer_callback_query(callback_query.id)
             return result
 
-        return decorator
+        return handler_args_wrapper
 
-    return handler_args_wrapper
+    return decorator
 
 
 def add_middlewares(mixed_handler=False,
                     use_resolve_state=False,
                     use_db_session=False,
                     use_trace=False):
-    def decorator(func):
+    def add_middlewares_wrapper(func):
         if use_trace:
             func = trace_async(func)
         if use_db_session:
@@ -133,19 +150,4 @@ def add_middlewares(mixed_handler=False,
         func = handler_args(mixed_handler)(func)
         return func
 
-    return decorator
-
-
-@trace
-def sql_result(query: sqlalchemy.orm.Query, raise_on_empty_result=False):
-    """Return rowcount, first row and rows list for query"""
-    rowcount = query.count()
-    if rowcount > 0:
-        rows_list = query.all()
-        first_row = query.one()
-    else:
-        rows_list = first_row = None
-
-    if raise_on_empty_result and rowcount == 0:
-        raise SQLEmptyResultError()
-    return rowcount, first_row, rows_list
+    return add_middlewares_wrapper
