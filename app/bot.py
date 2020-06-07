@@ -6,7 +6,7 @@ import aiogram
 from aiogram.utils import executor
 
 from app import dp as dispatcher, config
-from app.trace import trace_async, trace
+from app.middlewares import trace, trace_async
 
 
 @trace_async
