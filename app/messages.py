@@ -20,6 +20,7 @@ upload = 'Скинь мне список карт, которые хочешь �
 upload_complete = 'Успех!'
 
 delete = 'Что ты хочешь удалить?'
+delete_help = 'Что ты хочешь удалить?'
 
 search = 'Что ты хочешь найти?'
 
@@ -51,6 +52,7 @@ MESSAGES = {
 
     # delete messages
     'delete': delete,
+    'delete_help': delete_help,
 
     # search messages
     'search': search,
