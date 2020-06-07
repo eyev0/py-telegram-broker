@@ -199,6 +199,22 @@ async def delete_action(user_id,
     # save del_ids and request confirmation
     args: str = message.get_args()
     del_ids = re.sub('[ ,]+', ',', args)
+    if len(del_ids) == 0:
+        await message.reply(MESSAGES['delete_help'])
+        return States.STATE_1_MAIN
+    if del_ids == 'all':
+        _, user, _ = sql_result(session.query(User)
+                                .filter(User.uid == user_id))
+        del_records = user.owner_items
+    else:
+        _, _, del_records = sql_result(session.query(Item)
+                                       .join(User)
+                                       .filter(User.uid == user_id)
+                                       .filter(Item.id.in_(del_ids.split(','))))
+    reply_text = 'You are about to delete these records:\n'
+    reply_text += '\n'.join([f'{record!r}' for record in del_records])
+    reply_text += '\nType in "да" to confirm or any other string to cancel'
+    await message.reply(reply_text)
     context_data = await context.get_data()
     context_data['delete_ids'] = del_ids
     await context.set_data(context_data)
@@ -215,8 +231,7 @@ async def delete_action_confirmed(user_id,
                                   context: FSMContext,
                                   message: types.Message,
                                   session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
-    args: str = message.get_args()
-    delete_confirmed = args.strip().lower() == 'да'
+    delete_confirmed = message.text.strip().lower() == 'да'
     context_data = await context.get_data()
     del_ids = context_data.get('delete_ids', None)
     reply_text = ''
@@ -234,7 +249,10 @@ async def delete_action_confirmed(user_id,
         for record in del_records:
             reply_text += f'{record!r} deleted\n'
             session.delete(record)
-        return States.STATE_1_MAIN
+    else:
+        reply_text += 'Delete cancelled'
+    await message.reply(reply_text)
+    return States.STATE_1_MAIN
 
 
 # /search
