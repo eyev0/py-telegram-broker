@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 
-class SendListMixin:
+class ListReprMixin:
     _num_records = 20
     _list_mixin_header = ''
 
