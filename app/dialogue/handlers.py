@@ -211,8 +211,11 @@ async def delete_action(user_id,
                                        .join(User)
                                        .filter(User.uid == user_id)
                                        .filter(Item.id.in_(del_ids.split(','))))
+    if not del_records:
+        await message.reply(MESSAGES['delete_help'])
+        return States.STATE_1_MAIN
     reply_text = 'You are about to delete these records:\n'
-    reply_text += '\n'.join([f'{record!r}' for record in del_records])
+    reply_text += '\n'.join([f'{record.row_repr()}' for record in del_records])
     reply_text += '\nType in "да" to confirm or any other string to cancel'
     await message.reply(reply_text)
     context_data = await context.get_data()
@@ -247,10 +250,12 @@ async def delete_action_confirmed(user_id,
     if delete_confirmed:
         # process delete
         for record in del_records:
-            reply_text += f'{record!r} deleted\n'
+            reply_text += f'{record.row_repr()} deleted\n'
             session.delete(record)
     else:
         reply_text += 'Delete cancelled'
+    context_data['delete_ids'] = None
+    await context.set_data(context_data)
     await message.reply(reply_text)
     return States.STATE_1_MAIN
 
