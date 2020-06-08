@@ -117,7 +117,7 @@ async def cancel(user_id,
                  context,
                  message: types.Message) -> Union[StateItem, None]:
     await message.reply(MESSAGES['cancel'])
-    return None
+    return States.STATE_1_MAIN
 
 
 # /upload
@@ -216,7 +216,7 @@ async def delete_action(user_id,
         return States.STATE_1_MAIN
     reply_text = 'You are about to delete these records:\n'
     reply_text += '\n'.join([f'{record.row_repr()}' for record in del_records])
-    reply_text += '\nType in "да" to confirm or any other string to cancel'
+    reply_text += '\nType in "да/yes" to confirm or any other string to cancel'
     await message.reply(reply_text)
     context_data = await context.get_data()
     context_data['delete_ids'] = del_ids
@@ -234,7 +234,7 @@ async def delete_action_confirmed(user_id,
                                   context: FSMContext,
                                   message: types.Message,
                                   session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
-    delete_confirmed = message.text.strip().lower() == 'да'
+    delete_confirmed = message.text.strip().lower() in ['да', 'yes']
     context_data = await context.get_data()
     del_ids = context_data.get('delete_ids', None)
     reply_text = ''
@@ -249,9 +249,11 @@ async def delete_action_confirmed(user_id,
                                        .filter(Item.id.in_(del_ids.split(','))))
     if delete_confirmed:
         # process delete
+        reply_text += 'Records:\n'
         for record in del_records:
-            reply_text += f'{record.row_repr()} deleted\n'
+            reply_text += f'{record.row_repr()}\n'
             session.delete(record)
+        reply_text += '\ndeleted!'
     else:
         reply_text += 'Delete cancelled'
     context_data['delete_ids'] = None
@@ -285,11 +287,9 @@ async def mycards(user_id,
                   session: sqlalchemy.orm.Session):
     args = message.get_args()
 
-    _, _, rows = sql_result(session.query(Item)
-                            .join(User)
-                            .filter(User.uid == user_id)
-                            .filter(Item.status < 9))
+    _, user, _ = sql_result(session.query(User)
+                            .filter(User.uid == user_id))
 
-    reply_text = Item.list_repr(rows)
+    reply_text = Item.list_repr(user.owner_items)
     await message.reply(reply_text,
                         reply=False)
