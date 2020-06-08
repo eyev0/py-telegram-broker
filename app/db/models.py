@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
 from app import clock
-from app.db.mixin import ListReprMixin
+from app.db.mixin import ObjectsListMixin
 
 Base = declarative_base()
 
@@ -68,7 +68,7 @@ class User(Base):
                f"created={self.created}, edited={self.edited})"
 
 
-class Item(Base, ListReprMixin):
+class Item(Base, ObjectsListMixin):
     __tablename__ = 'item'
 
     STATUSES = {
