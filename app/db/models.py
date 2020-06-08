@@ -99,11 +99,11 @@ class Item(Base, ListReprMixin):
         return f"Item(id={self.id}, user_id={self.owner_id}, name={self.name}, price={self.price}, " \
                f"status={self.status}, created={self.created}, edited={self.edited})"
 
-    # SendListMixin
+    # ListReprMixin
     _list_mixin_header = 'Your cards:\n'
 
     def row_repr(self):
-        return f'{self.id} : {self.name} - {str(self.price)}р.\n'
+        return f'id={self.id}, {self.name} - {str(self.price)}р.'
 
 
 class Subscription(Base):
