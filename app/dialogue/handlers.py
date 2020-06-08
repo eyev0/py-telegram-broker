@@ -185,6 +185,24 @@ async def upload_action(user_id,
     return States.STATE_1_MAIN
 
 
+def parse_delete(raw_text: str,
+                 user_id: int,
+                 session: sqlalchemy.orm.Session) -> Union[List, None]:
+    if raw_text == 'all':
+        _, user, _ = sql_result(session.query(User)
+                                .filter(User.uid == user_id))
+        del_records = user.owner_items
+    elif re.findall('[^0-9, ]', raw_text):
+        return None
+    else:
+        ls = [x.strip() for x in raw_text.split(',')]
+        _, _, del_records = sql_result(session.query(Item)
+                                       .join(User)
+                                       .filter(User.uid == user_id)
+                                       .filter(Item.id.in_(ls)))
+    return del_records or []
+
+
 # /delete
 @dp.message_handler(commands=['delete'],
                     state=States.STATE_1_MAIN)
@@ -198,34 +216,28 @@ async def delete_action(user_id,
                         session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
     # save del_ids and request confirmation
     args: str = message.get_args()
-    del_ids = re.sub('[ ,]+', ',', args)
-    if len(del_ids) == 0:
+    if len(args) == 0:
         await message.reply(MESSAGES['delete_help'])
         return States.STATE_1_MAIN
-    if del_ids == 'all':
-        _, user, _ = sql_result(session.query(User)
-                                .filter(User.uid == user_id))
-        del_records = user.owner_items
-    else:
-        _, _, del_records = sql_result(session.query(Item)
-                                       .join(User)
-                                       .filter(User.uid == user_id)
-                                       .filter(Item.id.in_(del_ids.split(','))))
-    if not del_records:
-        await message.reply(MESSAGES['delete_help'])
+    items_list = parse_delete(args, user_id, session)
+    if items_list is None:
+        await message.reply(MESSAGES['delete_format_error'])
         return States.STATE_1_MAIN
-    reply_text = 'You are about to delete these records:\n'
-    reply_text += '\n'.join([f'{record.row_repr()}' for record in del_records])
-    reply_text += '\nType in "да/yes" to confirm or any other string to cancel'
-    await message.reply(reply_text)
+    if not items_list:
+        await message.reply(MESSAGES['delete_no_records'])
+        return States.STATE_1_MAIN
+    s = '\n'.join([f'{item.row_repr()}' for item in items_list])
+    await message.reply(MESSAGES['delete_records_confirm'].format(s))
+
     context_data = await context.get_data()
-    context_data['delete_ids'] = del_ids
+    context_data['delete_ids'] = ','.join([str(item.id) for item in items_list])
     await context.set_data(context_data)
     return States.STATE_3_DELETE
 
 
 # confirm delete
-@dp.message_handler(state=States.STATE_3_DELETE)
+@dp.message_handler(lambda m: m.text.strip().lower() in ['да', 'yes'],
+                    state=States.STATE_3_DELETE)
 @add_middlewares(mixed_handler='message',
                  use_resolve_state=True,
                  use_db_session=True,
@@ -234,28 +246,17 @@ async def delete_action_confirmed(user_id,
                                   context: FSMContext,
                                   message: types.Message,
                                   session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
-    delete_confirmed = message.text.strip().lower() in ['да', 'yes']
+    # process delete
     context_data = await context.get_data()
     del_ids = context_data.get('delete_ids', None)
-    reply_text = ''
-    if del_ids == 'all':
-        _, user, _ = sql_result(session.query(User)
-                                .filter(User.uid == user_id))
-        del_records = user.owner_items
-    else:
-        _, _, del_records = sql_result(session.query(Item)
-                                       .join(User)
-                                       .filter(User.uid == user_id)
-                                       .filter(Item.id.in_(del_ids.split(','))))
-    if delete_confirmed:
-        # process delete
-        reply_text += 'Records:\n'
-        for record in del_records:
-            reply_text += f'{record.row_repr()}\n'
-            session.delete(record)
-        reply_text += '\ndeleted!'
-    else:
-        reply_text += 'Delete cancelled'
+    _, _, del_records = sql_result(session.query(Item)
+                                   .join(User)
+                                   .filter(User.uid == user_id)
+                                   .filter(Item.id.in_(del_ids.split(','))))
+    s = '\n'.join([x.row_repr() for x in del_records])
+    for x in del_records:
+        session.delete(x)
+    reply_text = MESSAGES['delete_records_done'].format(s)
     context_data['delete_ids'] = None
     await context.set_data(context_data)
     await message.reply(reply_text)

@@ -20,14 +20,21 @@ upload_parse_failed = 'Что-то не так с форматом твоего 
 upload_limit_exceeded = 'Твой лимит объявлений({}) превышен! Нельзя загрузить {} карт'
 upload_complete = 'Успех!'
 
-delete = 'Что ты хочешь удалить?'
-delete_help = 'Что ты хочешь удалить?'
+delete_help = 'Что ты хочешь удалить? Пришли список id через пробел.\n' \
+              'Например, /delete 10 1 3 22'
+delete_format_error = 'Не, не так..\n' + delete_help
+delete_no_records = 'Нет карт с такими id!\n' \
+                    'Напиши /mycards, чтобы посмотреть список своих карт'
+delete_records_confirm = 'You are about to delete these records:\n' \
+                         '{}\n' \
+                         'Type in "да/yes" to confirm or /cancel to cancel'
+delete_cancelled = 'Delete cancelled'
+delete_records_done = 'Records:\n{}\ndeleted!'
 
 search = 'Что ты хочешь найти?'
 
 admin_enable = 'Ладно... будешь за админа теперь!'
 admin_disable = 'Теперь ты как все, друг!'
-
 
 MESSAGES = {
     # user messages
@@ -52,8 +59,12 @@ MESSAGES = {
     'upload_complete': upload_complete,
 
     # delete messages
-    'delete': delete,
     'delete_help': delete_help,
+    'delete_format_error': delete_format_error,
+    'delete_no_records': delete_no_records,
+    'delete_records_confirm': delete_records_confirm,
+    'delete_cancelled': delete_cancelled,
+    'delete_records_done': delete_records_done,
 
     # search messages
     'search': search,
