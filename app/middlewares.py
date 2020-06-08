@@ -17,7 +17,7 @@ def trace(func):
     @functools.wraps(func)
     def decorator(*args, **kwargs):
         logging.log(config.log.trace_level,
-                    f'TRACE: calling {func.__module__}.{func.__name__}(' +
+                    f'TRACE: call {func.__module__}.{func.__name__}(' +
                     f'{",".join([str(x) for x in args])}' +
                     ', ' +
                     f'{", ".join([str(x) + "=" + str(kwargs[x]) for x in kwargs])})')
@@ -29,7 +29,7 @@ def trace(func):
             else:
                 result_str = result
             logging.log(config.log.trace_level,
-                        f'TRACE: {func.__module__}.{func.__name__} '
+                        f'TRACE: return from {func.__module__}.{func.__name__}, '
                         f'returned {result_str!r}')
         return result
 
@@ -40,7 +40,7 @@ def trace_async(func):
     @functools.wraps(func)
     async def decorator(*args, **kwargs):
         logging.log(config.log.trace_level,
-                    f'TRACE: calling {func.__module__}.{func.__name__}(' +
+                    f'TRACE: call {func.__module__}.{func.__name__}(' +
                     f'{",".join([str(x) for x in args])}' +
                     ', ' +
                     f'{", ".join([str(x) + "=" + str(kwargs[x]) for x in kwargs])})')
@@ -52,7 +52,7 @@ def trace_async(func):
             else:
                 result_str = result
             logging.log(config.log.trace_level,
-                        f'TRACE: {func.__module__}.{func.__name__} '
+                        f'TRACE: return from {func.__module__}.{func.__name__}, '
                         f'returned {result_str!r}')
         return result
 
