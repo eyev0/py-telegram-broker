@@ -14,7 +14,7 @@ from app.config import Config, ConfigManager
 
 clock = datetime(2020, 1, 1, tzinfo=pytz.timezone('Europe/Moscow'))
 
-debug = bool(os.getenv('PY_APP_DEBUG_MODE') or False)
+debug = bool(os.getenv('PY_APP_DEBUG_MODE', 'False'))
 config = ConfigManager(debug).config
 
 stdout_handler = logging.StreamHandler(sys.stderr)
