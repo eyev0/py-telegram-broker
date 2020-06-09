@@ -18,8 +18,7 @@ from app.middlewares import trace, add_middlewares, sql_result
 # inactive
 @dp.message_handler(filter_user_inactive,
                     state='*')
-@add_middlewares(mixed_handler='message',
-                 use_resolve_state=True,
+@add_middlewares(use_resolve_state=True,
                  use_trace=True)
 async def inactive(uid,
                    context,
@@ -32,8 +31,7 @@ async def inactive(uid,
 @dp.message_handler(filter_su,
                     commands=['admin'],
                     state='*')
-@add_middlewares(mixed_handler='message',
-                 use_trace=True)
+@add_middlewares(use_trace=True)
 async def admin(uid,
                 context,
                 message: types.Message):
@@ -49,8 +47,7 @@ async def admin(uid,
 @dp.message_handler(filter_su,
                     commands=['clear'],
                     state='*')
-@add_middlewares(mixed_handler='message',
-                 use_resolve_state=True,
+@add_middlewares(use_resolve_state=True,
                  use_trace=True)
 async def clear_state(uid,
                       context,
@@ -61,8 +58,7 @@ async def clear_state(uid,
 # /start
 @dp.message_handler(commands=['start'],
                     state='*')
-@add_middlewares(mixed_handler='message',
-                 use_resolve_state=True,
+@add_middlewares(use_resolve_state=True,
                  use_db_session=True,
                  use_trace=True)
 async def start(uid,
@@ -88,8 +84,7 @@ async def start(uid,
 # get geo
 @dp.message_handler(state=States.STATE_0_REQUEST_CITY,
                     content_types=ContentTypes.TEXT)
-@add_middlewares(mixed_handler='message',
-                 use_resolve_state=True,
+@add_middlewares(use_resolve_state=True,
                  use_db_session=True,
                  use_trace=True)
 async def request_city(uid,
@@ -110,8 +105,7 @@ async def request_city(uid,
 # /cancel
 @dp.message_handler(commands=['cancel'],
                     state=[States.STATE_2_UPLOAD, States.STATE_3_DELETE, States.STATE_4_SEARCH])
-@add_middlewares(mixed_handler='message',
-                 use_resolve_state=True,
+@add_middlewares(use_resolve_state=True,
                  use_trace=True)
 async def cancel(uid,
                  context,
@@ -123,8 +117,7 @@ async def cancel(uid,
 # /upload
 @dp.message_handler(commands=['upload'],
                     state=States.STATE_1_MAIN)
-@add_middlewares(mixed_handler='message',
-                 use_resolve_state=True,
+@add_middlewares(use_resolve_state=True,
                  use_db_session=True,
                  use_trace=True)
 async def upload_command(uid,
@@ -157,8 +150,7 @@ def parse_upload(raw_text: str,
 
 # process /upload
 @dp.message_handler(state=States.STATE_2_UPLOAD)
-@add_middlewares(mixed_handler='message',
-                 use_resolve_state=True,
+@add_middlewares(use_resolve_state=True,
                  use_db_session=True,
                  use_trace=True)
 async def upload_parse_rows(uid,
@@ -206,8 +198,7 @@ def parse_delete(raw_text: str,
 # /delete
 @dp.message_handler(commands=['delete'],
                     state=States.STATE_1_MAIN)
-@add_middlewares(mixed_handler='message',
-                 use_resolve_state=True,
+@add_middlewares(use_resolve_state=True,
                  use_db_session=True,
                  use_trace=True)
 async def delete_command(uid,
@@ -238,8 +229,7 @@ async def delete_command(uid,
 # confirm delete
 @dp.message_handler(lambda m: m.text.strip().lower() in ['да', 'yes'],
                     state=States.STATE_3_DELETE)
-@add_middlewares(mixed_handler='message',
-                 use_resolve_state=True,
+@add_middlewares(use_resolve_state=True,
                  use_db_session=True,
                  use_trace=True)
 async def delete_confirm(uid,
@@ -265,8 +255,7 @@ async def delete_confirm(uid,
 
 # /search
 @dp.message_handler(state=States.STATE_4_SEARCH)
-@add_middlewares(mixed_handler='message',
-                 use_resolve_state=True,
+@add_middlewares(use_resolve_state=True,
                  use_db_session=True,
                  use_trace=True)
 async def search_command(uid,
@@ -279,8 +268,7 @@ async def search_command(uid,
 # /mycards
 @dp.message_handler(commands=['mycards'],
                     state=States.STATE_1_MAIN)
-@add_middlewares(mixed_handler='message',
-                 use_db_session=True,
+@add_middlewares(use_db_session=True,
                  use_trace=True)
 async def mycards(uid,
                   context,
