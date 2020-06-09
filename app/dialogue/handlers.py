@@ -132,19 +132,20 @@ async def upload_command(uid,
 
 
 def parse_upload(raw_text: str,
+                 user_id: int,
                  row_delimiter='\n',
                  column_delimiter=',',
-                 trim_carriage_return=True) -> Union[List, None]:
+                 trim_carriage_return=True) -> Union[List[Item], None]:
     result = []
     if trim_carriage_return:
         raw_text = raw_text.replace('\r', '')
     rows = raw_text.split(row_delimiter)
-    for item in [row.split(column_delimiter) for row in rows]:
-        if len(item) != 2:
+    for a in [row.split(column_delimiter) for row in rows]:
+        if len(a) != 2:
             result = None
             break
         else:
-            result.append({'name': item[0], 'price': item[1]})
+            result.append(Item(user_id, name=a[0], price=a[1]))
     return result
 
 
@@ -160,7 +161,7 @@ async def upload_parse_rows(uid,
     _, user, _ = sql_result(session.query(User)
                             .filter(User.uid == uid),
                             raise_on_empty_result=True)
-    items_list = parse_upload(message.text)
+    items_list = parse_upload(message.text, user.id)
     if items_list is None:
         await message.reply(MESSAGES['upload_parse_failed'])
         return States.STATE_2_UPLOAD
@@ -171,8 +172,7 @@ async def upload_parse_rows(uid,
         await message.reply(MESSAGES['upload_limit_exceeded'].format(user.limit, message.text))
         return States.STATE_1_MAIN
     for item in items_list:
-        Item(user.id, item['name'], item['price']) \
-            .insert_me(session)
+        item.insert_me(session)
     await message.reply(MESSAGES['upload_complete'])
     return States.STATE_1_MAIN
 
