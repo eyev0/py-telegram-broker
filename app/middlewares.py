@@ -110,16 +110,16 @@ def handler_args(mixed_mode=False):
             if isinstance(obj, types.CallbackQuery):
                 callback_query = obj
                 message = obj.message
-                user_id = callback_query.from_user.id
+                uid = callback_query.from_user.id
             elif isinstance(obj, types.Message):
                 message = obj
-                user_id = message.from_user.id
+                uid = message.from_user.id
             else:
                 return
-            context = partial_data.get('state', dp.current_state(user=user_id, chat=user_id))
+            context = partial_data.get('state', dp.current_state(user=uid, chat=uid))
 
             kwargs = {
-                'user_id': user_id,
+                'uid': uid,
                 'context': context,
                 'message': message,
             }
