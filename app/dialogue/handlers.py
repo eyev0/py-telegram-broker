@@ -21,7 +21,7 @@ from app.middlewares import trace, add_middlewares, sql_result
 @add_middlewares(mixed_handler='message',
                  use_resolve_state=True,
                  use_trace=True)
-async def inactive(user_id,
+async def inactive(uid,
                    context,
                    message: types.Message) -> Union[StateItem, None]:
     await message.reply(MESSAGES['user_inactive'], reply=False)
@@ -34,14 +34,14 @@ async def inactive(user_id,
                     state='*')
 @add_middlewares(mixed_handler='message',
                  use_trace=True)
-async def admin(user_id,
+async def admin(uid,
                 context,
                 message: types.Message):
     if not filter_admin(message):
-        config.app.admin.append(user_id)
+        config.app.admin.append(uid)
         await message.reply(MESSAGES['admin_enable'], reply=False)
     else:
-        config.app.admin.remove(user_id)
+        config.app.admin.remove(uid)
         await message.reply(MESSAGES['admin_disable'], reply=False)
 
 
@@ -52,7 +52,7 @@ async def admin(user_id,
 @add_middlewares(mixed_handler='message',
                  use_resolve_state=True,
                  use_trace=True)
-async def clear_state(user_id,
+async def clear_state(uid,
                       context,
                       message: types.Message) -> Union[StateItem, None]:
     return States.STATE_1_MAIN
@@ -65,14 +65,14 @@ async def clear_state(user_id,
                  use_resolve_state=True,
                  use_db_session=True,
                  use_trace=True)
-async def start(user_id,
+async def start(uid,
                 context,
                 message: types.Message,
                 session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
     rowcount, user, _ = sql_result(session.query(User)
-                                   .filter(User.uid == user_id))
+                                   .filter(User.uid == uid))
     if rowcount == 0:
-        trace(User)(uid=user_id,
+        trace(User)(uid=uid,
                     username=message.from_user.username) \
             .insert_me(session)
         reply_text = MESSAGES['greetings']
@@ -92,12 +92,12 @@ async def start(user_id,
                  use_resolve_state=True,
                  use_db_session=True,
                  use_trace=True)
-async def request_city(user_id,
+async def request_city(uid,
                        context,
                        message: types.Message,
                        session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
     rowcount, user, _ = sql_result(session.query(User)
-                                   .filter(User.uid == user_id),
+                                   .filter(User.uid == uid),
                                    raise_on_empty_result=True)
     user.location = message.text
     await message.reply(MESSAGES['sign_up_complete'],
@@ -113,7 +113,7 @@ async def request_city(user_id,
 @add_middlewares(mixed_handler='message',
                  use_resolve_state=True,
                  use_trace=True)
-async def cancel(user_id,
+async def cancel(uid,
                  context,
                  message: types.Message) -> Union[StateItem, None]:
     await message.reply(MESSAGES['cancel'])
@@ -127,12 +127,12 @@ async def cancel(user_id,
                  use_resolve_state=True,
                  use_db_session=True,
                  use_trace=True)
-async def upload_command(user_id,
+async def upload_command(uid,
                          context,
                          message: types.Message,
                          session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
     _, user, _ = sql_result(session.query(User)
-                            .filter(User.uid == user_id),
+                            .filter(User.uid == uid),
                             raise_on_empty_result=True)
     await message.reply(MESSAGES['upload'])
     return States.STATE_2_UPLOAD
@@ -161,12 +161,12 @@ def parse_upload(raw_text: str,
                  use_resolve_state=True,
                  use_db_session=True,
                  use_trace=True)
-async def upload_parse_rows(user_id,
+async def upload_parse_rows(uid,
                             context,
                             message: types.Message,
                             session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
     _, user, _ = sql_result(session.query(User)
-                            .filter(User.uid == user_id),
+                            .filter(User.uid == uid),
                             raise_on_empty_result=True)
     items_list = parse_upload(message.text)
     if items_list is None:
@@ -186,11 +186,11 @@ async def upload_parse_rows(user_id,
 
 
 def parse_delete(raw_text: str,
-                 user_id: int,
+                 uid: int,
                  session: sqlalchemy.orm.Session) -> Union[List, None]:
     if raw_text == 'all':
         _, user, _ = sql_result(session.query(User)
-                                .filter(User.uid == user_id))
+                                .filter(User.uid == uid))
         del_records = user.owner_items
     elif re.findall('[^0-9, ]', raw_text):
         return None
@@ -198,7 +198,7 @@ def parse_delete(raw_text: str,
         ls = [x.strip() for x in raw_text.split(',')]
         _, _, del_records = sql_result(session.query(Item)
                                        .join(User)
-                                       .filter(User.uid == user_id)
+                                       .filter(User.uid == uid)
                                        .filter(Item.id.in_(ls)))
     return del_records or []
 
@@ -210,7 +210,7 @@ def parse_delete(raw_text: str,
                  use_resolve_state=True,
                  use_db_session=True,
                  use_trace=True)
-async def delete_command(user_id,
+async def delete_command(uid,
                          context: FSMContext,
                          message: types.Message,
                          session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
@@ -219,7 +219,7 @@ async def delete_command(user_id,
     if len(args) == 0:
         await message.reply(MESSAGES['delete_help'])
         return States.STATE_1_MAIN
-    items_list = parse_delete(args, user_id, session)
+    items_list = parse_delete(args, uid, session)
     if items_list is None:
         await message.reply(MESSAGES['delete_format_error'])
         return States.STATE_1_MAIN
@@ -242,7 +242,7 @@ async def delete_command(user_id,
                  use_resolve_state=True,
                  use_db_session=True,
                  use_trace=True)
-async def delete_confirm(user_id,
+async def delete_confirm(uid,
                          context: FSMContext,
                          message: types.Message,
                          session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
@@ -251,7 +251,7 @@ async def delete_confirm(user_id,
     del_ids = context_data.get('delete_ids', None)
     _, _, del_records = sql_result(session.query(Item)
                                    .join(User)
-                                   .filter(User.uid == user_id)
+                                   .filter(User.uid == uid)
                                    .filter(Item.id.in_(del_ids.split(','))))
     s = '\n'.join([x.row_repr() for x in del_records])
     for x in del_records:
@@ -269,7 +269,7 @@ async def delete_confirm(user_id,
                  use_resolve_state=True,
                  use_db_session=True,
                  use_trace=True)
-async def search_command(user_id,
+async def search_command(uid,
                          context,
                          message: types.Message,
                          session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
@@ -282,14 +282,14 @@ async def search_command(user_id,
 @add_middlewares(mixed_handler='message',
                  use_db_session=True,
                  use_trace=True)
-async def mycards(user_id,
+async def mycards(uid,
                   context,
                   message: types.Message,
                   session: sqlalchemy.orm.Session):
     args = message.get_args()
 
     _, user, _ = sql_result(session.query(User)
-                            .filter(User.uid == user_id))
+                            .filter(User.uid == uid))
 
     reply_text = Item.list_repr(user.owner_items)
     await message.reply(reply_text,
