@@ -92,10 +92,10 @@ async def start(user_id,
                  use_resolve_state=True,
                  use_db_session=True,
                  use_trace=True)
-async def location(user_id,
-                   context,
-                   message: types.Message,
-                   session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
+async def request_city(user_id,
+                       context,
+                       message: types.Message,
+                       session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
     rowcount, user, _ = sql_result(session.query(User)
                                    .filter(User.uid == user_id),
                                    raise_on_empty_result=True)
@@ -161,10 +161,10 @@ def parse_upload(raw_text: str,
                  use_resolve_state=True,
                  use_db_session=True,
                  use_trace=True)
-async def upload_action(user_id,
-                        context,
-                        message: types.Message,
-                        session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
+async def upload_parse_rows(user_id,
+                            context,
+                            message: types.Message,
+                            session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
     _, user, _ = sql_result(session.query(User)
                             .filter(User.uid == user_id),
                             raise_on_empty_result=True)
@@ -210,10 +210,10 @@ def parse_delete(raw_text: str,
                  use_resolve_state=True,
                  use_db_session=True,
                  use_trace=True)
-async def delete_action(user_id,
-                        context: FSMContext,
-                        message: types.Message,
-                        session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
+async def delete_command(user_id,
+                         context: FSMContext,
+                         message: types.Message,
+                         session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
     # save del_ids and request confirmation
     args: str = message.get_args()
     if len(args) == 0:
@@ -242,10 +242,10 @@ async def delete_action(user_id,
                  use_resolve_state=True,
                  use_db_session=True,
                  use_trace=True)
-async def delete_action_confirmed(user_id,
-                                  context: FSMContext,
-                                  message: types.Message,
-                                  session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
+async def delete_confirm(user_id,
+                         context: FSMContext,
+                         message: types.Message,
+                         session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
     # process delete
     context_data = await context.get_data()
     del_ids = context_data.get('delete_ids', None)
@@ -269,10 +269,10 @@ async def delete_action_confirmed(user_id,
                  use_resolve_state=True,
                  use_db_session=True,
                  use_trace=True)
-async def search_action(user_id,
-                        context,
-                        message: types.Message,
-                        session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
+async def search_command(user_id,
+                         context,
+                         message: types.Message,
+                         session: sqlalchemy.orm.Session) -> Union[StateItem, None]:
     return States.STATE_1_MAIN
 
 
