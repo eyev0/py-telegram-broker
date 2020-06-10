@@ -90,6 +90,7 @@ def sql_result(query: sqlalchemy.orm.Query,
 
 
 def resolve_state(func):
+    """Deprecated"""
     @functools.wraps(func)
     async def resolve_state_wrapper(*args, **kwargs):
         result = await func(*args, **kwargs)
@@ -136,17 +137,14 @@ def handler_args(mixed_mode=False):
     return decorator
 
 
-def add_middlewares(mixed_handler=False,
-                    use_resolve_state=False,
-                    use_db_session=False,
-                    use_trace=False):
+def add_handler_middlewares(mixed_handler=False,
+                            use_db_session=False,
+                            use_trace=False):
     def add_middlewares_wrapper(func):
         if use_trace:
             func = trace_async(func)
         if use_db_session:
             func = db_session(func)
-        if use_resolve_state:
-            func = resolve_state(func)
         func = handler_args(mixed_handler)(func)
         return func
 

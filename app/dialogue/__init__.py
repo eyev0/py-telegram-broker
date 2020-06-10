@@ -1,21 +1,14 @@
+from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, KeyboardButton, ReplyKeyboardMarkup, \
     ReplyKeyboardRemove
-from aiogram.utils.helper import Item, Helper, HelperMode
 
 
-class StateItem(Item):
-    pass
-
-
-class States(Helper):
-    mode = HelperMode.snake_case
-
-    STATE_0_REQUEST_CITY = StateItem()
-    STATE_1_MAIN = StateItem()
-    STATE_2_UPLOAD = StateItem()
-    STATE_3_DELETE = StateItem()
-    STATE_4_SEARCH = StateItem()
-    STATE_5_VIEW = StateItem()
+class States(StatesGroup):
+    INITIAL_REQUEST_CITY = State()
+    UPLOAD = State()
+    DELETE = State()
+    SEARCH = State()
+    VIEW = State()
 
 
 keyboard_remove = ReplyKeyboardRemove()
