@@ -9,6 +9,7 @@ class ObjectsListMixin:
     @abstractmethod
     def row_repr(self):
         """Get row repr"""
+        raise NotImplementedError
 
     @classmethod
     def list_repr(cls, list_):
