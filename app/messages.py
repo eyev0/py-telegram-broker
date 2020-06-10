@@ -71,5 +71,5 @@ MESSAGES = {
 }
 
 # YO!
-for key in MESSAGES:
-    MESSAGES[key] = 'Yo, ' + MESSAGES[key]
+# for key in MESSAGES:
+#     MESSAGES[key] = 'Yo, ' + MESSAGES[key]
