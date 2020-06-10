@@ -15,7 +15,7 @@ from app.messages import MESSAGES
 from app.middlewares import trace, add_handler_middlewares, sql_result
 
 
-# inactive
+# check inactive
 @dp.message_handler(filter_user_inactive,
                     state=any_state)
 @add_handler_middlewares(use_trace=True)
@@ -40,17 +40,6 @@ async def admin(uid,
     else:
         config.app.admin.remove(uid)
         await message.reply(MESSAGES['admin_disable'], reply=False)
-
-
-# /clear
-@dp.message_handler(filter_su,
-                    commands=['clear'],
-                    state=any_state)
-@add_handler_middlewares(use_trace=True)
-async def clear_state(uid,
-                      context,
-                      message: types.Message):
-    await default_state.set()
 
 
 # /cancel
