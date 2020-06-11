@@ -236,13 +236,16 @@ async def delete_confirm(uid,
 
 
 # /search
-@dp.message_handler(state=States.SEARCH)
+@dp.message_handler(commands=['search'],
+                    state=default_state)
 @add_handler_middlewares(use_db_session=True,
                          use_trace=True)
 async def search_command(uid,
                          context,
                          message: types.Message,
                          session: sqlalchemy.orm.Session):
+    args: str = message.get_args()
+
     await default_state.set()
 
 
