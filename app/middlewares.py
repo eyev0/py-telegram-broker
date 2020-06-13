@@ -6,7 +6,7 @@ import sqlalchemy.orm
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
-from app import config, dp, bot
+from app import config, dispatcher, bot
 from app.db import session_scope, SQLEmptyResultError
 
 if config.log.add_trace_level_name:
@@ -117,7 +117,7 @@ def handler_args(mixed_mode=False):
                 uid = message.from_user.id
             else:
                 return
-            context = partial_data.get('state', dp.current_state(user=uid, chat=uid))
+            context = partial_data.get('state', dispatcher.current_state(user=uid, chat=uid))
 
             kwargs = {
                 'uid': uid,
