@@ -6,6 +6,7 @@ import aiogram
 from aiogram.utils import executor
 
 from app import dp as dispatcher, config
+from app.dialogue.handlers import register_handlers
 from app.middlewares import trace
 
 
@@ -37,6 +38,8 @@ def terminate(signalnum, frame):
 
 
 if __name__ == '__main__':
+    register_handlers()
+
     signal.signal(signal.SIGTERM, terminate)
     if config.app.webhook_mode:
         executor.start_webhook(dispatcher=dispatcher,

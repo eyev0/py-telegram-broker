@@ -52,5 +52,3 @@ dp = Dispatcher(bot,
                                       db=config.redis.db,
                                       prefix=config.redis.prefix))
 dp.middleware.setup(LoggingMiddleware())
-
-from app.dialogue.handlers import *
