@@ -1,5 +1,4 @@
-import sqlalchemy.orm
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -9,24 +8,8 @@ from app.db.mixin import ObjectsListMixin
 Base = declarative_base()
 
 
-def insert_me(obj, session: sqlalchemy.orm.Session):
-    session.add(obj)
-    session.commit()
-    return obj
-
-
-def delete_me(obj, session: sqlalchemy.orm.Session):
-    session.delete(obj)
-    session.commit()
-    return None
-
-
-Base.insert_me = insert_me
-Base.delete_me = delete_me
-
-
 class User(Base):
-    __tablename__ = 'user'
+    __tablename__ = "user"
     id = Column(Integer, primary_key=True)
     uid = Column(Integer)
     username = Column(String(255))
@@ -40,16 +23,18 @@ class User(Base):
     created = Column(DateTime, default=clock.now())
     edited = Column(DateTime, default=clock.now())
 
-    def __init__(self,
-                 uid,
-                 username=None,
-                 full_name=None,
-                 email_address=None,
-                 phone_number=None,
-                 location=None,
-                 limit=100,
-                 active=True,
-                 receive_notifications=True):
+    def __init__(
+        self,
+        uid,
+        username=None,
+        full_name=None,
+        email_address=None,
+        phone_number=None,
+        location=None,
+        limit=100,
+        active=True,
+        receive_notifications=True,
+    ):
         self.uid = uid
         self.username = username
         self.full_name = full_name
@@ -61,96 +46,120 @@ class User(Base):
         self.receive_notifications = receive_notifications
 
     def __repr__(self):
-        return f"User(id={self.id}, uid={self.uid}, username={self.username}, " \
-               f"full_name={self.full_name}, email_address={self.email_address}, " \
-               f"phone_number={self.phone_number}, location={self.location}, limit={self.limit}, " \
-               f"active={self.active}, receive_notifications={self.receive_notifications}, " \
-               f"created={self.created}, edited={self.edited})"
+        return (
+            f"User(id={self.id}, uid={self.uid}, "
+            f"username={self.username}, "
+            f"full_name={self.full_name}, "
+            f"email_address={self.email_address}, "
+            f"phone_number={self.phone_number}, "
+            f"location={self.location}, "
+            f"limit={self.limit}, "
+            f"active={self.active}, "
+            f"receive_notifications={self.receive_notifications}, "
+            f"created={self.created}, "
+            f"edited={self.edited})"
+        )
 
 
 class Item(Base, ObjectsListMixin):
-    __tablename__ = 'item'
+    __tablename__ = "item"
 
     STATUSES = {
-        0: 'created',
-        1: 'listed',
-        9: 'sold',
+        0: "created",
+        1: "listed",
+        9: "sold",
     }
 
     id = Column(Integer, primary_key=True)
-    owner_id = Column(Integer, ForeignKey('user.id'))
+    owner_id = Column(Integer, ForeignKey("user.id"))
     name = Column(String(100))
     price = Column(Integer, default=False)
     status = Column(Integer, default=0)
     created = Column(DateTime, default=clock.now())
     edited = Column(DateTime, default=clock.now())
 
-    owner = relationship('User', backref='owner_items', foreign_keys=[owner_id])
+    owner = relationship(
+        "User", backref="owner_items", foreign_keys=[owner_id]
+    )
 
-    def __init__(self,
-                 owner_id,
-                 name,
-                 price):
+    def __init__(self, owner_id, name, price):
         self.owner_id = owner_id
         self.name = name
         self.price = price
 
     def __repr__(self):
-        return f"Item(id={self.id}, user_id={self.owner_id}, name={self.name}, price={self.price}, " \
-               f"status={self.status}, created={self.created}, edited={self.edited})"
+        return (
+            f"Item(id={self.id}, "
+            f"user_id={self.owner_id}, "
+            f"name={self.name}, "
+            f"price={self.price}, "
+            f"status={self.status}, "
+            f"created={self.created}, "
+            f"edited={self.edited})"
+        )
 
     # ListReprMixin
-    _list_mixin_header = 'Your cards:\n'
+    _list_mixin_header = "Your cards:\n"
 
     def row_repr(self):
-        return f'id={self.id}, {self.name} - {str(self.price)}р.'
+        return f"id={self.id}, {self.name} - {str(self.price)}р."
 
 
 class Subscription(Base):
-    __tablename__ = 'subscription'
+    __tablename__ = "subscription"
 
     TYPES = {
-        0: 'item',
-        1: 'space_add_hundred',
-        2: 'space_add_thousand',
-        3: 'space_add_fivethousand',
+        0: "item",
+        1: "space_add_hundred",
+        2: "space_add_thousand",
+        3: "space_add_fivethousand",
     }
 
     id = Column(Integer, primary_key=True)
-    subscriber_id = Column(Integer, ForeignKey('user.id'))
+    subscriber_id = Column(Integer, ForeignKey("user.id"))
     type = Column(Integer, default=0)
-    item_id = Column(Integer, ForeignKey('item.id'))
+    item_id = Column(Integer, ForeignKey("item.id"))
     created = Column(DateTime, default=clock.now())
 
-    subscriber = relationship('User', backref='user_subscriptions', foreign_keys=[subscriber_id])
-    item = relationship('Item', backref='item_subscriptions', foreign_keys=[item_id])
+    subscriber = relationship(
+        "User", backref="user_subscriptions", foreign_keys=[subscriber_id]
+    )
+    item = relationship(
+        "Item", backref="item_subscriptions", foreign_keys=[item_id]
+    )
 
-    def __init__(self,
-                 subscriber_id,
-                 card_id):
+    def __init__(self, subscriber_id, card_id):
         self.subscriber_id = subscriber_id
         self.card_id = card_id
 
     def __repr__(self):
-        return f"Subscription(id={self.id}, user_id={self.subscriber_id}, " \
-               f"item_id={self.item_id}, created={self.created})"
+        return (
+            f"Subscription(id={self.id}, "
+            f"user_id={self.subscriber_id}, "
+            f"item_id={self.item_id}, "
+            f"created={self.created})"
+        )
 
 
 class Demand(Base):
-    __tablename__ = 'demand'
+    __tablename__ = "demand"
     id = Column(Integer, primary_key=True)
-    requestor_id = Column(Integer, ForeignKey('user.id'))
+    requestor_id = Column(Integer, ForeignKey("user.id"))
     item_name = Column(String(100))
     created = Column(DateTime, default=clock.now())
 
-    requestor = relationship('User', backref='user_demands', foreign_keys=[requestor_id])
+    requestor = relationship(
+        "User", backref="user_demands", foreign_keys=[requestor_id]
+    )
 
-    def __init__(self,
-                 requestor_id,
-                 item_name):
+    def __init__(self, requestor_id, item_name):
         self.requestor_id = requestor_id
         self.item_name = item_name
 
     def __repr__(self):
-        return f"Demand(id={self.id}, user_id={self.requestor_id}, " \
-               f"item_name={self.item_name}, created={self.created})"
+        return (
+            f"Demand(id={self.id}, "
+            f"user_id={self.requestor_id}, "
+            f"item_name={self.item_name}, "
+            f"created={self.created})"
+        )

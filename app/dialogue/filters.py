@@ -2,28 +2,36 @@ from typing import Union
 
 import sqlalchemy.orm
 from aiogram import types
-from aiogram.types import KeyboardButton, InlineKeyboardButton
+from aiogram.types import InlineKeyboardButton, KeyboardButton
 
 from app import config
+from app.db import sql_result, with_session
 from app.db.models import User
-from app.middlewares import db_session, sql_result
 
 
-@db_session
-def filter_user_inactive(message: types.Message, session: sqlalchemy.orm.Session):
-    rowcount, _, _ = sql_result(session.query(User)
-                                .filter(User.uid == message.from_user.id)
-                                .filter(User.active == False))
+@with_session
+def filter_user_inactive(
+    message: types.Message, session: sqlalchemy.orm.Session
+):
+    rowcount, _, _ = sql_result(
+        session.query(User)
+        .filter(User.uid == message.from_user.id)
+        .filter(User.active == "False")
+    )
     return rowcount > 0
 
 
 def filter_button_pressed(button: Union[KeyboardButton, InlineKeyboardButton]):
     if isinstance(button, KeyboardButton):
+
         def expr(message: types.Message):
             return message.text == button.text
+
     elif isinstance(button, InlineKeyboardButton):
+
         def expr(callback_query: types.CallbackQuery):
             return callback_query.data == button.callback_data
+
     else:
         return None
     return expr
