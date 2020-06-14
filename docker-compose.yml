@@ -4,7 +4,7 @@ services:
     bot:
         build: https://github.com/edementyev/salesboard.git
         image: salesboard:latest
-        command: python3 ./__main__.py
+        command: python3 ./app/bot.py
         restart: 'no'
         networks:
             - network

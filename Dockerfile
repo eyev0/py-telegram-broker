@@ -10,4 +10,4 @@ RUN pip install --no-cache-dir -e .
 
 RUN mkdir /log
 
-CMD [ "python", "./__main__.py"]
+CMD [ "python", "./app/bot.py"]
