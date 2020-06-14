@@ -20,7 +20,7 @@ def trace(func):
                     f'TRACE: call {func.__module__}.{func.__name__}(' +
                     f'{",".join([str(x) for x in args])}' +
                     ', ' +
-                    f'{", ".join([str(x) + "=" + str(kwargs[x]) for x in kwargs])})')
+                    f'{", ".join([str(k) + "=" + str(v) for k, v in kwargs.items()])})')
         result = func(*args, **kwargs)
 
         if result is not None:
@@ -43,7 +43,7 @@ def trace_async(func):
                     f'TRACE: call {func.__module__}.{func.__name__}(' +
                     f'{",".join([str(x) for x in args])}' +
                     ', ' +
-                    f'{", ".join([str(x) + "=" + str(kwargs[x]) for x in kwargs])})')
+                    f'{", ".join([str(k) + "=" + str(v) for k, v in kwargs.items()])})')
         result = await func(*args, **kwargs)
 
         if result is not None:
