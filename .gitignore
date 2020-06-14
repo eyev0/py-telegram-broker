@@ -228,5 +228,3 @@ cython_debug/
 .idea/
 config/
 log/*.log
-nginx/
-drafts/
