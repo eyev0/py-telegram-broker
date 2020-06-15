@@ -4,13 +4,13 @@ services:
     bot:
         build: https://github.com/edementyev/salesboard.git
         image: salesboard:latest
-        command: python3 ./app/bot.py
+        command: python3 ./core/bot.py
         restart: 'no'
         networks:
             - network
         volumes:
             - ./log:/log
-            - ./config:/usr/src/app/config
+            - ./config:/usr/src/core/config
         depends_on:
             - db
             - redis

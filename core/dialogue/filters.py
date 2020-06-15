@@ -4,15 +4,13 @@ import sqlalchemy.orm
 from aiogram import types
 from aiogram.types import InlineKeyboardButton, KeyboardButton
 
-from app import config
-from app.db import sql_result, with_session
-from app.db.models import User
+from core import config
+from core.db import sql_result, with_session
+from core.db.models import User
 
 
 @with_session
-def filter_user_inactive(
-    message: types.Message, session: sqlalchemy.orm.Session
-):
+def filter_user_inactive(message: types.Message, session: sqlalchemy.orm.Session):
     rowcount, _, _ = sql_result(
         session.query(User)
         .filter(User.uid == message.from_user.id)

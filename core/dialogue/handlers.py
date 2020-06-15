@@ -6,13 +6,13 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import any_state, default_state
 from aiogram.types import ContentTypes
 
-import app.db.worker as db
-from app import config, dp
-from app.db.models import Item
-from app.dialogue import States, keyboard_remove
-from app.dialogue.filters import filter_admin, filter_su, filter_user_inactive
-from app.messages import MESSAGES
-from app.middlewares import add_handler_middlewares
+import core.db.worker as db
+from core import config, dp
+from core.db.models import Item
+from core.dialogue import States, keyboard_remove
+from core.dialogue.filters import filter_admin, filter_su, filter_user_inactive
+from core.messages import MESSAGES
+from core.middlewares import add_handler_middlewares
 
 
 def register_handlers():
@@ -36,8 +36,7 @@ def register_handlers():
 
     # /cancel
     @dp.message_handler(
-        commands=["cancel"],
-        state=[States.UPLOAD, States.DELETE, States.SEARCH],
+        commands=["cancel"], state=[States.UPLOAD, States.DELETE, States.SEARCH],
     )
     @add_handler_middlewares(use_trace=True)
     async def cancel(uid, context, message: types.Message):
@@ -65,9 +64,7 @@ def register_handlers():
         user = db.get_user(uid)
         user.location = message.text
         await message.reply(
-            MESSAGES["sign_up_complete"],
-            reply=False,
-            reply_markup=keyboard_remove,
+            MESSAGES["sign_up_complete"], reply=False, reply_markup=keyboard_remove,
         )
         await default_state.set()
 
@@ -110,9 +107,7 @@ def register_handlers():
         user_items = db.get_user_items(uid)
         if len(upload_records) + len(user_items) > user.limit:
             await message.reply(
-                MESSAGES["upload_limit_exceeded"].format(
-                    user.limit, message.text
-                )
+                MESSAGES["upload_limit_exceeded"].format(user.limit, message.text)
             )
             await default_state.set()
             return
@@ -154,9 +149,7 @@ def register_handlers():
         await message.reply(MESSAGES["delete_records_confirm"].format(del_str))
 
         context_data = await context.get_data()
-        context_data["delete_ids"] = ",".join(
-            [str(item.id) for item in del_records]
-        )
+        context_data["delete_ids"] = ",".join([str(item.id) for item in del_records])
         await context.set_data(context_data)
         await States.DELETE.set()
 
