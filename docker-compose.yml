@@ -4,15 +4,15 @@ services:
     bot:
         build: https://github.com/edementyev/salesboard.git
         image: salesboard:latest
-        command: python3 ./app/bot.py
         restart: 'no'
         networks:
             - network
         volumes:
-            - ./log:/log
-            - ./local.env:/app/local.env
+            - ./logs:/logs
         env_file:
             - local.env
+        environment:
+            - DOCKER_COMPOSE=1
         depends_on:
             - db
             - redis
