@@ -19,10 +19,6 @@ services:
         image: 'redis:alpine'
         command: redis-server --appendonly yes
         restart: 'no'
-        environment:
-            - POSTGRES_USER=docker
-            - POSTGRES_PASSWORD=docker
-            - POSTGRES_DB=docker
         volumes:
             - redisdata:/data
         ports:
