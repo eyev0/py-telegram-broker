@@ -8,7 +8,7 @@ import sqlalchemy.orm
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 from core import config
-from core.db.models import Base
+from core.database.models import Base
 
 engine = sqlalchemy.create_engine(config.db.connect_str)
 

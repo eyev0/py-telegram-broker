@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
 from core import clock
-from core.db.mixin import ObjectsListMixin
+from core.database.mixin import ObjectsListMixin
 
 Base = declarative_base()
 

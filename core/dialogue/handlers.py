@@ -6,9 +6,9 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import any_state, default_state
 from aiogram.types import ContentTypes
 
-import core.db.worker as db
+import core.database.worker as db
 from core import config, dp
-from core.db.models import Item
+from core.database.models import Item
 from core.dialogue import States, keyboard_remove
 from core.dialogue.filters import filter_admin, filter_su, filter_user_inactive
 from core.messages import MESSAGES

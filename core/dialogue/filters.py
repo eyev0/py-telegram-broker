@@ -5,8 +5,8 @@ from aiogram import types
 from aiogram.types import InlineKeyboardButton, KeyboardButton
 
 from core import config
-from core.db import sql_result, with_session
-from core.db.models import User
+from core.database import sql_result, with_session
+from core.database.models import User
 
 
 @with_session
