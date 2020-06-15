@@ -23,6 +23,7 @@ uvloop = "^0.14.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.4.3"
+alembic = "^1"
 
 [tool.black]
 line-length = 79
