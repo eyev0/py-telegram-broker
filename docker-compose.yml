@@ -10,7 +10,9 @@ services:
             - network
         volumes:
             - ./log:/log
-            - ./config:/usr/src/app/config
+            - ./local.env:/app/local.env
+        env_file:
+            - local.env
         depends_on:
             - db
             - redis
