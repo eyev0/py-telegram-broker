@@ -228,4 +228,4 @@ cython_debug/
 
 .idea/
 config/
-log/*.log
+logs/
