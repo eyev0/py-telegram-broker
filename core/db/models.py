@@ -2,8 +2,8 @@ from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-from app import clock
-from app.db.mixin import ObjectsListMixin
+from core import clock
+from core.db.mixin import ObjectsListMixin
 
 Base = declarative_base()
 
@@ -78,9 +78,7 @@ class Item(Base, ObjectsListMixin):
     created = Column(DateTime, default=clock.now())
     edited = Column(DateTime, default=clock.now())
 
-    owner = relationship(
-        "User", backref="owner_items", foreign_keys=[owner_id]
-    )
+    owner = relationship("User", backref="owner_items", foreign_keys=[owner_id])
 
     def __init__(self, owner_id, name, price):
         self.owner_id = owner_id
@@ -124,9 +122,7 @@ class Subscription(Base):
     subscriber = relationship(
         "User", backref="user_subscriptions", foreign_keys=[subscriber_id]
     )
-    item = relationship(
-        "Item", backref="item_subscriptions", foreign_keys=[item_id]
-    )
+    item = relationship("Item", backref="item_subscriptions", foreign_keys=[item_id])
 
     def __init__(self, subscriber_id, card_id):
         self.subscriber_id = subscriber_id

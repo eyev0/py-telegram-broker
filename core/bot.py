@@ -5,10 +5,10 @@ import sys
 import aiogram
 from aiogram.utils import executor
 
-from app import config
-from app import dp as dispatcher
-from app.dialogue.handlers import register_handlers
-from app.middlewares import trace
+from core import config
+from core import dp as dispatcher
+from core.dialogue.handlers import register_handlers
+from core.middlewares import trace
 
 
 async def on_startup(dp: aiogram.Dispatcher):
@@ -54,8 +54,5 @@ def run():
         )
     else:
         executor.start_polling(
-            dispatcher,
-            on_startup=on_startup,
-            on_shutdown=on_shutdown,
-            timeout=20,
+            dispatcher, on_startup=on_startup, on_shutdown=on_shutdown, timeout=20,
         )

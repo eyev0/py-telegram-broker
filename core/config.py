@@ -2,13 +2,14 @@ import ast
 import configparser
 import os
 from pathlib import Path
-from typing import Tuple, List
+from typing import List, Tuple
 
 
 def literal_eval(func):
     def wrapper(*args, **kwargs):
         orig_result = func(*args, **kwargs)
         return ast.literal_eval(orig_result)
+
     return wrapper
 
 
@@ -19,11 +20,11 @@ class Section:
         self._raw_contents = config_parser[section_name]
         self._options = []
         self._parser_func_map = {
-            'i': self._parser.getint,
-            'f': self._parser.getfloat,
-            'b': self._parser.getboolean,
-            'e': literal_eval(self._parser.get),
-            's': self._parser.get,
+            "i": self._parser.getint,
+            "f": self._parser.getfloat,
+            "b": self._parser.getboolean,
+            "e": literal_eval(self._parser.get),
+            "s": self._parser.get,
         }
 
         for key in self._raw_contents:
@@ -47,8 +48,8 @@ class Section:
     def get_option(self, key):
         return getattr(self, key, None)
 
-    def parse_raw_option(self, sect_name: str, opt_key: str, mode='s') -> Tuple:
-        if opt_key[1] == ',':
+    def parse_raw_option(self, sect_name: str, opt_key: str, mode="s") -> Tuple:
+        if opt_key[1] == ",":
             mode = opt_key[0]
             parsed_key = opt_key[2:]
         else:
@@ -69,21 +70,25 @@ class Config:
         self._sections = []
         self._section_names = []
         self._loaded_configs_list = []
-        self._configparser = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
-        self._parsers = [self._configparser, ]
+        self._configparser = configparser.ConfigParser(
+            interpolation=configparser.ExtendedInterpolation()
+        )
+        self._parsers = [
+            self._configparser,
+        ]
         if path is not None:
             self._configparser.read(path)
             self.dynamic_load_sections(self._configparser)
             self._loaded_configs_list.append(path)
 
     def __repr__(self):
-        repr_str = 'Loaded configs: '
+        repr_str = "Loaded configs: "
         for conf_path in self._loaded_configs_list:
-            repr_str += f'\n{conf_path}'
+            repr_str += f"\n{conf_path}"
         for section in self._sections:
-            repr_str += f'\n[{section.get_name()}]\n'
+            repr_str += f"\n[{section.get_name()}]\n"
             for key in section.get_options_list():
-                repr_str += f'    {key}={section.get_option(key)}\n'
+                repr_str += f"    {key}={section.get_option(key)}\n"
         return repr_str
 
     def get_path(self) -> str:
@@ -117,7 +122,9 @@ class Config:
                 section = conf.get_section(section_name)
                 self.set_section(section)
             else:
-                self.get_section(section_name).override_with(conf.get_section(section_name))
+                self.get_section(section_name).override_with(
+                    conf.get_section(section_name)
+                )
         self._parsers.append(conf.get_parser())
         self._loaded_configs_list.append(conf.get_path())
 
@@ -137,8 +144,8 @@ class ConfigManager:
         else:
             app_dir = os.getcwd()
 
-        self.path_defaults = app_dir + '/defaults/'
-        self.path_configs = app_dir + '/config/'
+        self.path_defaults = app_dir + "/defaults/"
+        self.path_configs = app_dir + "/config/"
         if not os.path.exists(self.path_defaults):
             raise DefaultConfigDirNotExistsError()
         if not os.path.exists(self.path_configs):

@@ -5,7 +5,7 @@ from typing import Iterable
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
-from app import bot, config, dp
+from core import bot, config, dp
 
 if config.log.add_trace_level_name:
     logging.addLevelName(config.log.trace_level, "TRACE")
@@ -15,9 +15,7 @@ def trace(func):
     @functools.wraps(func)
     def decorator(*args, **kwargs):
         args_str = ",".join([str(x) for x in args])
-        kwargs_str = ", ".join(
-            [str(k) + "=" + str(v) for k, v in kwargs.items()]
-        )
+        kwargs_str = ", ".join([str(k) + "=" + str(v) for k, v in kwargs.items()])
         logging.log(
             config.log.trace_level,
             f"TRACE: call {func.__module__}.{func.__name__}("
@@ -46,9 +44,7 @@ def trace_async(func):
     @functools.wraps(func)
     async def decorator(*args, **kwargs):
         args_str = ",".join([str(x) for x in args])
-        kwargs_str = ", ".join(
-            [str(k) + "=" + str(v) for k, v in kwargs.items()]
-        )
+        kwargs_str = ", ".join([str(k) + "=" + str(v) for k, v in kwargs.items()])
         logging.log(
             config.log.trace_level,
             f"TRACE: call {func.__module__}.{func.__name__}("
@@ -90,9 +86,7 @@ def resolve_state(func):
 def handler_args(mixed_mode=False):
     def decorator(func):
         @functools.wraps(func)
-        async def handler_args_wrapper(
-            obj: types.base.TelegramObject, **partial_data
-        ):
+        async def handler_args_wrapper(obj: types.base.TelegramObject, **partial_data):
             callback_query = None
             if isinstance(obj, types.CallbackQuery):
                 callback_query = obj
@@ -103,9 +97,7 @@ def handler_args(mixed_mode=False):
                 uid = message.from_user.id
             else:
                 return
-            context = partial_data.get(
-                "state", dp.current_state(user=uid, chat=uid)
-            )
+            context = partial_data.get("state", dp.current_state(user=uid, chat=uid))
 
             kwargs = {
                 "uid": uid,

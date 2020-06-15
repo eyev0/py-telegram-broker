@@ -10,7 +10,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 
-from app.config import ConfigManager
+from core.config import ConfigManager
 
 clock = datetime(2020, 1, 1, tzinfo=pytz.timezone("Europe/Moscow"))
 
@@ -46,10 +46,7 @@ if config.app.use_proxy:
             login=config.proxy.username, password=config.proxy.password
         )
 bot = Bot(
-    token=config.app.token,
-    loop=event_loop,
-    proxy=proxy_url,
-    proxy_auth=proxy_auth,
+    token=config.app.token, loop=event_loop, proxy=proxy_url, proxy_auth=proxy_auth,
 )
 dp = Dispatcher(
     bot,
