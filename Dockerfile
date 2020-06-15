@@ -1,13 +1,9 @@
 FROM python:slim
 
-WORKDIR /usr/src/app
+RUN ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime && echo "Europe/Moscow" > /etc/timezone # default timezone
 
-COPY requirements.txt ./
+WORKDIR /app
+COPY requirements.txt /app
 RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . .
-RUN pip install --no-cache-dir -e .
-
-RUN mkdir /log
-
-CMD [ "python", "./app/bot.py"]
+COPY . /app
+CMD [ "python", "-m", "app"]
