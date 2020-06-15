@@ -2,8 +2,8 @@ from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-from core import clock
 from core.database.mixin import ObjectsListMixin
+from core.utils.utils import clock
 
 Base = declarative_base()
 
@@ -11,23 +11,27 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = "user"
     id = Column(Integer, primary_key=True)
-    uid = Column(Integer)
+    chat_id = Column(Integer)
     username = Column(String(255))
-    full_name = Column(String(30))
+    first_name = Column(String(100))
+    last_name = Column(String(100))
+    locale = Column(String(2))
     email_address = Column(String(100))
     phone_number = Column(String(20))
     location = Column(String(100))
     limit = Column(Integer, default=100)
     active = Column(Boolean, default=True)
     receive_notifications = Column(Boolean, default=True)
-    created = Column(DateTime, default=clock.now())
-    edited = Column(DateTime, default=clock.now())
+    created = Column(DateTime, default=clock.now)
+    edited = Column(DateTime, default=clock.now)
 
     def __init__(
         self,
-        uid,
+        chat_id,
         username=None,
-        full_name=None,
+        first_name=None,
+        last_name=None,
+        locale=None,
         email_address=None,
         phone_number=None,
         location=None,
@@ -35,9 +39,11 @@ class User(Base):
         active=True,
         receive_notifications=True,
     ):
-        self.uid = uid
+        self.chat_id = chat_id
         self.username = username
-        self.full_name = full_name
+        self.first_name = first_name
+        self.last_name = last_name
+        self.locale = locale
         self.email_address = email_address
         self.phone_number = phone_number
         self.location = location
@@ -47,9 +53,12 @@ class User(Base):
 
     def __repr__(self):
         return (
-            f"User(id={self.id}, uid={self.uid}, "
+            f"User(id={self.id}, "
+            f"chat_id={self.chat_id}, "
             f"username={self.username}, "
-            f"full_name={self.full_name}, "
+            f"first_name={self.first_name}, "
+            f"last_name={self.last_name}, "
+            f"locale={self.locale}, "
             f"email_address={self.email_address}, "
             f"phone_number={self.phone_number}, "
             f"location={self.location}, "
@@ -75,8 +84,8 @@ class Item(Base, ObjectsListMixin):
     name = Column(String(100))
     price = Column(Integer, default=False)
     status = Column(Integer, default=0)
-    created = Column(DateTime, default=clock.now())
-    edited = Column(DateTime, default=clock.now())
+    created = Column(DateTime, default=clock.now)
+    edited = Column(DateTime, default=clock.now)
 
     owner = relationship("User", backref="owner_items", foreign_keys=[owner_id])
 
@@ -117,7 +126,7 @@ class Subscription(Base):
     subscriber_id = Column(Integer, ForeignKey("user.id"))
     type = Column(Integer, default=0)
     item_id = Column(Integer, ForeignKey("item.id"))
-    created = Column(DateTime, default=clock.now())
+    created = Column(DateTime, default=clock.now)
 
     subscriber = relationship(
         "User", backref="user_subscriptions", foreign_keys=[subscriber_id]
@@ -142,7 +151,7 @@ class Demand(Base):
     id = Column(Integer, primary_key=True)
     requestor_id = Column(Integer, ForeignKey("user.id"))
     item_name = Column(String(100))
-    created = Column(DateTime, default=clock.now())
+    created = Column(DateTime, default=clock.now)
 
     requestor = relationship(
         "User", backref="user_demands", foreign_keys=[requestor_id]

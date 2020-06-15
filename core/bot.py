@@ -1,58 +1,129 @@
+import asyncio
 import logging
 import signal
 import sys
 
 import aiogram
+import aiohttp
+from aiogram import Bot, Dispatcher
+from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from aiogram.utils import executor
+from loguru import logger
 
-from core import config
-from core import dp as dispatcher
-from core.dialogue.handlers import register_handlers
-from core.middlewares import trace
+from core.configs import proxy, redis, telegram, webhook
+from core.configs.consts import LOGS_FOLDER
+from core.database import db_worker
+from core.utils.middlewares.logging_middleware import LoguruLoggingMiddleware
+from core.utils.middlewares.update_middleware import UpdateUserMiddleware
+
+logging.basicConfig(
+    format="[%(asctime)s] %(levelname)s : %(name)s : %(message)s",
+    level=logging.INFO,
+    datefmt="%Y-%m-%d at %H:%M:%S",
+)
+
+logger.remove()
+
+logger.add(
+    LOGS_FOLDER / "debug_logs.log",
+    format="[{time:YYYY-MM-DD at HH:mm:ss}] {level}: {name} : {message}",
+    level=logging.DEBUG,
+)
+
+logger.add(
+    LOGS_FOLDER / "info_logs.log",
+    format="[{time:YYYY-MM-DD at HH:mm:ss}] {level}: {name} : {message}",
+    level=logging.INFO,
+)
+
+logger.add(
+    LOGS_FOLDER / "warn_logs.log",
+    format="[{time:YYYY-MM-DD at HH:mm:ss}] {level}: {name} : {message}",
+    level=logging.WARNING,
+)
+
+logger.add(
+    sys.stderr,
+    format="[{time:YYYY-MM-DD at HH:mm:ss}] {level}: {name} : {message}",
+    level=logging.INFO,
+    colorize=False,
+)
+
+logging.getLogger("aiogram").setLevel(logging.INFO)
+
+proxy_url = None
+proxy_auth = None
+if proxy.PROXY_USE:
+    proxy_url = proxy.PROXY_URL
+    if len(proxy.PROXY_USERNAME) > 0:
+        proxy_auth = aiohttp.BasicAuth(
+            login=proxy.PROXY_USERNAME, password=proxy.PROXY_PASSWORD
+        )
+event_loop = asyncio.get_event_loop()
+bot = Bot(
+    token=telegram.BOT_TOKEN, loop=event_loop, proxy=proxy_url, proxy_auth=proxy_auth,
+)
+dp = Dispatcher(
+    bot,
+    loop=event_loop,
+    storage=RedisStorage2(
+        redis.REDIS_HOST,
+        redis.REDIS_PORT,
+        db=redis.REDIS_DB,
+        prefix=redis.REDIS_PREFIX,
+    ),
+)
 
 
-async def on_startup(dp: aiogram.Dispatcher):
-    if config.app.webhook_mode:
-        await dp.bot.set_webhook(config.webhook.url)
+async def on_startup(dispatcher: aiogram.Dispatcher):
+    if webhook.WEBHOOK_USE:
+        await dispatcher.bot.set_webhook(webhook.WEBHOOK_LISTEN)
 
-    me = await dp.bot.get_me()
+    me = await dispatcher.bot.get_me()
     logging.warning(f'Powering up @{me["username"]}')
 
+    dp.middleware.setup(LoguruLoggingMiddleware())
+    dp.middleware.setup(UpdateUserMiddleware())
 
-async def on_shutdown(dp: aiogram.Dispatcher):
+    from core.handlers import register_handlers
+
+    register_handlers()
+
+    signal.signal(signal.SIGTERM, terminate)
+
+
+async def on_shutdown(dispatcher: aiogram.Dispatcher):
     logging.warning("Shutting down..")
 
-    # Close DB connection (if used)
-    await dp.storage.close()
-    await dp.storage.wait_closed()
+    # Close storage
+    await dispatcher.storage.close()
+    await dispatcher.storage.wait_closed()
+    # close db session
+    db_worker.on_shutdown(dp)
 
-    if config.app.webhook_mode:
-        await dp.bot.delete_webhook()
+    if webhook.WEBHOOK_USE:
+        await dispatcher.bot.delete_webhook()
 
     logging.warning("Bye!")
 
 
-@trace
 def terminate(signalnum, frame):
     logging.warning(f"!! received {signalnum}, terminating the process")
     sys.exit()
 
 
 def run():
-    register_handlers()
-
-    signal.signal(signal.SIGTERM, terminate)
-    if config.app.webhook_mode:
+    if webhook.WEBHOOK_USE:
         executor.start_webhook(
-            dispatcher=dispatcher,
-            webhook_path=config.webhook.path,
+            dispatcher=dp,
+            webhook_path=webhook.WEBHOOK_LISTEN,
             on_startup=on_startup,
             on_shutdown=on_shutdown,
             skip_updates=False,
-            host=config.webhook.webapp_host,
-            port=config.webhook.webapp_port,
+            host=webhook.WEBHOOK_HOST,
+            port=webhook.WEBHOOK_PORT,
         )
     else:
         executor.start_polling(
-            dispatcher, on_startup=on_startup, on_shutdown=on_shutdown, timeout=20,
+            dp, on_startup=on_startup, on_shutdown=on_shutdown, timeout=20,
         )

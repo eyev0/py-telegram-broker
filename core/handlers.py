@@ -4,52 +4,79 @@ from typing import List, Union
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import any_state, default_state
-from aiogram.types import ContentTypes
+from aiogram.types import ContentTypes, ReplyKeyboardRemove
 
-import core.database.worker as db
-from core import config, dp
+import core.database.db_worker as db
+from core.bot import dp
+from core.configs import telegram
 from core.database.models import Item
-from core.dialogue import States, keyboard_remove
-from core.dialogue.filters import filter_admin, filter_su, filter_user_inactive
 from core.messages import MESSAGES
-from core.middlewares import add_handler_middlewares
+from core.utils.filters import filter_admin, filter_su, filter_user_inactive
+from core.utils.states import States
+
+
+def _parse_upload(
+    raw_text: str,
+    user_id: int,
+    row_delimiter="\n",
+    column_delimiter=",",
+    trim_carriage_return=True,
+) -> Union[List[Item], None]:
+    result = []
+    if trim_carriage_return:
+        raw_text = raw_text.replace("\r", "")
+    rows = raw_text.split(row_delimiter)
+    for a in [row.split(column_delimiter) for row in rows]:
+        if len(a) != 2:
+            result = None
+            break
+        else:
+            result.append(Item(user_id, name=a[0], price=a[1]))
+    return result
+
+
+def _parse_delete(raw_text: str, chat_id: int) -> Union[List, None]:
+    if raw_text == "all":
+        del_records = db.get_user_items(chat_id)
+    else:
+        if re.findall("[^0-9, ]", raw_text):
+            return None
+        del_ids = [x.strip() for x in raw_text.split(",")]
+        del_records = db.get_user_items(chat_id, ids=del_ids)
+    return del_records or []
 
 
 def register_handlers():
     # check inactive
     @dp.message_handler(filter_user_inactive, state=any_state)
-    @add_handler_middlewares(use_trace=True)
-    async def inactive(uid, context, message: types.Message):
+    async def inactive(message: types.Message):
         await message.reply(MESSAGES["user_inactive"], reply=False)
         await default_state.set()
 
     # /admin
     @dp.message_handler(filter_su, commands=["admin"], state=any_state)
-    @add_handler_middlewares(use_trace=True)
-    async def admin(uid, context, message: types.Message):
+    async def admin(message: types.Message):
         if not filter_admin(message):
-            config.app.admin.append(uid)
+            telegram.BOT_ADMINS.remove(message.from_user.id)
             await message.reply(MESSAGES["admin_enable"], reply=False)
         else:
-            config.app.admin.remove(uid)
+            telegram.BOT_ADMINS.remove(message.from_user.id)
             await message.reply(MESSAGES["admin_disable"], reply=False)
 
     # /cancel
     @dp.message_handler(
         commands=["cancel"], state=[States.UPLOAD, States.DELETE, States.SEARCH],
     )
-    @add_handler_middlewares(use_trace=True)
-    async def cancel(uid, context, message: types.Message):
+    async def cancel(message: types.Message):
         await message.reply(MESSAGES["cancel"])
         await default_state.set()
 
     # /start
     @dp.message_handler(commands=["start"], state=any_state)
-    @add_handler_middlewares(use_trace=True)
-    async def start(uid, context, message: types.Message):
-        user = db.get_user(uid)
+    async def start(message: types.Message):
+        user = db.get_user(message.from_user.id)
         if not user:
-            db.create_user(uid, message.from_user.username)
+            db.create_user(message.from_user.id, message.from_user.username)
             await States.INITIAL_REQUEST_CITY.set()
             await message.reply(MESSAGES["greetings"], reply=False)
         else:
@@ -59,52 +86,32 @@ def register_handlers():
     @dp.message_handler(
         state=States.INITIAL_REQUEST_CITY, content_types=ContentTypes.TEXT
     )
-    @add_handler_middlewares(use_trace=True)
-    async def request_city(uid, context, message: types.Message):
-        user = db.get_user(uid)
+    async def request_city(message: types.Message):
+        user = db.get_user(message.from_user.id)
         user.location = message.text
         await message.reply(
-            MESSAGES["sign_up_complete"], reply=False, reply_markup=keyboard_remove,
+            MESSAGES["sign_up_complete"],
+            reply=False,
+            reply_markup=ReplyKeyboardRemove(),
         )
         await default_state.set()
 
     # /upload
     @dp.message_handler(commands=["upload"], state=default_state)
-    @add_handler_middlewares(use_trace=True)
-    async def upload_command(uid, context, message: types.Message):
+    async def upload_command(message: types.Message):
         await message.reply(MESSAGES["upload"])
         await States.UPLOAD.set()
 
-    def _parse_upload(
-        raw_text: str,
-        user_id: int,
-        row_delimiter="\n",
-        column_delimiter=",",
-        trim_carriage_return=True,
-    ) -> Union[List[Item], None]:
-        result = []
-        if trim_carriage_return:
-            raw_text = raw_text.replace("\r", "")
-        rows = raw_text.split(row_delimiter)
-        for a in [row.split(column_delimiter) for row in rows]:
-            if len(a) != 2:
-                result = None
-                break
-            else:
-                result.append(Item(user_id, name=a[0], price=a[1]))
-        return result
-
     # process /upload
     @dp.message_handler(state=States.UPLOAD)
-    @add_handler_middlewares(use_trace=True)
-    async def upload_parse_rows(uid, context, message: types.Message):
-        user = db.get_user(uid)
+    async def upload_parse_rows(message: types.Message):
+        user = db.get_user(message.from_user.id)
         upload_records = _parse_upload(message.text, user.id)
         if not upload_records:
             await message.reply(MESSAGES["upload_parse_failed"])
             await States.UPLOAD.set()
             return
-        user_items = db.get_user_items(uid)
+        user_items = db.get_user_items(message.from_user.id)
         if len(upload_records) + len(user_items) > user.limit:
             await message.reply(
                 MESSAGES["upload_limit_exceeded"].format(user.limit, message.text)
@@ -116,27 +123,19 @@ def register_handlers():
         await message.reply(MESSAGES["upload_complete"])
         await default_state.set()
 
-    def _parse_delete(raw_text: str, uid: int) -> Union[List, None]:
-        if raw_text == "all":
-            del_records = db.get_user_items(uid)
-        else:
-            if re.findall("[^0-9, ]", raw_text):
-                return None
-            del_ids = [x.strip() for x in raw_text.split(",")]
-            del_records = db.get_user_items(uid, ids=del_ids)
-        return del_records or []
-
     # /delete
     @dp.message_handler(commands=["delete"], state=default_state)
-    @add_handler_middlewares(use_trace=True)
-    async def delete_command(uid, context: FSMContext, message: types.Message):
+    async def delete_command(message: types.Message):
         # save del_ids and request confirmation
         args: str = message.get_args()
+        context: FSMContext = dp.current_state(
+            user=message.from_user.id, chat=message.chat.id
+        )
         if len(args) == 0:
             await message.reply(MESSAGES["delete_help"])
             await default_state.set()
             return
-        del_records = _parse_delete(args, uid)
+        del_records = _parse_delete(args, message.from_user.id)
         if del_records is None:
             await message.reply(MESSAGES["delete_format_error"])
             await default_state.set()
@@ -157,12 +156,14 @@ def register_handlers():
     @dp.message_handler(
         lambda m: m.text.strip().lower() in ["да", "yes"], state=States.DELETE
     )
-    @add_handler_middlewares(use_trace=True)
-    async def delete_confirm(uid, context: FSMContext, message: types.Message):
+    async def delete_confirm(message: types.Message):
         # process delete
+        context: FSMContext = dp.current_state(
+            user=message.from_user.id, chat=message.chat.id
+        )
         context_data = await context.get_data()
         del_ids = context_data.get("delete_ids", "")
-        del_records = db.get_user_items(uid, ids=del_ids)
+        del_records = db.get_user_items(message.from_user.id, ids=del_ids)
         del_str = "\n".join([x.row_repr() for x in del_records])
         for item in del_records:
             db.delete(item)
@@ -174,14 +175,12 @@ def register_handlers():
 
     # /search
     @dp.message_handler(state=States.SEARCH)
-    @add_handler_middlewares(use_trace=True)
-    async def search_command(uid, context, message: types.Message):
+    async def search_command(message: types.Message):
         await default_state.set()
 
     # /mycards
     @dp.message_handler(commands=["mycards"], state=default_state)
-    @add_handler_middlewares(use_trace=True)
-    async def mycards(uid, context, message: types.Message):
-        user = db.get_user(uid)
+    async def mycards(message: types.Message):
+        user = db.get_user(message.from_user.id)
         reply_text = Item.list_repr(user.owner_items)
         await message.reply(reply_text, reply=False)

@@ -2,15 +2,14 @@ import functools
 import logging
 from collections import namedtuple
 from contextlib import contextmanager
-from typing import Awaitable
 
 import sqlalchemy.orm
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-from core import config
+from core.configs import database
 from core.database.models import Base
 
-engine = sqlalchemy.create_engine(config.db.connect_str)
+engine = sqlalchemy.create_engine(database.DB_HOST_URL)
 
 Base.metadata.create_all(engine)
 
@@ -47,12 +46,23 @@ def with_session(func):
     """Add session kwarg"""
 
     @functools.wraps(func)
-    async def decorator(*args, **kwargs):
+    def decorator(*args, **kwargs):
         with session_scope() as session:
             kwargs["session"] = session
             result = func(*args, **kwargs)
-            if isinstance(result, Awaitable):
-                result = await result
+            return result
+
+    return decorator
+
+
+def with_session_coroutine(func):
+    """Add session kwarg"""
+
+    @functools.wraps(func)
+    async def decorator(*args, **kwargs):
+        with session_scope() as session:
+            kwargs["session"] = session
+            result = await func(*args, **kwargs)
             return result
 
     return decorator
