@@ -1,10 +1,7 @@
 import os
 
-from dotenv import load_dotenv
-
-from core.configs.consts import BASE_DIR
+from dotenv import find_dotenv, load_dotenv
 
 DOCKER_COMPOSE = os.getenv("DOCKER_COMPOSE", "false").lower() in ["true", "1", "yes"]
 if not DOCKER_COMPOSE:
-    env_path = BASE_DIR / "local.env"
-    load_dotenv(verbose=True, dotenv_path=env_path)
+    load_dotenv(find_dotenv(), verbose=True)

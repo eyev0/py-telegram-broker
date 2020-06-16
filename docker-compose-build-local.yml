@@ -12,7 +12,7 @@ services:
         volumes:
             - ./logs:/app/logs
         env_file:
-            - local.env
+            - .env
         environment:
             - DOCKER_COMPOSE=1
         depends_on:
