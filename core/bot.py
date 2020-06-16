@@ -80,7 +80,7 @@ async def on_startup(dispatcher: aiogram.Dispatcher):
         await dispatcher.bot.set_webhook(webhook.WEBHOOK_LISTEN)
 
     me = await dispatcher.bot.get_me()
-    logging.warning(f'Powering up @{me["username"]}')
+    logger.warning(f'Powering up @{me["username"]}')
 
     dp.middleware.setup(LoguruLoggingMiddleware())
     dp.middleware.setup(UpdateUserMiddleware())
@@ -93,7 +93,7 @@ async def on_startup(dispatcher: aiogram.Dispatcher):
 
 
 async def on_shutdown(dispatcher: aiogram.Dispatcher):
-    logging.warning("Shutting down..")
+    logger.warning("Shutting down..")
 
     # Close storage
     await dispatcher.storage.close()
@@ -104,11 +104,11 @@ async def on_shutdown(dispatcher: aiogram.Dispatcher):
     if webhook.WEBHOOK_USE:
         await dispatcher.bot.delete_webhook()
 
-    logging.warning("Bye!")
+    logger.warning("Bye!")
 
 
 def terminate(signalnum, frame):
-    logging.warning(f"!! received {signalnum}, terminating the process")
+    logger.warning(f"!! received {signalnum}, terminating the process")
     sys.exit()
 
 

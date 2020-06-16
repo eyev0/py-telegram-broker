@@ -1,9 +1,9 @@
 import functools
-import logging
 from collections import namedtuple
 from contextlib import contextmanager
 
 import sqlalchemy.orm
+from loguru import logger
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 from core.configs import database
@@ -31,11 +31,11 @@ def session_scope():
         yield session
         session.commit()
     except SQLEmptyResultError:
-        logging.exception("Got unexpected empty result for query:")
+        logger.exception("Got unexpected empty result for query:")
         session.rollback()
         pass
     except Exception:
-        logging.exception("Got Error From Database:")
+        logger.exception("Got Error From Database:")
         session.rollback()
         raise
     finally:
