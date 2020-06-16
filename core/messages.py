@@ -1,7 +1,4 @@
-greetings = (
-    "Давай знакомиться. Для начала напиши, в каком городе ты живешь, "
-    "чтобы я мог зарегистрировать тебя в базе пользователей нашей площадки."
-)
+request_postal_code = "Напиши свой почтовый индекс"
 sign_up_complete = "Отлично! Можешь заливать картон."
 yo = "Как дела?"
 help_ = " "
@@ -33,7 +30,7 @@ delete_help = (
 )
 delete_format_error = "Не, не так..\n" + delete_help
 delete_no_records = (
-    "Нет карт с такими id!\n" "Напиши /mycards, чтобы посмотреть список своих карт"
+    "Нет карт с такими id!\nНапиши /mycards, чтобы посмотреть список своих карт"
 )
 delete_records_confirm = (
     "You are about to delete these records:\n"
@@ -50,7 +47,7 @@ admin_disable = "Теперь ты как все, друг!"
 
 MESSAGES = {
     # user messages
-    "greetings": greetings,
+    "request_postal_code": request_postal_code,
     "yo": yo,
     "help_": help_,
     "sign_up_complete": sign_up_complete,

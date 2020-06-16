@@ -72,13 +72,12 @@ def register_handlers():
         await default_state.set()
 
     # /start
-    @dp.message_handler(commands=["start"], state=any_state)
+    @dp.message_handler(commands=["start", "location"], state=any_state)
     async def start(message: types.Message):
         user = db.get_user(message.from_user.id)
-        if not user:
-            db.create_user(message.from_user.id, message.from_user.username)
+        if not user.location or message.get_command() == "/location":
             await States.INITIAL_REQUEST_CITY.set()
-            await message.reply(MESSAGES["greetings"], reply=False)
+            await message.reply(MESSAGES["request_postal_code"], reply=False)
         else:
             await default_state.set()
 
