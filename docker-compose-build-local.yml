@@ -1,0 +1,50 @@
+version: '3.7'
+
+services:
+    bot:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        image: py-telegram-broker:latest
+        restart: 'no'
+        networks:
+            - network
+        volumes:
+            - ./logs:/app/logs
+        env_file:
+            - local.env
+        environment:
+            - DOCKER_COMPOSE=1
+        depends_on:
+            - db
+            - redis
+
+    db:
+        image: 'postgres:alpine'
+        restart: 'no'
+        environment:
+            - POSTGRES_USER=docker
+            - POSTGRES_PASSWORD=docker
+            - POSTGRES_DB=docker
+        volumes:
+            - dbdata:/var/lib/postgresql/data
+        networks:
+            - network
+
+    redis:
+        image: 'redis:alpine'
+        command: redis-server --appendonly yes
+        restart: 'no'
+        volumes:
+            - redisdata:/data
+        networks:
+            - network
+
+networks:
+    network:
+
+volumes:
+    dbdata:
+        name: py-telegram-broker-db
+    redisdata:
+        name: py-telegram-broker-redis
