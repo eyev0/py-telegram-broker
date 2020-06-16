@@ -2,7 +2,9 @@ version: '3.7'
 
 services:
     bot:
-        build: https://github.com/edementyev/py-telegram-broker.git
+        build:
+            context: .
+            dockerfile: Dockerfile
         image: py-telegram-broker:latest
         restart: 'no'
         networks:
@@ -11,8 +13,6 @@ services:
             - ./logs:/app/logs
         env_file:
             - .env
-        environment:
-            - DOCKER_COMPOSE=1
         depends_on:
             - db
             - redis
