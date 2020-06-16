@@ -2,8 +2,8 @@ version: '3.7'
 
 services:
     bot:
-        build: https://github.com/edementyev/salesboard.git
-        image: salesboard:latest
+        build: https://github.com/edementyev/py-telegram-broker.git
+        image: py-telegram-broker:latest
         restart: 'no'
         networks:
             - network
@@ -43,6 +43,6 @@ networks:
 
 volumes:
     dbdata:
-        name: salesboard-db
+        name: py-telegram-broker-db
     redisdata:
-        name: salesboard-redis
+        name: py-telegram-broker-redis

@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "py-telegram-salesboard"
+name = "py-telegram-broker"
 version = "0.1.0"
 description = ""
 authors = ["Egor D <bespamiatny@gmail.com>"]
