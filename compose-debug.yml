@@ -12,8 +12,6 @@ services:
             - dbdata:/var/lib/postgresql/data
         ports:
             - 55432:5432
-        networks:
-            - expose-network
 
     redis:
         image: 'redis:alpine'
@@ -23,11 +21,6 @@ services:
             - redisdata:/data
         ports:
             - 56379:6379
-        networks:
-            - expose-network
-
-networks:
-    expose-network:
 
 volumes:
     dbdata:
