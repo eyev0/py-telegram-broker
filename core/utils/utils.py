@@ -1,5 +1,4 @@
-from datetime import datetime
+import pendulum
+from pendulum.tz.timezone import Timezone
 
-import pytz
-
-clock = datetime(2020, 1, 1, tzinfo=pytz.timezone("Europe/Moscow"))
+clock = pendulum.datetime(2020, 1, 1, tz=Timezone("Europe/Moscow"))
