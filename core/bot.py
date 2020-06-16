@@ -10,7 +10,7 @@ from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from aiogram.utils import executor
 from loguru import logger
 
-from core.configs import proxy, redis, telegram, webhook
+from core.configs import consts, proxy, redis, telegram, webhook
 from core.configs.consts import LOGS_FOLDER
 from core.database import db_worker
 from core.utils.middlewares.logging_middleware import LoguruLoggingMiddleware
@@ -80,7 +80,10 @@ async def on_startup(dispatcher: aiogram.Dispatcher):
         await dispatcher.bot.set_webhook(webhook.WEBHOOK_LISTEN)
 
     me = await dispatcher.bot.get_me()
+
     logger.warning(f'Powering up @{me["username"]}')
+    logger.warning(f"BASE_DIR {consts.BASE_DIR}")
+    logger.warning(f"LOGS_FOLDER {consts.LOGS_FOLDER}")
 
     dp.middleware.setup(LoguruLoggingMiddleware())
     dp.middleware.setup(UpdateUserMiddleware())
