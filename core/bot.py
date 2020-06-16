@@ -83,8 +83,6 @@ async def on_startup(dispatcher: aiogram.Dispatcher):
 
     logger.warning(f'Powering up @{me["username"]}')
     logger.warning(f"BASE_DIR {consts.BASE_DIR}")
-    logger.warning(f"LOGS_FOLDER {consts.LOGS_FOLDER}")
-
     dp.middleware.setup(LoguruLoggingMiddleware())
     dp.middleware.setup(UpdateUserMiddleware())
 
