@@ -7,8 +7,7 @@ services:
             dockerfile: Dockerfile
         image: py-telegram-broker:latest
         restart: 'no'
-        networks:
-            - network
+        stop_signal: SIGINT
         volumes:
             - ./logs:/app/logs
         env_file:
