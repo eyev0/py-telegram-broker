@@ -1,7 +1,7 @@
 import os
 
 
-class EnvNotImplementedError(NotImplementedError):
+class DotEnvNotProvidedError(ValueError):
     """env configuration is missing"""
 
 
@@ -17,4 +17,4 @@ for file in ["debug.env", ".env"]:
     if os.getenv("DOTENV_LOADED", "False").lower() in ["true", "1", "yes"]:
         break
 else:
-    raise EnvNotImplementedError()
+    raise DotEnvNotProvidedError()
