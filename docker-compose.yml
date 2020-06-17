@@ -8,10 +8,27 @@ services:
         image: py-telegram-broker:latest
         restart: 'no'
         stop_signal: SIGINT
+        environment:
+            BOT_TOKEN:
+            BOT_SU:
+            POSTGRES_USER:
+            POSTGRES_PASSWORD:
+            POSTGRES_DB:
+            POSTGRES_HOST: "db"
+            POSTGRES_PORT: "5432"
+            REDIS_HOST: "redis"
+            REDIS_PORT: "6379"
+            REDIS_DB:
+            PROXY_USE:
+            PROXY_URL:
+            PROXY_USERNAME:
+            PROXY_PASSWORD:
+            WEBHOOK_USE: "False"
+            DOTENV_LOADED: "True"
+        networks:
+            - net
         volumes:
             - ./logs:/app/logs
-        env_file:
-            - .env
         depends_on:
             - db
             - redis
@@ -20,25 +37,24 @@ services:
         image: 'postgres:alpine'
         restart: 'no'
         environment:
-            - POSTGRES_USER=docker
-            - POSTGRES_PASSWORD=docker
-            - POSTGRES_DB=docker
+            POSTGRES_USER:
+            POSTGRES_PASSWORD:
+            POSTGRES_DB:
+        networks:
+            - net
         volumes:
             - dbdata:/var/lib/postgresql/data
-        networks:
-            - network
 
     redis:
         image: 'redis:alpine'
         command: redis-server --appendonly yes
         restart: 'no'
+        networks:
+            - net
         volumes:
             - redisdata:/data
-        networks:
-            - network
-
 networks:
-    network:
+    net:
 
 volumes:
     dbdata:

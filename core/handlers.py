@@ -7,8 +7,8 @@ from aiogram.dispatcher.filters.state import any_state, default_state
 from aiogram.types import ContentTypes, ReplyKeyboardRemove
 
 import core.database.db_worker as db
+from core import config
 from core.bot import dp
-from core.configs import telegram
 from core.database.models import Item
 from core.messages import MESSAGES
 from core.utils.filters import filter_admin, filter_su, filter_user_inactive
@@ -57,10 +57,10 @@ def register_handlers():
     @dp.message_handler(filter_su, commands=["admin"], state=any_state)
     async def admin(message: types.Message):
         if not filter_admin(message):
-            telegram.BOT_ADMINS.remove(message.from_user.id)
+            config.BOT_ADMINS.remove(message.from_user.id)
             await message.reply(MESSAGES["admin_enable"], reply=False)
         else:
-            telegram.BOT_ADMINS.remove(message.from_user.id)
+            config.BOT_ADMINS.remove(message.from_user.id)
             await message.reply(MESSAGES["admin_disable"], reply=False)
 
     # /cancel

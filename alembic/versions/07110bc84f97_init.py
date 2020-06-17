@@ -1,13 +1,13 @@
-"""Init db
+"""init
 
-Revision ID: 512a2a041838
+Revision ID: 07110bc84f97
 Revises:
-Create Date: 2020-06-03 21:51:50.887241
+Create Date: 2020-06-17 19:21:51.926914
 
 """
 
 # revision identifiers, used by Alembic.
-revision = "512a2a041838"
+revision = "07110bc84f97"
 down_revision = None
 branch_labels = None
 depends_on = None

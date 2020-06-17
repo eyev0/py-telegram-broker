@@ -1,7 +1,7 @@
 from aiogram import types
 
 import core.database.db_worker as db
-from core.configs import telegram
+from core import config
 
 
 def filter_user_inactive(message: types.Message):
@@ -10,8 +10,8 @@ def filter_user_inactive(message: types.Message):
 
 
 def filter_su(message: types.Message):
-    return message.from_user.id in telegram.BOT_SU
+    return message.from_user.id in config.BOT_SU
 
 
 def filter_admin(message: types.Message):
-    return message.from_user.id in telegram.BOT_ADMINS
+    return message.from_user.id in config.BOT_ADMINS
