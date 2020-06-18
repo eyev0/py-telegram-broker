@@ -11,20 +11,25 @@ services:
         environment:
             BOT_TOKEN:
             BOT_SU:
+
             POSTGRES_USER:
             POSTGRES_PASSWORD:
             POSTGRES_DB:
             POSTGRES_HOST: "db"
             POSTGRES_PORT: "5432"
+
             REDIS_HOST: "redis"
             REDIS_PORT: "6379"
             REDIS_DB:
+
             PROXY_URL:
             PROXY_USERNAME:
             PROXY_PASSWORD:
+
             DOMAIN:
             BOT_PUBLIC_PORT:
             WEBHOOK_BASE_PATH:
+
             DOTENV_LOADED: "True"
         networks:
             - net
