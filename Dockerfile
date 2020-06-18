@@ -12,5 +12,7 @@ COPY Pipfile* /app/
 RUN pip install pipenv && \
     pipenv install --system --deploy
 ADD . /app
+RUN chmod +x scripts/*
 
-CMD [ "python", "-m", "app"]
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["run-webhook"]

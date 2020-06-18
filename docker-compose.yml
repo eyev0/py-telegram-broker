@@ -23,7 +23,8 @@ services:
             PROXY_USERNAME:
             PROXY_PASSWORD:
             DOMAIN:
-            WEBHOOK_BASE_PATH: "False"
+            BOT_PUBLIC_PORT:
+            WEBHOOK_BASE_PATH:
             DOTENV_LOADED: "True"
         networks:
             - net
