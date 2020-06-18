@@ -1,7 +1,7 @@
 from aiogram import types
 
-import core.database.db_worker as db
-from core import config
+import app.database.db_worker as db
+from app import config
 
 
 def filter_user_inactive(message: types.Message):

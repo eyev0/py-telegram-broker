@@ -6,13 +6,13 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import any_state, default_state
 from aiogram.types import ContentTypes, ReplyKeyboardRemove
 
-import core.database.db_worker as db
-from core import config
-from core.bot import dp
-from core.database.models import Item
-from core.messages import MESSAGES
-from core.utils.filters import filter_admin, filter_su, filter_user_inactive
-from core.utils.states import States
+import app.database.db_worker as db
+from app import config
+from app.bot import dp
+from app.database.models import Item
+from app.messages import MESSAGES
+from app.utils.filters import filter_admin, filter_su, filter_user_inactive
+from app.utils.states import States
 
 
 def _parse_upload(

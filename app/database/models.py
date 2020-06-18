@@ -2,8 +2,8 @@ from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-from core.database.mixin import ObjectsListMixin
-from core.utils.utils import clock
+from app.database.mixin import ObjectsListMixin
+from app.utils.utils import clock
 
 Base = declarative_base()
 

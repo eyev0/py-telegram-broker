@@ -2,8 +2,8 @@ from typing import List, Union
 
 import sqlalchemy.orm
 
-from core.database import Session, sql_result
-from core.database.models import Item, User
+from app.database import Session, sql_result
+from app.database.models import Item, User
 
 session: sqlalchemy.orm.Session = Session()
 

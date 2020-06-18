@@ -1,7 +1,7 @@
 from aiogram import types
 from aiogram.dispatcher.middlewares import BaseMiddleware
 
-from core.database.db_worker import update_user
+from app.database.db_worker import update_user
 
 
 class UpdateUserMiddleware(BaseMiddleware):

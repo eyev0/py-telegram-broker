@@ -10,10 +10,10 @@ from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from aiogram.utils import executor
 from loguru import logger
 
-from core import config
-from core.database import db_worker
-from core.utils.middlewares.logging_middleware import LoguruLoggingMiddleware
-from core.utils.middlewares.update_middleware import UpdateUserMiddleware
+from app import config
+from app.database import db_worker
+from app.utils.middlewares.logging_middleware import LoguruLoggingMiddleware
+from app.utils.middlewares.update_middleware import UpdateUserMiddleware
 
 logging.basicConfig(
     format="[%(asctime)s] %(levelname)s : %(name)s : %(message)s",
@@ -85,7 +85,7 @@ async def on_startup(dispatcher: aiogram.Dispatcher):
     dp.middleware.setup(LoguruLoggingMiddleware())
     dp.middleware.setup(UpdateUserMiddleware())
 
-    from core.handlers import register_handlers
+    from app.handlers import register_handlers
 
     register_handlers()
 

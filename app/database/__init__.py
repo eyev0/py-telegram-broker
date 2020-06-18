@@ -6,8 +6,8 @@ import sqlalchemy.orm
 from loguru import logger
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-from core import config
-from core.database.models import Base
+from app import config
+from app.database.models import Base
 
 engine = sqlalchemy.create_engine(config.POSTGRES_URI)
 
