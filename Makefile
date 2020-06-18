@@ -68,9 +68,6 @@ docker-build:
 	docker-compose build
 
 docker-db:
-	docker-compose up -d redis db
-
-docker-dev-db:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d redis db
 
 docker-up:
