@@ -1,4 +1,4 @@
-from pathlib import Path
+import secrets
 
 from envparse import env
 
@@ -21,8 +21,6 @@ for file in ["debug.env", ".env"]:
 else:
     raise DotEnvNotProvidedError()
 
-BASE_DIR: Path = Path(".")
-LOGS_FOLDER: Path = BASE_DIR / "logs"
 
 BOT_TOKEN = env.str("BOT_TOKEN", default="")
 BOT_SU = env.str("BOT_SU", default="").split(",")
@@ -41,16 +39,14 @@ POSTGRES_URI = (
 REDIS_HOST = env.str("REDIS_HOST", default="redis")
 REDIS_PORT = env.int("REDIS_PORT", default=6379)
 REDIS_DB = env.int("REDIS_DB", default=0)
-REDIS_PREFIX = env.str("REDIS_PREFIX", default="fsm")
 
 PROXY_USE = env.bool("PROXY_USE", default=False)
 PROXY_URL = env.str("PROXY_URL", default="")
 PROXY_USERNAME = env.str("PROXY_USERNAME", default="")
 PROXY_PASSWORD = env.str("PROXY_PASSWORD", default="")
 
-WEBHOOK_USE = env.bool("WEBHOOK_USE", default=False)
-WEBHOOK_HOST = env.str("WEBHOOK_HOST", default="")
-WEBHOOK_PORT = env.str("WEBHOOK_PORT", default="")
-WEBHOOK_LISTEN = env.str("WEBHOOK_LISTEN", default="")
-WEBHOOK_SSL_CERT_PATH = env.str("WEBHOOK_SSL_CERT_PATH", default="")
-WEBHOOK_SSL_PRIV_PATH = env.str("WEBHOOK_SSL_PRIV_PATH", default="")
+DOMAIN = env.str("DOMAIN", default="example.com")
+SECRET_KEY = secrets.token_urlsafe(48)
+WEBHOOK_BASE_PATH = env.str("WEBHOOK_BASE_PATH", default="/webhook")
+WEBHOOK_PATH = f"{WEBHOOK_BASE_PATH}/{SECRET_KEY}"
+WEBHOOK_URL = f"https://{DOMAIN}{WEBHOOK_PATH}"

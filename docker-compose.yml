@@ -19,11 +19,11 @@ services:
             REDIS_HOST: "redis"
             REDIS_PORT: "6379"
             REDIS_DB:
-            PROXY_USE:
             PROXY_URL:
             PROXY_USERNAME:
             PROXY_PASSWORD:
-            WEBHOOK_USE: "False"
+            DOMAIN:
+            WEBHOOK_BASE_PATH: "False"
             DOTENV_LOADED: "True"
         networks:
             - net
