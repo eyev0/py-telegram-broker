@@ -8,6 +8,14 @@ PROJECT := py-telegram-broker
 VERSION := 0.1.0
 PIPENV_VERBOSITY := -1
 
+py := pipenv run
+python := $(py) python
+
+reports_dir := reports
+
+package_dir := app
+code_dir := $(package_dir) tests
+
 # =================================================================================================
 # Base
 # =================================================================================================
@@ -22,32 +30,38 @@ help:
 # =================================================================================================
 
 isort:
-	pipenv run isort --recursive .
+	$(py) isort --recursive .
 
 black:
-	pipenv run black .
+	$(py) black .
 
 flake8:
-	pipenv run flake8 .
+	$(py) flake8 .
 
-lint: isort black flake8
+mypy:
+	$(py) mypy $(package_dir)
+
+mypy-report:
+	$(py) mypy $(package_dir) --html-report $(reports_dir)/typechecking
+
+lint: isort black flake8 mypy
 
 alembic:
-	PYTHONPATH=$(shell pwd):${PYTHONPATH} pipenv run alembic ${args}
+	PYTHONPATH=$(shell pwd):${PYTHONPATH} $(py) alembic ${args}
 
 migrate:
-	PYTHONPATH=$(shell pwd):${PYTHONPATH} pipenv run alembic upgrade head
+	PYTHONPATH=$(shell pwd):${PYTHONPATH} $(py) alembic upgrade head
 
 migration:
-	PYTHONPATH=$(shell pwd):${PYTHONPATH} pipenv run alembic revision --autogenerate -m "${message}"
+	PYTHONPATH=$(shell pwd):${PYTHONPATH} $(py) alembic revision --autogenerate -m "${message}"
 
 downgrade:
-	PYTHONPATH=$(shell pwd):${PYTHONPATH} pipenv run alembic downgrade -1
+	PYTHONPATH=$(shell pwd):${PYTHONPATH} $(py) alembic downgrade -1
 
 beforeStart: docker-up-db migrate
 
 app:
-	pipenv run python -m core
+	$(py) python -m core
 
 start:
 	$(MAKE) beforeStart
