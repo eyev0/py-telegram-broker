@@ -44,7 +44,7 @@ mypy:
 mypy-report:
 	$(py) mypy $(package_dir) --html-report $(reports_dir)/typechecking
 
-lint: isort black flake8 mypy
+lint: isort black flake8
 
 alembic:
 	PYTHONPATH=$(shell pwd):${PYTHONPATH} $(py) alembic ${args}
