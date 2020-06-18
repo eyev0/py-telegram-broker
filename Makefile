@@ -5,9 +5,8 @@ tail := 200
 PYTHONPATH := $(shell pwd):${PYTHONPATH}
 
 PROJECT := py-telegram-broker
-LOCALES_DOMAIN := bot
-LOCALES_DIR := locales
 VERSION := 0.1.0
+PIPENV_VERBOSITY := -1
 
 # =================================================================================================
 # Base
@@ -23,32 +22,32 @@ help:
 # =================================================================================================
 
 isort:
-	poetry run isort --recursive .
+	pipenv run isort --recursive .
 
 black:
-	poetry run black .
+	pipenv run black .
 
 flake8:
-	poetry run flake8 .
+	pipenv run flake8 .
 
 lint: isort black flake8
 
 alembic:
-	PYTHONPATH=$(shell pwd):${PYTHONPATH} poetry run alembic ${args}
+	PYTHONPATH=$(shell pwd):${PYTHONPATH} pipenv run alembic ${args}
 
 migrate:
-	PYTHONPATH=$(shell pwd):${PYTHONPATH} poetry run alembic upgrade head
+	PYTHONPATH=$(shell pwd):${PYTHONPATH} pipenv run alembic upgrade head
 
 migration:
-	PYTHONPATH=$(shell pwd):${PYTHONPATH} poetry run alembic revision --autogenerate -m "${message}"
+	PYTHONPATH=$(shell pwd):${PYTHONPATH} pipenv run alembic revision --autogenerate -m "${message}"
 
 downgrade:
-	PYTHONPATH=$(shell pwd):${PYTHONPATH} poetry run alembic downgrade -1
+	PYTHONPATH=$(shell pwd):${PYTHONPATH} pipenv run alembic downgrade -1
 
 beforeStart: docker-up-db migrate
 
 app:
-	poetry run python -m core
+	pipenv run python -m core
 
 start:
 	$(MAKE) beforeStart
