@@ -1,0 +1,99 @@
+# Russian translations for py-telegram-broker.
+# Copyright (C) 2020 Illemius
+# This file is distributed under the same license as the py-telegram-broker
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: py-telegram-broker 0.1.0\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2020-06-20 18:03+0300\n"
+"PO-Revision-Date: 2020-06-20 18:03+0300\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+
+#: app/handlers/base.py:27
+msgid ""
+"Hello, {user}.\n"
+"Send /help to see list of my commands.\n"
+"You can also change language by sending /settings command."
+msgstr ""
+"Привет, {user}.\n"
+"Напиши /help to see list of my commands.\n"
+"You can also change language by sending /settings command."
+
+#: app/handlers/base.py:43
+msgid "Here's the list of my commands:"
+msgstr ""
+
+#: app/handlers/base.py:44
+msgid "{command} - Start conversation with bot"
+msgstr ""
+
+#: app/handlers/base.py:45
+msgid "{command} - Show this message"
+msgstr ""
+
+#: app/handlers/base.py:46
+msgid "{command} - User settings"
+msgstr ""
+
+#: app/handlers/base.py:47
+msgid "{command} - Enter your postal code"
+msgstr ""
+
+#: app/handlers/chat_settings.py:49
+msgid "Choose chat language"
+msgstr ""
+
+#: app/handlers/chat_settings.py:78
+msgid "Language changed to {new_language}"
+msgstr ""
+
+#: app/handlers/chat_settings.py:88
+msgid "Do not disturb mode reconfigured"
+msgstr ""
+
+#: app/handlers/chat_settings.py:100
+msgid "Settings saved"
+msgstr ""
+
+#: app/handlers/superuser.py:25
+msgid "Successfuly changed is_superuser to {is_superuser} for user {user}"
+msgstr ""
+
+#: app/handlers/superuser.py:30
+msgid "Failed to set is_superuser to {is_superuser} for user {user}"
+msgstr ""
+
+#: app/utils/chat_settings.py:24
+msgid "Settings for chat {chat_title}"
+msgstr ""
+
+#: app/utils/chat_settings.py:29
+msgid "{status} Join filter"
+msgstr ""
+
+#: app/utils/chat_settings.py:39 app/utils/chat_settings.py:77
+msgid "{flag} Language"
+msgstr ""
+
+#: app/utils/chat_settings.py:49 app/utils/chat_settings.py:85
+msgid "Done"
+msgstr ""
+
+#: app/utils/chat_settings.py:62
+msgid "Personal settings"
+msgstr ""
+
+#: app/utils/chat_settings.py:67
+msgid "{status} Do not disturb"
+msgstr ""
