@@ -49,7 +49,7 @@ async def wait_redis():
         await connector.connect()
         info = await connector.redis.info()
         logger.info(
-            "Connected to Redis server v{redis}", redis=info["server"]["redis_version"]
+            "Connected to Redis server {redis}", redis=info["server"]["redis_version"],
         )
     finally:
         await connector.disconnect()

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: py-telegram-broker 0.1.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2020-06-20 18:03+0300\n"
+"POT-Creation-Date: 2020-06-21 17:51+0300\n"
 "PO-Revision-Date: 2020-06-20 18:03+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -20,80 +20,96 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-#: app/handlers/base.py:27
+#: app/handlers/base.py:28
 msgid ""
 "Hello, {user}.\n"
 "Send /help to see list of my commands.\n"
 "You can also change language by sending /settings command."
 msgstr ""
 "Привет, {user}.\n"
-"Напиши /help to see list of my commands.\n"
-"You can also change language by sending /settings command."
+"Напиши /help, чтобы посмотреть список моих команд.\n"
+"Также ты можешь сменить язык чата в настройках - /settings."
+
+#: app/handlers/base.py:42
+msgid "Here's a list of my commands:"
+msgstr "Команды:"
 
 #: app/handlers/base.py:43
-msgid "Here's the list of my commands:"
-msgstr ""
+msgid "{command} - Start conversation with bot"
+msgstr "{command} - Начать чат с ботом"
 
 #: app/handlers/base.py:44
-msgid "{command} - Start conversation with bot"
-msgstr ""
+msgid "{command} - Show this message"
+msgstr "{command} - Показать это сообщение"
 
 #: app/handlers/base.py:45
-msgid "{command} - Show this message"
-msgstr ""
+msgid "{command} - User settings"
+msgstr "{command} - Настройки"
 
 #: app/handlers/base.py:46
-msgid "{command} - User settings"
-msgstr ""
-
-#: app/handlers/base.py:47
 msgid "{command} - Enter your postal code"
-msgstr ""
+msgstr "{command} - Ввети почтовый индекс"
 
-#: app/handlers/chat_settings.py:49
+#: app/handlers/chat_settings.py:53
 msgid "Choose chat language"
-msgstr ""
+msgstr "Выбрать язык чата"
 
-#: app/handlers/chat_settings.py:78
+#: app/handlers/chat_settings.py:80
 msgid "Language changed to {new_language}"
-msgstr ""
+msgstr "Язык сменен на {new_language}"
 
-#: app/handlers/chat_settings.py:88
-msgid "Do not disturb mode reconfigured"
-msgstr ""
+#: app/handlers/chat_settings.py:95
+msgid "Do not disturb mode {mode}"
+msgstr "Режим 'Не беспокоить' {mode}"
 
-#: app/handlers/chat_settings.py:100
+#: app/handlers/chat_settings.py:96
+msgid "switched on"
+msgstr "включен"
+
+#: app/handlers/chat_settings.py:96
+msgid "switched off"
+msgstr "выключен"
+
+#: app/handlers/chat_settings.py:110
 msgid "Settings saved"
-msgstr ""
+msgstr "Настройки сохранены"
 
-#: app/handlers/superuser.py:25
+#: app/handlers/search.py:23
+msgid "List of your lots:"
+msgstr "Список твоих лотов:"
+
+#: app/handlers/search.py:25
+msgid "lot_id={id}, {name}, price: {price}"
+msgstr "lot_id={id}, {name}, цена: {price}"
+
+#: app/handlers/superuser.py:26
 msgid "Successfuly changed is_superuser to {is_superuser} for user {user}"
-msgstr ""
+msgstr "Статус суперпользователя успешно сменен на {is_superuser} для юзера {user}"
 
-#: app/handlers/superuser.py:30
+#: app/handlers/superuser.py:31
 msgid "Failed to set is_superuser to {is_superuser} for user {user}"
-msgstr ""
+msgstr "Не удалось поменять статус на {is_superuser} для юзера {user}"
 
 #: app/utils/chat_settings.py:24
 msgid "Settings for chat {chat_title}"
 msgstr ""
 
-#: app/utils/chat_settings.py:29
+#: app/utils/chat_settings.py:31
 msgid "{status} Join filter"
 msgstr ""
 
-#: app/utils/chat_settings.py:39 app/utils/chat_settings.py:77
+#: app/utils/chat_settings.py:41 app/utils/chat_settings.py:81
 msgid "{flag} Language"
-msgstr ""
+msgstr "{flag} Язык"
 
-#: app/utils/chat_settings.py:49 app/utils/chat_settings.py:85
+#: app/utils/chat_settings.py:51 app/utils/chat_settings.py:91
 msgid "Done"
-msgstr ""
+msgstr "Закрыть"
 
-#: app/utils/chat_settings.py:62
+#: app/utils/chat_settings.py:66
 msgid "Personal settings"
-msgstr ""
+msgstr "Личные настройки"
 
-#: app/utils/chat_settings.py:67
+#: app/utils/chat_settings.py:71
 msgid "{status} Do not disturb"
-msgstr ""
+msgstr "{status} Не беспокоить"

@@ -1,18 +1,20 @@
-FROM python:3.8-slim-buster as production
+FROM python:3.8-slim-buster as build
 LABEL description="Telegram Bot"
 
-ENV PYTHONPATH "${PYTHONPATH}:/app"
-ENV PATH "/app/scripts:${PATH}"
+ENV PYTHONPATH "${PYTHONPATH}:/usr/src/"
+ENV PATH "/usr/src/scripts:${PATH}"
 
-RUN ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime && echo "Europe/Moscow" > /etc/timezone # default timezone
+WORKDIR /usr/src/
 
-WORKDIR /app
+COPY ./requirements.txt /usr/src/
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY Pipfile* /app/
-RUN pip install pipenv && \
-    pipenv install --system --deploy
-ADD . /app
-RUN chmod +x scripts/*
+COPY . /usr/src/
+RUN pip install --no-cache-dir -e .
 
+RUN chmod +x scripts/* && \
+    pybabel compile -d locales -D bot
+
+STOPSIGNAL SIGINT
 ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["run-webhook"]
+CMD ["run-polling"]

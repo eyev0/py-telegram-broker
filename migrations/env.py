@@ -4,11 +4,11 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 from app.config import POSTGRES_URI
-from app.database.models import Base
+from app.models.base import db
 
 config = context.config
 fileConfig(config.config_file_name)
-target_metadata = Base.metadata
+target_metadata = db
 config.set_main_option("sqlalchemy.url", POSTGRES_URI)
 
 # other values from the config, defined by the needs of env.py,

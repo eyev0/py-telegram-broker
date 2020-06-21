@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: py-telegram-broker 0.1.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2020-06-20 18:03+0300\n"
+"POT-Creation-Date: 2020-06-21 17:51+0300\n"
 "PO-Revision-Date: 2020-06-20 18:03+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -19,54 +19,70 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-#: app/handlers/base.py:27
+#: app/handlers/base.py:28
 msgid ""
 "Hello, {user}.\n"
 "Send /help to see list of my commands.\n"
 "You can also change language by sending /settings command."
 msgstr ""
 
-#: app/handlers/base.py:43
-msgid "Here's the list of my commands:"
+#: app/handlers/base.py:42
+msgid "Here's a list of my commands:"
 msgstr ""
 
-#: app/handlers/base.py:44
+#: app/handlers/base.py:43
 msgid "{command} - Start conversation with bot"
 msgstr ""
 
-#: app/handlers/base.py:45
+#: app/handlers/base.py:44
 msgid "{command} - Show this message"
 msgstr ""
 
-#: app/handlers/base.py:46
+#: app/handlers/base.py:45
 msgid "{command} - User settings"
 msgstr ""
 
-#: app/handlers/base.py:47
+#: app/handlers/base.py:46
 msgid "{command} - Enter your postal code"
 msgstr ""
 
-#: app/handlers/chat_settings.py:49
+#: app/handlers/chat_settings.py:53
 msgid "Choose chat language"
 msgstr ""
 
-#: app/handlers/chat_settings.py:78
+#: app/handlers/chat_settings.py:80
 msgid "Language changed to {new_language}"
 msgstr ""
 
-#: app/handlers/chat_settings.py:88
-msgid "Do not disturb mode reconfigured"
+#: app/handlers/chat_settings.py:95
+msgid "Do not disturb mode {mode}"
 msgstr ""
 
-#: app/handlers/chat_settings.py:100
+#: app/handlers/chat_settings.py:96
+msgid "switched on"
+msgstr ""
+
+#: app/handlers/chat_settings.py:96
+msgid "switched off"
+msgstr ""
+
+#: app/handlers/chat_settings.py:110
 msgid "Settings saved"
 msgstr ""
 
-#: app/handlers/superuser.py:25
+#: app/handlers/search.py:23
+msgid "List of your lots:"
+msgstr ""
+
+#: app/handlers/search.py:25
+msgid "lot_id={id}, {name}, price: {price}"
+msgstr ""
+
+#: app/handlers/superuser.py:26
 msgid "Successfuly changed is_superuser to {is_superuser} for user {user}"
 msgstr ""
 
-#: app/handlers/superuser.py:30
+#: app/handlers/superuser.py:31
 msgid "Failed to set is_superuser to {is_superuser} for user {user}"
 msgstr ""
 
@@ -74,22 +90,22 @@ msgstr ""
 msgid "Settings for chat {chat_title}"
 msgstr ""
 
-#: app/utils/chat_settings.py:29
+#: app/utils/chat_settings.py:31
 msgid "{status} Join filter"
 msgstr ""
 
-#: app/utils/chat_settings.py:39 app/utils/chat_settings.py:77
+#: app/utils/chat_settings.py:41 app/utils/chat_settings.py:81
 msgid "{flag} Language"
 msgstr ""
 
-#: app/utils/chat_settings.py:49 app/utils/chat_settings.py:85
+#: app/utils/chat_settings.py:51 app/utils/chat_settings.py:91
 msgid "Done"
 msgstr ""
 
-#: app/utils/chat_settings.py:62
+#: app/utils/chat_settings.py:66
 msgid "Personal settings"
 msgstr ""
 
-#: app/utils/chat_settings.py:67
+#: app/utils/chat_settings.py:71
 msgid "{status} Do not disturb"
 msgstr ""

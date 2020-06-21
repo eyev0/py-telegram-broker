@@ -1,6 +1,12 @@
 from typing import Optional
 
 import aioredis
+from aiogram import Dispatcher
+from aiogram.contrib.fsm_storage.redis import RedisStorage2
+from aiogram.utils.executor import Executor
+from loguru import logger
+
+from app import config
 
 
 class BaseRedis:
@@ -31,3 +37,24 @@ class BaseRedis:
         if self.closed:
             raise RuntimeError("Redis connection is not opened")
         return self._redis
+
+
+storage = RedisStorage2(
+    host=config.REDIS_HOST, port=config.REDIS_PORT, db=config.REDIS_DB
+)
+
+
+async def on_startup(dispatcher: Dispatcher):
+    logger.info("Setup Redis2 Storage")
+    dispatcher.storage = storage
+
+
+async def on_shutdown(dispatcher: Dispatcher):
+    logger.info("Close Redis Connection")
+    await dispatcher.storage.close()
+    await dispatcher.storage.wait_closed()
+
+
+def setup(executor: Executor):
+    executor.on_startup(on_startup)
+    executor.on_shutdown(on_shutdown)
