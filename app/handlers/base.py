@@ -1,22 +1,12 @@
 from aiogram import types
-from aiogram.dispatcher.filters.state import default_state
 from aiogram.utils.markdown import hbold
 from loguru import logger
 
 from app.middlewares.i18n import i18n
 from app.misc import dp
 from app.models.user import User
-from app.utils.states import States
 
 _ = i18n.gettext
-
-
-@dp.message_handler(
-    commands=["cancel"], state=[States.UPLOAD, States.DELETE, States.SEARCH],
-)
-async def cmd_cancel(message: types.Message):
-    await message.reply(_("Текущее действие отменено"))
-    await default_state.set()
 
 
 @dp.message_handler(commands=["start"])

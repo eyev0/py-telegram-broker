@@ -19,7 +19,7 @@ from app.utils.states import States
 _ = i18n.gettext
 
 
-@dp.message_handler(commands=["mylots"], state=default_state)
+@dp.message_handler(commands=["mylots"])
 async def mylots(message: types.Message, user: User):
     logger.info("User {user} requested his lots", user=user.id)
     with suppress(MessageCantBeDeleted):
@@ -62,7 +62,7 @@ def _parse_upload(raw_text: str,) -> List[List[str]]:
     return result
 
 
-@dp.message_handler(commands=["upload"], state=default_state)
+@dp.message_handler(commands=["upload"])
 async def cmd_upload(message: types.Message):
     logger.info("User {user} wants to upload lots", user=message.from_user.id)
     await message.answer(
@@ -115,7 +115,7 @@ async def upload_parse_rows(message: types.Message, user: User):
     await default_state.set()
 
 
-@dp.message_handler(commands=["delete"], state=default_state)
+@dp.message_handler(commands=["delete"])
 async def cmd_delete(message: types.Message, user: User):
     logger.info("User {user} deletes his lots", user=user.id)
     user_lots = await Lot.load(item=Item).gino.all()
@@ -133,3 +133,11 @@ async def cmd_delete(message: types.Message, user: User):
     for lot in user_lots:
         await lot.delete()
         logger.info("Lot {lot!r} deleted!", lot=lot)
+
+
+@dp.message_handler(
+    commands=["cancel"], state=[States.UPLOAD, States.DELETE, States.SEARCH],
+)
+async def cmd_cancel(message: types.Message):
+    await message.reply(_("Текущее действие отменено"))
+    await default_state.set()
