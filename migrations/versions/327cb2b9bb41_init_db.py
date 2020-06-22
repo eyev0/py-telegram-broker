@@ -1,15 +1,15 @@
-"""init_db
+"""init db
 
-Revision ID: 070ec850fc02
+Revision ID: 327cb2b9bb41
 Revises:
-Create Date: 2020-06-19 21:06:46.621328
+Create Date: 2020-06-22 15:47:10.069969
 
 """
 import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "070ec850fc02"
+revision = "327cb2b9bb41"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -22,11 +22,11 @@ def upgrade():
         sa.Column("id", sa.BigInteger(), nullable=False),
         sa.Column("type", sa.String(), nullable=True),
         sa.Column(
-            "is_official", sa.Boolean(), server_default=sa.text("false"), nullable=True,
+            "is_official", sa.Boolean(), server_default=sa.text("false"), nullable=True
         ),
         sa.Column("language", sa.String(length=12), nullable=True),
         sa.Column(
-            "join_filter", sa.Boolean(), server_default=sa.text("false"), nullable=True,
+            "join_filter", sa.Boolean(), server_default=sa.text("false"), nullable=True
         ),
         sa.Column(
             "created_at",
@@ -46,31 +46,26 @@ def upgrade():
     op.create_table(
         "users",
         sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column(
-            "username", sa.String(), server_default=sa.text("NULL"), nullable=True,
-        ),
+        sa.Column("username", sa.String(), nullable=True),
         sa.Column("locale", sa.String(), nullable=True),
         sa.Column(
-            "is_superuser",
+            "is_superuser", sa.Boolean(), server_default=sa.text("false"), nullable=True
+        ),
+        sa.Column("first_name", sa.String(), nullable=True),
+        sa.Column("last_name", sa.String(), nullable=True),
+        sa.Column("location", sa.String(), nullable=True),
+        sa.Column("lot_limit", sa.Integer(), server_default="500", nullable=True),
+        sa.Column(
+            "conversation_started",
             sa.Boolean(),
-            server_default=sa.text("false"),
+            server_default=sa.text("true"),
             nullable=True,
         ),
         sa.Column(
-            "first_name", sa.String(), server_default=sa.text("NULL"), nullable=True,
+            "active", sa.Boolean(), server_default=sa.text("true"), nullable=True
         ),
         sa.Column(
-            "last_name", sa.String(), server_default=sa.text("NULL"), nullable=True,
-        ),
-        sa.Column(
-            "location", sa.String(), server_default=sa.text("NULL"), nullable=True,
-        ),
-        sa.Column("item_limit", sa.Integer(), server_default="500", nullable=True),
-        sa.Column(
-            "active", sa.Boolean(), server_default=sa.text("true"), nullable=True,
-        ),
-        sa.Column(
-            "receive_notifications",
+            "do_not_disturb",
             sa.Boolean(),
             server_default=sa.text("true"),
             nullable=True,
@@ -92,7 +87,7 @@ def upgrade():
     op.create_index(op.f("ix_users_id"), "users", ["id"], unique=True)
     op.create_table(
         "items",
-        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("name", sa.String(), nullable=True),
         sa.Column(
             "created_at",
@@ -114,34 +109,9 @@ def upgrade():
     )
     op.create_index(op.f("ix_items_id"), "items", ["id"], unique=True)
     op.create_table(
-        "demands",
-        sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column(
-            "created_at",
-            sa.DateTime(timezone=True),
-            server_default=sa.text("now()"),
-            nullable=True,
-        ),
-        sa.Column(
-            "updated_at",
-            sa.DateTime(timezone=True),
-            server_default=sa.text("now()"),
-            nullable=True,
-        ),
-        sa.Column("user_id", sa.Integer(), nullable=False),
-        sa.Column("item_id", sa.Integer(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["item_id"], ["items.id"], onupdate="CASCADE", ondelete="CASCADE"
-        ),
-        sa.ForeignKeyConstraint(
-            ["user_id"], ["users.id"], onupdate="CASCADE", ondelete="CASCADE"
-        ),
-        sa.PrimaryKeyConstraint("id"),
-    )
-    op.create_index(op.f("ix_demands_id"), "demands", ["id"], unique=True)
-    op.create_table(
         "lots",
-        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
+        sa.Column("is_demand", sa.Boolean(), nullable=True),
         sa.Column("price", sa.Integer(), nullable=True),
         sa.Column(
             "status",
@@ -173,9 +143,9 @@ def upgrade():
     op.create_index(op.f("ix_lots_id"), "lots", ["id"], unique=True)
     op.create_table(
         "deals",
-        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column(
-            "type", sa.Enum("lot_tax", "lot_space", name="dealtype"), nullable=True,
+            "type", sa.Enum("lot_tax", "lot_space", name="dealtype"), nullable=True
         ),
         sa.Column(
             "created_at",
@@ -209,8 +179,6 @@ def downgrade():
     op.drop_table("deals")
     op.drop_index(op.f("ix_lots_id"), table_name="lots")
     op.drop_table("lots")
-    op.drop_index(op.f("ix_demands_id"), table_name="demands")
-    op.drop_table("demands")
     op.drop_index(op.f("ix_items_id"), table_name="items")
     op.drop_table("items")
     op.drop_index(op.f("ix_users_id"), table_name="users")

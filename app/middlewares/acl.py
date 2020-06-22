@@ -3,6 +3,7 @@ from typing import Optional
 from aiogram import types
 from aiogram.dispatcher.handler import CancelHandler
 from aiogram.dispatcher.middlewares import BaseMiddleware
+from loguru import logger
 
 from app.models.chat import Chat
 from app.models.user import User
@@ -18,14 +19,20 @@ class ACLMiddleware(BaseMiddleware):
         chat_type = chat.type if chat else "private"
 
         if chat_type != "private":
+            logger.info(
+                "User {user} tried to chat with bot in non-private chat, which is not permitted!",
+                user=user,
+            )
             raise CancelHandler()
 
         user = await User.get(user_id)
         if user is None:
             user = await User.create(id=user_id)
+            logger.info("User {user} created!", user=user)
         chat = await Chat.get(chat_id)
         if chat is None:
             chat = await Chat.create(id=chat_id, type=chat_type)
+            logger.info("Chat {chat} created!", chat=chat)
 
         data["user"] = user
         data["chat"] = chat

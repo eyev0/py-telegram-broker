@@ -1,11 +1,12 @@
 from app.models.db import BaseModel, TimedBaseModel, db
-from app.models.user import UserRelatedModel
 
 
-class Item(TimedBaseModel, UserRelatedModel):
+class Item(TimedBaseModel):
     __tablename__ = "items"
 
-    id = db.Column(db.Integer, primary_key=True, index=True, unique=True)
+    id = db.Column(
+        db.Integer, autoincrement=True, primary_key=True, index=True, unique=True
+    )
     name = db.Column(db.String)
 
 

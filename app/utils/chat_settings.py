@@ -17,6 +17,54 @@ _ = i18n.gettext
 FLAG_STATUS = ["❌", "✅"]
 
 
+def get_user_settings_markup(
+    chat: Chat, user: User
+) -> Tuple[str, InlineKeyboardMarkup]:
+    return (
+        _("Personal settings"),
+        InlineKeyboardMarkup(
+            inline_keyboard=[
+                [
+                    InlineKeyboardButton(
+                        text=_("Change postal code"),
+                        callback_data=cb_user_settings.new(
+                            property="postal_code", value="enter"
+                        ),
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        text=_("{status} Do not disturb").format(
+                            status=FLAG_STATUS[user.do_not_disturb]
+                        ),
+                        callback_data=cb_user_settings.new(
+                            property="do_not_disturb", value="switch"
+                        ),
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        text=_("{flag} Language").format(
+                            flag=i18n.AVAILABLE_LANGUAGES[chat.language].flag
+                        ),
+                        callback_data=cb_user_settings.new(
+                            property="language", value="change"
+                        ),
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        text=_("Done"),
+                        callback_data=cb_user_settings.new(
+                            property="done", value="true"
+                        ),
+                    )
+                ],
+            ]
+        ),
+    )
+
+
 def get_chat_settings_markup(
     telegram_chat: types.Chat, chat: Chat
 ) -> Tuple[str, InlineKeyboardMarkup]:
@@ -51,46 +99,6 @@ def get_chat_settings_markup(
                         text=_("Done"),
                         callback_data=cb_chat_settings.new(
                             id=chat.id, property="done", value="true"
-                        ),
-                    )
-                ],
-            ]
-        ),
-    )
-
-
-def get_user_settings_markup(
-    chat: Chat, user: User
-) -> Tuple[str, InlineKeyboardMarkup]:
-    return (
-        _("Personal settings"),
-        InlineKeyboardMarkup(
-            inline_keyboard=[
-                [
-                    InlineKeyboardButton(
-                        text=_("{status} Do not disturb").format(
-                            status=FLAG_STATUS[user.do_not_disturb]
-                        ),
-                        callback_data=cb_user_settings.new(
-                            property="do_not_disturb", value="switch"
-                        ),
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        text=_("{flag} Language").format(
-                            flag=i18n.AVAILABLE_LANGUAGES[chat.language].flag
-                        ),
-                        callback_data=cb_user_settings.new(
-                            property="language", value="change"
-                        ),
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        text=_("Done"),
-                        callback_data=cb_user_settings.new(
-                            property="done", value="true"
                         ),
                     )
                 ],

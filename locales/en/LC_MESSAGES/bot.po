@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: py-telegram-broker 0.1.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2020-06-21 17:51+0300\n"
+"POT-Creation-Date: 2020-06-22 17:50+0300\n"
 "PO-Revision-Date: 2020-06-20 18:03+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -19,63 +19,125 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-#: app/handlers/base.py:28
+#: app/handlers/base.py:18
+msgid "Текущее действие отменено"
+msgstr ""
+
+#: app/handlers/base.py:27
 msgid ""
 "Hello, {user}.\n"
 "Send /help to see list of my commands.\n"
 "You can also change language by sending /settings command."
 msgstr ""
 
-#: app/handlers/base.py:42
+#: app/handlers/base.py:41
 msgid "Here's a list of my commands:"
 msgstr ""
 
-#: app/handlers/base.py:43
+#: app/handlers/base.py:42
 msgid "{command} - Start conversation with bot"
 msgstr ""
 
-#: app/handlers/base.py:44
+#: app/handlers/base.py:43
 msgid "{command} - Show this message"
 msgstr ""
 
-#: app/handlers/base.py:45
+#: app/handlers/base.py:44
 msgid "{command} - User settings"
 msgstr ""
 
-#: app/handlers/base.py:46
-msgid "{command} - Enter your postal code"
+#: app/handlers/base.py:45
+msgid "{command} - Show list of your lots"
 msgstr ""
 
-#: app/handlers/chat_settings.py:53
+#: app/handlers/base.py:46
+msgid "{command} - Publish new lots"
+msgstr ""
+
+#: app/handlers/base.py:47
+msgid "{command} - Delete your lots"
+msgstr ""
+
+#: app/handlers/chat_settings.py:43
+msgid "Enter postal code"
+msgstr ""
+
+#: app/handlers/chat_settings.py:63
+msgid "Invalid postal code value - {postal_code}"
+msgstr ""
+
+#: app/handlers/chat_settings.py:68
+msgid "Invalid postal code value entered by {user}, postal_code = {postal_code}"
+msgstr ""
+
+#: app/handlers/chat_settings.py:78
+msgid "Postal code changed to {postal_code}"
+msgstr ""
+
+#: app/handlers/chat_settings.py:109
 msgid "Choose chat language"
 msgstr ""
 
-#: app/handlers/chat_settings.py:80
+#: app/handlers/chat_settings.py:136
 msgid "Language changed to {new_language}"
 msgstr ""
 
-#: app/handlers/chat_settings.py:95
+#: app/handlers/chat_settings.py:151
 msgid "Do not disturb mode {mode}"
 msgstr ""
 
-#: app/handlers/chat_settings.py:96
+#: app/handlers/chat_settings.py:152
 msgid "switched on"
 msgstr ""
 
-#: app/handlers/chat_settings.py:96
+#: app/handlers/chat_settings.py:152
 msgid "switched off"
 msgstr ""
 
-#: app/handlers/chat_settings.py:110
+#: app/handlers/chat_settings.py:166
 msgid "Settings saved"
 msgstr ""
 
-#: app/handlers/search.py:23
+#: app/handlers/lots.py:35
 msgid "List of your lots:"
 msgstr ""
 
-#: app/handlers/search.py:25
+#: app/handlers/lots.py:37 app/handlers/lots.py:125
 msgid "lot_id={id}, {name}, price: {price}"
+msgstr ""
+
+#: app/handlers/lots.py:69
+msgid ""
+"Скинь мне список карт, которые хочешь загрузить. Каждая строка должна "
+"иметь формат 'Название','Цена'\n"
+"Например, так:\n"
+"\n"
+"Серый выхухоль,10\n"
+"Черная вдова,25\n"
+"Скрытный оползень,100\n"
+"..."
+msgstr ""
+
+#: app/handlers/lots.py:88
+msgid ""
+"Что-то не так с форматом твоего списка.. Не могу распарсить твой запрос "
+"на добавление. Приведи все к формату выше."
+msgstr ""
+
+#: app/handlers/lots.py:103
+msgid "Твой лимит объявлений({limit}) превышен! Нельзя загрузить {num} лотов"
+msgstr ""
+
+#: app/handlers/lots.py:114
+msgid "Успех!"
+msgstr ""
+
+#: app/handlers/lots.py:123
+msgid "Records:"
+msgstr ""
+
+#: app/handlers/lots.py:130
+msgid "deleted!"
 msgstr ""
 
 #: app/handlers/superuser.py:26
@@ -87,25 +149,32 @@ msgid "Failed to set is_superuser to {is_superuser} for user {user}"
 msgstr ""
 
 #: app/utils/chat_settings.py:24
-msgid "Settings for chat {chat_title}"
-msgstr ""
-
-#: app/utils/chat_settings.py:31
-msgid "{status} Join filter"
-msgstr ""
-
-#: app/utils/chat_settings.py:41 app/utils/chat_settings.py:81
-msgid "{flag} Language"
-msgstr ""
-
-#: app/utils/chat_settings.py:51 app/utils/chat_settings.py:91
-msgid "Done"
-msgstr ""
-
-#: app/utils/chat_settings.py:66
 msgid "Personal settings"
 msgstr ""
 
-#: app/utils/chat_settings.py:71
+#: app/utils/chat_settings.py:29
+msgid "Change postal code"
+msgstr ""
+
+#: app/utils/chat_settings.py:37
 msgid "{status} Do not disturb"
 msgstr ""
+
+#: app/utils/chat_settings.py:47 app/utils/chat_settings.py:89
+msgid "{flag} Language"
+msgstr ""
+
+#: app/utils/chat_settings.py:57 app/utils/chat_settings.py:99
+msgid "Done"
+msgstr ""
+
+#: app/utils/chat_settings.py:72
+msgid "Settings for chat {chat_title}"
+msgstr ""
+
+#: app/utils/chat_settings.py:79
+msgid "{status} Join filter"
+msgstr ""
+
+#~ msgid "{command} - Enter your postal code"
+#~ msgstr ""

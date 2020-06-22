@@ -18,7 +18,7 @@ class User(TimedBaseModel):
     last_name = db.Column(db.String)
     location = db.Column(db.String)
 
-    item_limit = db.Column(db.Integer, server_default="500")
+    lot_limit = db.Column(db.Integer, server_default="500")
 
     conversation_started = db.Column(db.Boolean, server_default=expression.true())
     active = db.Column(db.Boolean, server_default=expression.true())

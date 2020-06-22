@@ -2,6 +2,8 @@ from contextlib import suppress
 
 from aiogram import types
 from aiogram.dispatcher.filters.filters import OrFilter
+from aiogram.dispatcher.filters.state import default_state
+from aiogram.types import ContentTypes, ForceReply
 from aiogram.utils.exceptions import MessageCantBeDeleted, MessageNotModified
 from loguru import logger
 
@@ -9,16 +11,14 @@ from app.middlewares.i18n import i18n
 from app.misc import bot, dp
 from app.models.chat import Chat
 from app.models.user import User
-from app.utils.chat_settings import (
-    cb_user_settings,
-    get_chat_settings_markup,
-    get_user_settings_markup,
-)
+from app.utils import geolocation
+from app.utils.chat_settings import cb_user_settings, get_user_settings_markup
+from app.utils.states import States
 
 _ = i18n.gettext
 
 
-@dp.message_handler(types.ChatType.is_private, commands=["settings"])
+@dp.message_handler(commands=["settings"])
 async def cmd_chat_settings(message: types.Message, chat: Chat, user: User):
     logger.info(
         "User {user} wants to configure chat {chat}", user=user.id, chat=chat.id
@@ -26,11 +26,67 @@ async def cmd_chat_settings(message: types.Message, chat: Chat, user: User):
     with suppress(MessageCantBeDeleted):
         await message.delete()
 
-    if types.ChatType.is_private(message.chat):
-        text, markup = get_user_settings_markup(chat, user)
-    else:
-        text, markup = get_chat_settings_markup(message.chat, chat)
+    text, markup = get_user_settings_markup(chat, user)
     await bot.send_message(chat_id=user.id, text=text, reply_markup=markup)
+
+
+@dp.callback_query_handler(
+    cb_user_settings.filter(property="postal_code", value="enter")
+)
+async def cq_user_settings_postal_code(
+    query: types.CallbackQuery, chat: Chat, callback_data: dict
+):
+    logger.info(
+        "User {user} wants to change postal code", user=query.from_user.id,
+    )
+
+    await query.answer(_("Enter postal code"))
+    await States.SETTINGS_POSTAL_CODE.set()
+
+
+@dp.message_handler(
+    state=[States.SETTINGS_POSTAL_CODE], content_types=ContentTypes.TEXT,
+)
+async def user_settings_change_postal_code(
+    message: types.Message, chat: Chat, user: User
+):
+    logger.info(
+        "User {user} wants to change postal code to {postal_code}",
+        user=message.from_user.id,
+        postal_code=message.text,
+    )
+
+    postal_code = geolocation.validate_postal_code(message.text)
+
+    if postal_code < 0:
+        await message.answer(
+            _("Invalid postal code value - {postal_code}").format(
+                postal_code=message.text
+            )
+        )
+        logger.info(
+            _(
+                "Invalid postal code value entered by {user}, postal_code = {postal_code}"
+            ),
+            user=message.from_user.id,
+            postal_code=message.text,
+        )
+    else:
+        # with suppress(MessageCantBeDeleted):
+        #     await message.reply_to_message.delete()
+        await message.answer(
+            _("Postal code changed to {postal_code}").format(postal_code=postal_code)
+        )
+        logger.info(
+            "User {user} changed postal code to {postal_code}",
+            user=message.from_user.id,
+            postal_code=postal_code,
+        )
+
+    with suppress(MessageCantBeDeleted):
+        await message.delete()
+
+    await default_state.set()
 
 
 @dp.callback_query_handler(cb_user_settings.filter(property="language", value="change"))

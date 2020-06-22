@@ -17,9 +17,11 @@ class LotStatus(enum.Enum):
 class Lot(TimedBaseModel, UserRelatedModel, ItemRelatedModel):
     __tablename__ = "lots"
 
-    id = db.Column(db.Integer, primary_key=True, index=True, unique=True)
+    id = db.Column(
+        db.Integer, autoincrement=True, primary_key=True, index=True, unique=True
+    )
     is_demand = db.Column(db.Boolean, default=expression.false())
-    price = db.Column(db.Integer, default="0")
+    price = db.Column(db.Integer)
     status = db.Column(sa.Enum(LotStatus), default=LotStatus.created)
 
 

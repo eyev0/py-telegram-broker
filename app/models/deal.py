@@ -15,5 +15,7 @@ class DealType(enum.Enum):
 class Deal(TimedBaseModel, UserRelatedModel, LotRelatedModel):
     __tablename__ = "deals"
 
-    id = db.Column(db.Integer, primary_key=True, index=True, unique=True)
+    id = db.Column(
+        db.Integer, autoincrement=True, primary_key=True, index=True, unique=True
+    )
     type = db.Column(sa.Enum(DealType), default=DealType.lot_tax)
