@@ -1,6 +1,6 @@
 ## py-telegram-broker
 
-Broker bot for telegram (made for profit :3)
+Broker bot for telegram
 using [aiogram](https://github.com/aiogram/aiogram) framework
 and docker.
 
