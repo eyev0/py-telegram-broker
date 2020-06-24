@@ -17,3 +17,6 @@ postgres.env
 
 # logs
 logs/
+
+# scrapy
+scrape_magic/
