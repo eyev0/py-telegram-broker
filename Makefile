@@ -74,10 +74,10 @@ texts-compile:
 texts-create-language:
 	$(py) pybabel init -i locales/bot.pot -d locales -D bot -l ${language}
 
-scrape:
+crawl:
 	$(py) scrapy crawl sets
 
-scrape-shell:
+scrape:
 	$(py) scrapy shell ${url}
 
 alembic:
