@@ -31,6 +31,9 @@ help:
 # Development
 # =================================================================================================
 
+requirements:
+	pipenv lock -r > ./requirements.txt
+
 seed-isort-config:
 	$(py) seed-isort-config
 
