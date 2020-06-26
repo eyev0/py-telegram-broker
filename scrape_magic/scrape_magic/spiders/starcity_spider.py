@@ -74,6 +74,7 @@ class ScrapedItem(scrapy.Item):
     status = scrapy.Field()
     product_id = scrapy.Field(serializer=int)
     name = scrapy.Field()
+    img_src = scrapy.Field()
     card_type = scrapy.Field()
     set = scrapy.Field()
     rarity = scrapy.Field()
@@ -85,12 +86,17 @@ class ScrapedItemLoader(ItemLoader):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+        self.add_value("status", "ok")
         self.add_css("product_id", "div.productView-product::attr(value)")
         # re = trim single quotes and whitespace characters (except for spaces)
         self.add_css(
             "name",
             "dd.productView-info-value[data-field='Card Name']::text",
             re="([^\t\n\r\f\v']+)\\r",
+        )
+        self.add_css(
+            "img_src", "img.productView-image--default::attr(data-src)",
         )
         self.add_css(
             "card_type",
@@ -104,6 +110,11 @@ class ScrapedItemLoader(ItemLoader):
         )
         self.add_css(
             "finish",
+            "dd.productView-info-value[data-field='Finish']::text",
+            re="([^\t\n\r\f\v']+)\\r",
+        )
+        self.add_css(
+            "rarity",
             "dd.productView-info-value[data-field='Finish']::text",
             re="([^\t\n\r\f\v']+)\\r",
         )
