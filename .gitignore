@@ -19,4 +19,4 @@ postgres.env
 logs/
 
 # scrapy
-scrape_magic/
+scrape_magic/**/*.json
