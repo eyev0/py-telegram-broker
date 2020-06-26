@@ -95,7 +95,7 @@ migration:
 downgrade:
 	PYTHONPATH=$(shell pwd):${PYTHONPATH} $(py) alembic downgrade -1
 
-beforeStart: docker-up-db migrate
+beforeStart: docker-db migrate requirements
 
 app:
 	$(py) python -m core
@@ -139,7 +139,7 @@ docker-logs:
 # Application in Docker
 # =================================================================================================
 
-app-create: docker-build docker-stop docker-up
+app-create: requirements docker-build docker-stop docker-up
 
 app-logs:
 	$(MAKE) docker-logs args="bot"
