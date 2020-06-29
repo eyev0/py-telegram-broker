@@ -8,25 +8,16 @@ from ..items import (
     ScrapedItemVariant,
     ScrapedItemVariantLoader,
 )
+from .config import BASE_URL, SETS, VARIANTS_BASE_URL
 
 
 # noinspection PyAbstractClass
 class StarcitySpider(scrapy.Spider):
     name = "starcity"
 
-    base_url = "https://starcitygames.com/shop/singles/english/{set_name}/?limit=100"
-    variants_base_url = (
-        "https://newstarcityconnector.herokuapp.com/eyApi/"
-        "products/{product}/variants"
-    )
-
     def start_requests(self):
-        sets = [
-            "game-night-2019",
-            # "core-set-2021",
-            # "core-set-2020",
-        ]
-        urls = [self.base_url.format(set_name=set_name) for set_name in sets]
+
+        urls = [BASE_URL.format(set_name=set_name) for set_name in SETS]
 
         for url in urls:
             yield scrapy.Request(
@@ -57,7 +48,7 @@ class StarcitySpider(scrapy.Spider):
         loader = ScrapedItemLoader(item=ScrapedItem(), response=response)
         item = loader.load_item()
         request_variants = scrapy.Request(
-            self.variants_base_url.format(product=item["product_id"]),
+            VARIANTS_BASE_URL.format(product=item["product_id"]),
             callback=self.parse_item_variants,
             cb_kwargs=dict(item=item),
         )
