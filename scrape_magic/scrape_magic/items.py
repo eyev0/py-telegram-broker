@@ -62,7 +62,7 @@ class ScrapedItemLoader(ItemLoader):
         )
         self.add_css(
             "rarity",
-            "dd.productView-info-value[data-field='Finish']::text",
+            "dd.productView-info-value[data-field='Rarity']::text",
             re="([^\t\n\r\f\v']+)\\r",
         )
 
