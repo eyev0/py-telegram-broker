@@ -2,66 +2,44 @@ import json
 
 import scrapy
 
-from ..items import (
-    ScrapedItem,
-    ScrapedItemLoader,
-    ScrapedItemVariant,
-    ScrapedItemVariantLoader,
-)
-from .config import BASE_URL, SETS, VARIANTS_BASE_URL
+from ..items import BaseItem, PricedItem
+from ..loaders import BaseItemLoader, PricedItemLoader
+from .base_spider import BaseSpider
+from .config import SETS, STARCITY_CARD_VARIANTS_URL, STARCITY_SET_URL
 
 
 # noinspection PyAbstractClass
-class StarcitySpider(scrapy.Spider):
+class StarcitySpider(BaseSpider):
     name = "starcity"
 
-    def start_requests(self):
+    def __init__(self, name=None, **kwargs):
+        super().__init__(name, **kwargs)
+        self.urls = [
+            STARCITY_SET_URL.format(set_url_name=set_url_name, page=1)
+            for set_url_name, _ in SETS.items()
+        ]
+        self.start_page_num = 1
+        self.parse_item_callback = self.parse_base_item
 
-        urls = [BASE_URL.format(set_name=set_name) for set_name in SETS]
-
-        for url in urls:
-            yield scrapy.Request(
-                url=url,
-                callback=self.parse_page,
-                cb_kwargs=dict(main_url=url, page_num=1),
-            )
-
-    def parse_page(self, response, main_url, page_num):
-        for product in response.css("tr.product"):
-            item_url = product.css(
-                "div.listItem-details > h4.listItem-title > a::attr(href)"
-            ).get()
-            request_item = scrapy.Request(item_url, callback=self.parse_item,)
-            yield request_item
-
-        if response.status != 404:
-            page_num += 1
-            next_url = main_url + f"&page={page_num}"
-            request_next_page = scrapy.Request(
-                next_url,
-                callback=self.parse_page,
-                cb_kwargs=dict(main_url=main_url, page_num=page_num),
-            )
-            yield request_next_page
-
-    def parse_item(self, response):
-        loader = ScrapedItemLoader(item=ScrapedItem(), response=response)
-        item = loader.load_item()
+    @classmethod
+    def parse_base_item(cls, response):
+        loader = BaseItemLoader(item=BaseItem(), response=response, source=cls.name)
+        loader.add_attrs()
+        base_item = loader.load_item()
         request_variants = scrapy.Request(
-            VARIANTS_BASE_URL.format(product=item["product_id"]),
-            callback=self.parse_item_variants,
-            cb_kwargs=dict(item=item),
+            STARCITY_CARD_VARIANTS_URL.format(product=base_item["product_id"]),
+            callback=cls.parse_priced_item,
+            cb_kwargs=dict(base_item=base_item),
         )
         yield request_variants
 
     @staticmethod
-    def parse_item_variants(response, item):
+    def parse_priced_item(response, base_item):
         response_data = json.loads(response.text)["response"]["data"]
         for data in response_data:
             for option in data["option_values"]:
-                loader = ScrapedItemVariantLoader(
-                    variant_data=data,
-                    option=option,
-                    item=ScrapedItemVariant(item.copy()),
+                loader = PricedItemLoader(
+                    item=PricedItem(base_item.copy()), response=response
                 )
+                loader.add_attrs(data, option)
                 yield loader.load_item()

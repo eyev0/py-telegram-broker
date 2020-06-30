@@ -22,7 +22,8 @@ pylint = ">=2.4.4"
 alembic = ">=1"
 mypy = ">=0.770"
 aiohttp-autoreload = "==0.0.1"
-scrapy= ">=2.1.0"
+scrapy = ">=2.1.0"
+itemadapter = ">=0.1.0"
 
 [packages]
 aiodns = "==2.0.0"
