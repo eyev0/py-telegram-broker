@@ -2,10 +2,10 @@ import json
 
 import scrapy
 
+from ..config import SETS, STARCITY_CARD_VARIANTS_URL, STARCITY_SET_URL
 from ..items import BaseItem, PricedItem
 from ..loaders import BaseItemLoader, PricedItemLoader
 from .base_spider import BaseSpider
-from .config import SETS, STARCITY_CARD_VARIANTS_URL, STARCITY_SET_URL
 
 
 # noinspection PyAbstractClass

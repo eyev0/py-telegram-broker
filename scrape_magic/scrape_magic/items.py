@@ -7,7 +7,7 @@
 import scrapy
 from scrapy.loader.processors import MapCompose
 
-from .spiders.config import GATHERER_BASE_URL
+from .config import GATHERER_BASE_URL
 
 
 def complete_item_url(url: str, loader_context):

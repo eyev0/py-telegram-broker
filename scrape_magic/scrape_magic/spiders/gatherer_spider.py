@@ -1,14 +1,9 @@
 import scrapy
 
-from ..items import BaseItem, TranslatedItem, Translation, URLList
-from ..loaders import (
-    BaseItemLoader,
-    TranslatedItemLoader,
-    TranslationLoader,
-    URLListLoader,
-)
+from ..config import GATHERER_LANGUAGES_BASE_URL, GATHERER_SET_URL, LANGUAGES, SETS
+from ..items import BaseItem, TranslatedItem, Translation
+from ..loaders import BaseItemLoader, TranslatedItemLoader, TranslationLoader
 from .base_spider import BaseSpider
-from .config import GATHERER_LANGUAGES_BASE_URL, GATHERER_SET_URL, LANGUAGES, SETS
 
 
 # noinspection PyAbstractClass
