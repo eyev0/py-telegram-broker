@@ -1,5 +1,5 @@
 import datetime
-from typing import List
+from typing import List, Union
 
 import sqlalchemy as sa
 from aiogram import Dispatcher
@@ -41,12 +41,12 @@ class TimedBaseModel(BaseModel):
     )
 
 
-async def on_startup(dispatcher: Dispatcher):
+async def on_startup(dispatcher: Union[Dispatcher, None]):
     logger.info("Setup PostgreSQL Connection")
     await db.set_bind(config.POSTGRES_URI)
 
 
-async def on_shutdown(dispatcher: Dispatcher):
+async def on_shutdown(dispatcher: Union[Dispatcher, None]):
     bind = db.pop_bind()
     if bind:
         logger.info("Close PostgreSQL Connection")
