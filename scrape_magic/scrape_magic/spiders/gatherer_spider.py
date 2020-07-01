@@ -1,6 +1,12 @@
 import scrapy
 
-from ..config import GATHERER_LANGUAGES_BASE_URL, GATHERER_SET_URL, LANGUAGES, SETS
+from ..config import (
+    GATHERER_BASE_URL,
+    GATHERER_LANGUAGES_BASE_URL,
+    GATHERER_SET_URL,
+    LANGUAGES,
+    SETS,
+)
 from ..items import BaseItem, TranslatedItem, Translation
 from ..loaders import BaseItemLoader, TranslatedItemLoader, TranslationLoader
 from .base_spider import BaseSpider
@@ -18,6 +24,14 @@ class GathererSpider(BaseSpider):
         ]
         self.start_page_num = 0
         self.parse_item_callback = self.parse_base_item
+
+    def get_next_search_url(self, response, search_url, page_num):
+        hyperlinks = response.css("div.pagingcontrols > div > a")
+        for hyperlink in hyperlinks:
+            text: str = hyperlink.css("::text").get()
+            if text.find(">") > 0:
+                return GATHERER_BASE_URL + hyperlink.css("::attr(href)").get()
+        return ""
 
     def parse_base_item(self, response):
         loader = BaseItemLoader(item=BaseItem(), response=response, source=self.name)

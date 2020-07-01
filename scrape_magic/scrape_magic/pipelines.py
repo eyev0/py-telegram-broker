@@ -32,15 +32,22 @@ class ScrapeMagicPipeline:
 
 
 class JsonWriterPipeline:
+    def __init__(self):
+        self._file = None
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls()
+
     def open_spider(self, spider):
-        self.file = open(spider.name + "_items.jl", "w")
+        self._file = open(spider.name + "_items.jl", "w")
 
     def close_spider(self, spider):
-        self.file.close()
+        self._file.close()
 
     def process_item(self, item, spider):
         line = json.dumps(ItemAdapter(item).asdict()) + "\n"
-        self.file.write(line)
+        self._file.write(line)
         return item
 
 

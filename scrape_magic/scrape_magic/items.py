@@ -13,21 +13,21 @@ from .config import GATHERER_BASE_URL
 def complete_item_url(url: str, loader_context):
     source = loader_context.get("source", "")
     if source == "gatherer":
-        url = GATHERER_BASE_URL + url.replace("../", "Pages/")
+        url = GATHERER_BASE_URL + url.replace("../", "/Pages/")
     return url
 
 
 def complete_image_url(url: str, loader_context):
     source = loader_context.get("source", "")
     if source == "gatherer":
-        url = GATHERER_BASE_URL + url.replace("../../", "")
+        url = GATHERER_BASE_URL + url.replace("../../", "/")
     return url
 
 
 def complete_translation_url(url: str, loader_context):
     source = loader_context.get("source", "")
     if source == "gatherer":
-        url = GATHERER_BASE_URL + "Pages/Card/" + url
+        url = GATHERER_BASE_URL + "/Pages/Card/" + url
     return url
 
 

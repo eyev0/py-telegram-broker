@@ -21,6 +21,11 @@ class StarcitySpider(BaseSpider):
         self.start_page_num = 1
         self.parse_item_callback = self.parse_base_item
 
+    def get_next_search_url(self, response, search_url, page_num):
+        if response.status != 404:
+            return search_url + f"&page={page_num}"
+        return ""
+
     @classmethod
     def parse_base_item(cls, response):
         loader = BaseItemLoader(item=BaseItem(), response=response, source=cls.name)
