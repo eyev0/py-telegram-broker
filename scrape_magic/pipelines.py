@@ -10,7 +10,7 @@ from itemadapter import ItemAdapter
 from sqlalchemy import and_
 
 from app.models.item import Item as db_item
-from scrape_magic.config import RESULTS_DIR
+from scrape_magic.config import results_dir
 
 
 class ScrapeMagicPipeline:
@@ -42,7 +42,7 @@ class JsonWriterPipeline:
         return cls()
 
     def open_spider(self, spider):
-        self._file = open(RESULTS_DIR + spider.name + "_items.jl", "w")
+        self._file = open(results_dir / (spider.name + "_items.jl"), "w")
 
     def close_spider(self, spider):
         self._file.close()
@@ -74,12 +74,12 @@ class PostgresPipeline:
         existing_item = await db_item.query.where(
             and_(
                 db_item.source == item["source"],
-                db_item.product_id == item["product_id"],
+                db_item.product_id == int(item["product_id"]),
             )
         ).gino.first()
         if not existing_item:
             await db_item.create(
-                product_id=item["product_id"],
+                product_id=int(item["product_id"]),
                 source=item["source"],
                 original_name=item["name"],
                 set_name=item["set_name"],

@@ -2,6 +2,7 @@ from aiogram import types
 
 from app.middlewares.i18n import i18n
 from app.misc import dp
+from app.utils import scrapy
 from app.utils.superuser import create_super_user
 
 _ = i18n.gettext
@@ -32,3 +33,8 @@ async def cmd_superuser(message: types.Message):
             is_superuser=not remove, user=user_id
         )
     )
+
+
+@dp.message_handler(commands=["updateitems"], is_superuser=True)
+async def cmd_updateitems(message: types.Message):
+    scrapy.update_items()

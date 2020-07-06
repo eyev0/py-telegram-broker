@@ -93,7 +93,7 @@ class BaseItemLoader(ItemLoader):
             re=r"\r\n\s+([^\t\n\r\f\v]+)",
         )
         self.add_value(
-            "finish", "",
+            "finish", "N/A",
         )
         self.add_css(
             "rarity",
