@@ -3,8 +3,8 @@ import json
 import scrapy
 
 from ..config import SETS, STARCITY_CARD_VARIANTS_URL, STARCITY_SET_URL
-from ..items import BaseItem, PricedItem
-from ..loaders import BaseItemLoader, PricedItemLoader
+from ..items import BaseItem, ItemOption
+from ..loaders import BaseItemLoader, ItemOptionLoader
 from .base_spider import BaseSpider
 
 
@@ -43,8 +43,8 @@ class StarcitySpider(BaseSpider):
         response_data = json.loads(response.text)["response"]["data"]
         for data in response_data:
             for option in data["option_values"]:
-                loader = PricedItemLoader(
-                    item=PricedItem(base_item.copy()), response=response
+                loader = ItemOptionLoader(
+                    item=ItemOption(base_item.copy()), response=response
                 )
                 loader.add_attrs(data, option)
                 yield loader.load_item()

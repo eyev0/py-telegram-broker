@@ -19,5 +19,6 @@ postgres.env
 logs/
 
 # scrapy
+scrape_magic/config.py
 scrape_magic/**/*.json
 *.jl

@@ -66,6 +66,7 @@ ROBOTSTXT_OBEY = True
 ITEM_PIPELINES = {
     "scrape_magic.pipelines.ScrapeMagicPipeline": 300,
     "scrape_magic.pipelines.JsonWriterPipeline": 400,
+    "scrape_magic.pipelines.PostgresPipeline": 500,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -88,3 +89,6 @@ AUTOTHROTTLE_TARGET_CONCURRENCY = 10.0
 # HTTPCACHE_DIR = 'httpcache'
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+
+TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"

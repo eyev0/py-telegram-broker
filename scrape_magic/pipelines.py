@@ -4,11 +4,13 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-
-
 import json
 
 from itemadapter import ItemAdapter
+from sqlalchemy import and_
+
+from app.models.item import Item as db_item
+from scrape_magic.config import RESULTS_DIR
 
 
 class ScrapeMagicPipeline:
@@ -40,7 +42,7 @@ class JsonWriterPipeline:
         return cls()
 
     def open_spider(self, spider):
-        self._file = open(spider.name + "_items.jl", "w")
+        self._file = open(RESULTS_DIR + spider.name + "_items.jl", "w")
 
     def close_spider(self, spider):
         self._file.close()
@@ -51,27 +53,38 @@ class JsonWriterPipeline:
         return item
 
 
-# class PostgresPipeline:
-#     collection_name = 'scrapy_items'
-#
-#     def __init__(self, mongo_uri, mongo_db):
-#         self.mongo_uri = mongo_uri
-#         self.mongo_db = mongo_db
-#
-#     @classmethod
-#     def from_crawler(cls, crawler):
-#         return cls(
-#             mongo_uri=crawler.settings.get('MONGO_URI'),
-#             mongo_db=crawler.settings.get('MONGO_DATABASE', 'items')
-#         )
-#
-#     def open_spider(self, spider):
-#         self.client = pymongo.MongoClient(self.mongo_uri)
-#         self.db = self.client[self.mongo_db]
-#
-#     def close_spider(self, spider):
-#         self.client.close()
-#
-#     def process_item(self, item, spider):
-#         self.db[self.collection_name].insert_one(ItemAdapter(item).asdict())
-#         return item
+class PostgresPipeline:
+    def __init__(self):
+        from app.models.db import db
+
+        self.db = db
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls()
+
+    def open_spider(self, spider):
+        pass
+
+    def close_spider(self, spider):
+        pass
+
+    @staticmethod
+    async def process_item(item, spider):
+        existing_item = await db_item.query.where(
+            and_(
+                db_item.source == item["source"],
+                db_item.product_id == item["product_id"],
+            )
+        ).gino.first()
+        if not existing_item:
+            await db_item.create(
+                product_id=item["product_id"],
+                source=item["source"],
+                original_name=item["name"],
+                set_name=item["set_name"],
+                card_type=item["card_type"],
+                rarity=item["rarity"],
+                finish=item["finish"],
+            )
+        return item

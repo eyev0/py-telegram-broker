@@ -43,26 +43,26 @@ class Translation(scrapy.Item):
 class BaseItem(scrapy.Item):
     status = scrapy.Field()
     source = scrapy.Field()
-    url = scrapy.Field()
+    source_url = scrapy.Field()
     product_id = scrapy.Field(serializer=int)
     name = scrapy.Field()
-    img_src = scrapy.Field(input_processor=MapCompose(complete_image_url))
+    image_url = scrapy.Field(input_processor=MapCompose(complete_image_url))
     card_type = scrapy.Field()
-    set = scrapy.Field()
+    set_name = scrapy.Field()
     rarity = scrapy.Field()
     finish = scrapy.Field()
 
 
-class PricedItem(BaseItem):
+class LocalizedItem(BaseItem):
+    translated_source_url = scrapy.Field()
+    translated_product_id = scrapy.Field()
+    translated_image_url = scrapy.Field(input_processor=MapCompose(complete_image_url))
+    translated_name = scrapy.Field()
+
+
+class ItemOption(BaseItem):
     variant_id = scrapy.Field(serializer=int)
     price = scrapy.Field(serializer=float)
     calculated_price = scrapy.Field(serializer=float)
     option_display_name = scrapy.Field()
     option_label = scrapy.Field()
-
-
-class TranslatedItem(BaseItem):
-    translated_url = scrapy.Field()
-    translated_product_id = scrapy.Field()
-    translated_img_src = scrapy.Field(input_processor=MapCompose(complete_image_url))
-    translated_name = scrapy.Field()

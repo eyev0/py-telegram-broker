@@ -14,7 +14,7 @@ class URLListLoader(ItemLoader):
         self.add_css("urls", "tr.cardItem > td > a::attr(href)")
 
 
-class TranslationLoader(ItemLoader):
+class LocalizationLoader(ItemLoader):
     default_output_processor = TakeFirst()
 
     def add_attrs(self):
@@ -31,7 +31,7 @@ class BaseItemLoader(ItemLoader):
         source = context.get("source", "")
         self.add_value("source", source)
         self.add_value("status", "ok")
-        self.add_value("url", response.url)
+        self.add_value("source_url", response.url)
         self.response_url = response.url
         self.source = source
 
@@ -43,7 +43,7 @@ class BaseItemLoader(ItemLoader):
 
     def load_from_starcity(self):
         self.add_css(
-            "set",
+            "set_name",
             "dd.productView-info-value[data-field='Set']::text",
             re=r"([^\t\n\r\f\v']+)\r",
         )
@@ -54,7 +54,7 @@ class BaseItemLoader(ItemLoader):
         )
         self.add_css("product_id", "div.productView-product::attr(value)")
         self.add_css(
-            "img_src", "img.productView-image--default::attr(data-src)",
+            "image_url", "img.productView-image--default::attr(data-src)",
         )
         self.add_css(
             "card_type",
@@ -74,7 +74,7 @@ class BaseItemLoader(ItemLoader):
 
     def load_from_gatherer(self):
         self.add_css(
-            "set",
+            "set_name",
             "div#ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_currentSetSymbol"
             " > a ~ a::text",
             re=r"([^\t\n\r\f\v]+)",
@@ -84,7 +84,7 @@ class BaseItemLoader(ItemLoader):
         )
         self.add_value("product_id", self.response_url, re=r"multiverseid=(\d+)")
         self.add_css(
-            "img_src", "div.cardImage > img::attr(src)",
+            "image_url", "div.cardImage > img::attr(src)",
         )
         self.add_css(
             "card_type",
@@ -103,7 +103,7 @@ class BaseItemLoader(ItemLoader):
         )
 
 
-class PricedItemLoader(ItemLoader):
+class ItemOptionLoader(ItemLoader):
     default_output_processor = TakeFirst()
 
     def add_attrs(self, variant_data, option):
@@ -114,10 +114,10 @@ class PricedItemLoader(ItemLoader):
         self.add_value("option_label", option["label"])
 
 
-class TranslatedItemLoader(BaseItemLoader):
+class LocalizedItemLoader(BaseItemLoader):
     def __init__(self, item=None, selector=None, response=None, parent=None, **context):
         super().__init__(item, selector, response, parent, **context)
-        self.add_value("translated_url", response.url)
+        self.add_value("translated_source_url", response.url)
 
     def add_attrs(self):
         self.add_css(
@@ -127,5 +127,5 @@ class TranslatedItemLoader(BaseItemLoader):
             "translated_product_id", self.response_url, re=r"multiverseid=(\d+)"
         )
         self.add_css(
-            "translated_img_src", "div.cardImage > img::attr(src)",
+            "translated_image_url", "div.cardImage > img::attr(src)",
         )
