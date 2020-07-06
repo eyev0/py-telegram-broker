@@ -185,4 +185,6 @@ def downgrade():
     op.drop_table("users")
     op.drop_index(op.f("ix_chats_id"), table_name="chats")
     op.drop_table("chats")
+    sa.Enum(name="dealtype").drop(op.get_bind(), checkfirst=False)
+    sa.Enum(name="lotstatus").drop(op.get_bind(), checkfirst=False)
     # ### end Alembic commands ###
