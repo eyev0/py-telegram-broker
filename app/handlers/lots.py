@@ -11,7 +11,7 @@ from sqlalchemy import join
 from app.middlewares.i18n import i18n
 from app.misc import dp
 from app.models.db import db
-from app.models.item import Item
+from app.models.item import LocalizedItem
 from app.models.lot import Lot
 from app.models.user import User
 from app.utils.states import States
@@ -26,8 +26,8 @@ async def mylots(message: types.Message, user: User):
         await message.delete()
 
     user_lots = (
-        await db.select([Item.name, Lot.id, Lot.price])
-        .select_from(join(Lot, Item))
+        await db.select([LocalizedItem.name, Lot.id, Lot.price])
+        .select_from(join(Lot, LocalizedItem))
         .where(Lot.user_id == user.id)
         .gino.all()
     )
@@ -93,8 +93,8 @@ async def upload_parse_rows(message: types.Message, user: User):
         )
         raise SkipHandler
     user_lots = (
-        await db.select([Item.name, Lot.id, Lot.price])
-        .select_from(join(Lot, Item))
+        await db.select([LocalizedItem.name, Lot.id, Lot.price])
+        .select_from(join(Lot, LocalizedItem))
         .where(Lot.user_id == user.id)
         .gino.all()
     )
@@ -108,7 +108,7 @@ async def upload_parse_rows(message: types.Message, user: User):
         await default_state.set()
         raise SkipHandler
     for name, price in _parse_upload(message.text):
-        item = await Item.create(name=name)
+        item = await LocalizedItem.create(name=name)
         lot = await Lot.create(user_id=user.id, item_id=item.id, price=int(price))
         logger.info("Item = {item!r}, Lot = {lot!r} - created!", item=item, lot=lot)
     await message.answer(_("Успех!"))
@@ -118,7 +118,7 @@ async def upload_parse_rows(message: types.Message, user: User):
 @dp.message_handler(commands=["delete"])
 async def cmd_delete(message: types.Message, user: User):
     logger.info("User {user} deletes his lots", user=user.id)
-    user_lots = await Lot.load(item=Item).gino.all()
+    user_lots = await Lot.load(item=LocalizedItem).gino.all()
     text = [
         _("Records:"),
         *[
