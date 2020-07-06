@@ -95,14 +95,14 @@ migration:
 downgrade:
 	PYTHONPATH=$(shell pwd):${PYTHONPATH} $(py) alembic downgrade -1
 
-beforeStart: docker-db migrate requirements
+_beforeStart: docker-db migrate requirements
 
-app:
+_app:
 	$(py) python -m core
 
 start:
-	$(MAKE) beforeStart
-	$(MAKE) app
+	$(MAKE) _beforeStart
+	$(MAKE) _app
 
 # =================================================================================================
 # Docker
@@ -119,6 +119,9 @@ docker-build:
 
 docker-db:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d redis db
+
+docker-db-stop:
+	docker-compose stop redis db
 
 docker-up:
 	docker-compose up -d --remove-orphans
@@ -139,7 +142,7 @@ docker-logs:
 # Application in Docker
 # =================================================================================================
 
-app-create: requirements docker-build docker-stop docker-up
+app-create: _beforeStart docker-db-stop docker-build docker-stop docker-up
 
 app-logs:
 	$(MAKE) docker-logs args="bot"
